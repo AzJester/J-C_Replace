@@ -1,0 +1,10 @@
+qa-captures/
+deck-assets/
+deck-build/
+deck-renders/
+pdf-renders/
+qa-report.json
+qa-product.cjs
+qa-offline.cjs
+capture-product.cjs
+downloads/*.inspect.ndjson

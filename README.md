@@ -1,24 +1,52 @@
-# Jira + Confluence Replacement Leadership Concept
+# Unified Project Management Suite
 
-A presenter-led, synthetic-data concept showing how Program Control could connect work management, knowledge, decisions, audit history, and leadership reporting in one governed workflow.
+A broad interactive concept for replacing fragmented Jira, Confluence, and manual reporting with one governed system for work, knowledge, decisions, risk, evidence, and leadership status.
 
-## Run the demo
+## Run the prototype
 
-**[Open the live leadership concept demo](https://azjester.github.io/J-C_Replace/)**
+- [Open the live product prototype](https://azjester.github.io/J-C_Replace/)
+- [Open the five-minute leadership tour](https://azjester.github.io/J-C_Replace/leadership-demo.html)
+- [Download the PowerPoint](./downloads/unified-project-management-suite-leadership-brief.pptx)
+- [Download the PDF](./downloads/unified-project-management-suite-leadership-brief.pdf)
 
-The demo is a standalone front-end prototype. It does not connect to Jira, Confluence, Program Control production data, or any external service. It uses no authentication, APIs, cookies, telemetry, uploads, or persistent browser storage.
+## What is represented
 
-## Leadership briefing
+- Portfolio home, personal work, and notification inbox
+- Projects and a populated Sentinel Mesh Node project overview
+- Backlog, sprint board, editable work details, dependencies, comments, checklists, and activity
+- Timeline, milestones, releases, risks, and delivery reporting
+- Knowledge spaces, page tree, living pages, comments, evidence, editing, and version history
+- Governed decision register with an approval cascade that updates six dependent items
+- Leadership readout generated from the same synthetic operating record
+- People, teams, capacity, workflow administration, permissions, templates, integrations, and audit
+- Automation rules and a synthetic Jira/Confluence migration dry run
+- Unified search, global create, keyboard navigation, responsive layouts, reduced motion, and demo reset
 
-- [Download the PowerPoint](./downloads/program-control-leadership-brief.pptx)
-- [Download the PDF](./downloads/program-control-leadership-brief.pdf)
+## Demonstration path
 
-The seven-slide leadership story includes concise speaker notes for a five-minute presentation, followed by two appendix slides covering the production boundary and a staged migration approach.
+1. Open **Home** and select the certification intervention.
+2. Inspect **SMN-191** and its blocked downstream work.
+3. Follow the linked **Alternate Path Decision Brief**.
+4. Open **DEC-014** and approve Option B.
+5. Confirm that six items move to Ready, the forecast returns to 18 September, risk falls to 6/25, and the leadership brief refreshes.
+6. Reset the demo from the user menu.
 
-## Scenario boundary
+## Concept boundary
 
-All project names, people, dates, risks, schedule changes, evidence, and outcomes are fictional. The concept demonstrates workflow value and supports requirements discovery; it is not a claim of completed Atlassian parity or production readiness.
+This is a front-end-only product prototype using fictional people, projects, dates, metrics, and outcomes. State exists only in a JavaScript `DemoState` object and is cleared by reset or refresh. The site uses no APIs, authentication, cookies, telemetry, uploads, browser storage, or real Atlassian or organizational program data.
 
-## Run offline
+Production replacement would still require enterprise identity and permissions, durable storage, security engineering, scale and performance work, supported integrations, migration tooling, data-quality validation, operational support, and an approved cutover plan.
 
-Download `index.html` and open it directly in a modern browser. The Inter font and Program Control monogram are embedded in the file.
+## Local use
+
+Clone the repository and open `index.html` in a modern browser, or serve the folder from any static web server. All visual assets are bundled locally; no internet connection is needed after download.
+
+Keyboard shortcuts:
+
+- `Ctrl/Cmd + K` — unified search
+- `C` — create work
+- `Esc` — close the current overlay
+
+## Visual system
+
+The prototype uses a neutral navy-and-teal product palette, semantic status colors, a system-font stack, and a generic suite mark. It intentionally carries no company-specific identity.

@@ -1,0 +1,756 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#0b1f2a">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src 'none'; font-src 'none'; connect-src 'none'; media-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>Unified Project Management Suite | Senior Leadership Concept Demo</title>
+  <style>
+    :root {
+      --navy-950: #071820;
+      --navy-900: #0b1f2a;
+      --navy-800: #123442;
+      --navy-700: #1a4b5d;
+      --teal-700: #087a78;
+      --teal-600: #0b908c;
+      --teal-500: #18a7a2;
+      --teal-100: #d9f3f0;
+      --teal-050: #effaf9;
+      --blue-600: #1769aa;
+      --ink: #11242d;
+      --muted: #5a6b73;
+      --line: #d9e2e6;
+      --line-strong: #b8c7cd;
+      --surface: #ffffff;
+      --canvas: #f4f7f8;
+      --green: #137454;
+      --green-soft: #e1f5ec;
+      --amber: #8a5700;
+      --amber-soft: #fff3d6;
+      --red: #a33a32;
+      --red-soft: #ffe8e5;
+      --shadow: 0 18px 48px rgba(7, 24, 32, .12);
+      --font: "Segoe UI", Arial, Helvetica, sans-serif;
+      --mono: "Cascadia Mono", Consolas, monospace;
+    }
+
+    * { box-sizing: border-box; }
+    html { background: var(--canvas); scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-width: 320px;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 92% -10%, rgba(24, 167, 162, .12), transparent 30rem),
+        var(--canvas);
+      font-family: var(--font);
+      font-size: 15px;
+      line-height: 1.45;
+    }
+    button, a { font: inherit; }
+    button { color: inherit; }
+    button:focus-visible, a:focus-visible {
+      outline: 3px solid rgba(24, 167, 162, .5);
+      outline-offset: 3px;
+    }
+    [hidden] { display: none !important; }
+
+    .app-shell { min-height: 100vh; display: flex; flex-direction: column; }
+    .topbar {
+      min-height: 70px;
+      padding: 10px clamp(18px, 3vw, 46px);
+      display: grid;
+      grid-template-columns: minmax(310px, 1fr) auto minmax(310px, 1fr);
+      gap: 22px;
+      align-items: center;
+      color: white;
+      background: var(--navy-950);
+      border-bottom: 1px solid rgba(255,255,255,.11);
+    }
+    .brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
+    .brand-mark {
+      width: 42px;
+      height: 42px;
+      flex: 0 0 auto;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(255,255,255,.28);
+      border-radius: 11px 4px 11px 4px;
+      color: white;
+      background: linear-gradient(145deg, var(--teal-500), var(--teal-700));
+      box-shadow: inset 0 0 0 4px rgba(255,255,255,.08);
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: -.04em;
+    }
+    .brand-copy { display: grid; min-width: 0; }
+    .brand-copy strong { font-size: 15px; line-height: 1.2; letter-spacing: .01em; }
+    .brand-copy span { color: #a9c0ca; font-size: 12px; }
+    .concept-label {
+      justify-self: center;
+      padding: 7px 12px;
+      border: 1px solid rgba(255,255,255,.18);
+      border-radius: 999px;
+      color: #dbe9ed;
+      background: rgba(255,255,255,.06);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .top-actions { justify-self: end; display: flex; align-items: center; gap: 9px; }
+    .privacy-note { color: #9fb7c1; font-size: 11px; white-space: nowrap; }
+    .top-action {
+      min-height: 36px;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 11px;
+      border: 1px solid rgba(255,255,255,.2);
+      border-radius: 8px;
+      color: #f7fbfc;
+      background: transparent;
+      text-decoration: none;
+      cursor: pointer;
+      transition: background .18s ease, border-color .18s ease;
+    }
+    .top-action:hover { background: rgba(255,255,255,.1); border-color: rgba(255,255,255,.36); }
+
+    .journey {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      padding: 0 clamp(18px, 3vw, 46px);
+      background: rgba(255,255,255,.96);
+      border-bottom: 1px solid var(--line);
+      box-shadow: 0 7px 18px rgba(17,36,45,.05);
+      backdrop-filter: blur(10px);
+    }
+    .journey ol {
+      max-width: 1450px;
+      margin: 0 auto;
+      padding: 0;
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      list-style: none;
+    }
+    .journey li { min-width: 0; }
+    .journey button {
+      width: 100%;
+      min-height: 68px;
+      padding: 9px 12px;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      border: 0;
+      border-bottom: 3px solid transparent;
+      color: var(--muted);
+      background: transparent;
+      text-align: left;
+      cursor: pointer;
+    }
+    .journey button:hover { background: var(--teal-050); }
+    .journey button[aria-selected="true"] { color: var(--navy-900); border-bottom-color: var(--teal-600); background: var(--teal-050); }
+    .step-number {
+      width: 29px;
+      height: 29px;
+      flex: 0 0 auto;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      color: var(--navy-700);
+      background: #e7eff2;
+      font: 700 11px var(--mono);
+    }
+    [aria-selected="true"] .step-number { color: white; background: var(--teal-700); }
+    .step-copy { min-width: 0; display: grid; }
+    .step-copy strong { font-size: 12px; white-space: nowrap; }
+    .step-copy span { overflow: hidden; color: var(--muted); font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+
+    main { flex: 1; }
+    .panel { min-height: calc(100vh - 196px); }
+    .panel-inner { max-width: 1450px; margin: 0 auto; padding: 28px clamp(18px, 3vw, 46px) 24px; }
+    .scene-heading { margin-bottom: 22px; display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; }
+    .scene-heading-copy { max-width: 850px; }
+    .eyebrow { display: block; margin-bottom: 7px; color: var(--teal-700); font-size: 12px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+    h1, h2, h3, h4, p { margin-top: 0; }
+    h1, h2 { margin-bottom: 8px; color: var(--navy-900); font-size: clamp(27px, 2.5vw, 39px); line-height: 1.08; letter-spacing: -.035em; }
+    h3 { color: var(--navy-900); }
+    .scene-heading p { max-width: 780px; margin-bottom: 0; color: var(--muted); font-size: 16px; }
+    .scene-kicker {
+      width: min(330px, 34vw);
+      flex: 0 0 auto;
+      padding: 12px 15px;
+      border-left: 3px solid var(--teal-500);
+      color: var(--muted);
+      background: white;
+      box-shadow: 0 6px 20px rgba(17,36,45,.06);
+    }
+    .scene-kicker strong { display: block; margin-bottom: 2px; color: var(--navy-700); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; }
+    .scene-kicker span { font-size: 13px; }
+
+    .card { border: 1px solid var(--line); border-radius: 13px; background: var(--surface); box-shadow: 0 7px 24px rgba(17,36,45,.06); }
+    .tag, .status-pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 8px;
+      border-radius: 999px;
+      color: var(--navy-700);
+      background: #e8f0f3;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+    .tag.amber, .status-pill.amber { color: var(--amber); background: var(--amber-soft); }
+    .tag.green, .status-pill.green { color: var(--green); background: var(--green-soft); }
+    .primary-button, .secondary-button {
+      min-height: 40px;
+      padding: 9px 14px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .primary-button { border: 1px solid var(--teal-700); color: white; background: var(--teal-700); }
+    .primary-button:hover { background: #066b69; }
+    .secondary-button { border: 1px solid var(--line-strong); color: var(--navy-700); background: white; }
+    .secondary-button:hover { border-color: var(--teal-600); background: var(--teal-050); }
+    .primary-button:disabled { border-color: var(--green); background: var(--green); cursor: default; }
+
+    /* Step 1 */
+    .friction-layout { display: grid; grid-template-columns: minmax(270px, .72fr) minmax(0, 1.7fr); gap: 18px; }
+    .friction-summary { padding: 23px; border-radius: 13px; color: white; background: linear-gradient(150deg, var(--navy-900), var(--navy-700)); box-shadow: var(--shadow); }
+    .friction-summary .tag { color: #bfeae7; background: rgba(24,167,162,.18); }
+    .friction-summary h3 { margin: 16px 0 8px; color: white; font-size: 24px; line-height: 1.12; }
+    .friction-summary > p { color: #c4d5dc; }
+    .friction-metrics { margin-top: 22px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .friction-metrics div { padding: 12px 7px; border: 1px solid rgba(255,255,255,.11); border-radius: 8px; background: rgba(255,255,255,.06); }
+    .friction-metrics strong { display: block; color: white; font-size: 21px; }
+    .friction-metrics span { color: #b7cbd3; font-size: 10px; }
+    .tool-grid { position: relative; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .tool-card { min-width: 0; padding: 18px; border: 1px solid var(--line); border-radius: 12px; background: white; box-shadow: 0 7px 22px rgba(17,36,45,.06); }
+    .tool-head { margin-bottom: 22px; display: flex; justify-content: space-between; gap: 8px; color: var(--muted); font-size: 10px; text-transform: uppercase; }
+    .tool-name { display: flex; align-items: center; gap: 7px; color: var(--navy-900); font-size: 12px; font-weight: 800; }
+    .tool-icon { width: 25px; height: 25px; display: grid; place-items: center; border-radius: 6px; color: white; background: var(--blue-600); font-style: normal; }
+    .tool-card:nth-child(2) .tool-icon { background: var(--teal-700); }
+    .tool-card:nth-child(3) .tool-icon { background: var(--navy-700); }
+    .tool-record > span { color: var(--amber); font: 700 10px var(--mono); }
+    .tool-record h4 { min-height: 42px; margin: 8px 0; font-size: 16px; line-height: 1.25; }
+    .tool-record p { color: var(--muted); font-size: 12px; }
+    .tool-lines { margin-top: 18px; display: grid; gap: 7px; }
+    .tool-lines i { height: 6px; border-radius: 4px; background: #e7edef; }
+    .tool-lines i:nth-child(2) { width: 79%; }
+    .tool-lines i:nth-child(3) { width: 57%; }
+    .manual-reconcile { position: absolute; right: 50%; bottom: -14px; transform: translateX(50%); }
+    .manual-reconcile span { padding: 6px 11px; border: 1px dashed var(--amber); border-radius: 999px; color: var(--amber); background: var(--amber-soft); font-size: 10px; font-weight: 800; text-transform: uppercase; }
+
+    /* Product preview */
+    .workspace-preview { overflow: hidden; min-height: 454px; display: grid; grid-template-columns: 200px 1fr; border: 1px solid #90a7b1; border-radius: 13px; background: white; box-shadow: var(--shadow); }
+    .mini-sidebar { padding: 18px 14px; color: #d8e8ec; background: var(--navy-900); }
+    .mini-sidebar-head { display: flex; align-items: center; gap: 8px; color: white; font-size: 12px; font-weight: 800; }
+    .mini-mark { width: 28px; height: 28px; display: grid; place-items: center; border-radius: 8px 3px 8px 3px; color: white; background: var(--teal-600); font-style: normal; }
+    .mini-project { display: block; margin: 20px 7px 9px; color: #8fabb5; font-size: 9px; letter-spacing: .08em; text-transform: uppercase; }
+    .mini-nav { display: grid; gap: 4px; }
+    .mini-nav span { padding: 8px 9px; border-radius: 6px; color: #bcd0d7; font-size: 11px; }
+    .mini-nav .active { color: white; background: rgba(24,167,162,.2); box-shadow: inset 3px 0 var(--teal-500); }
+    .mini-safety { margin-top: 42px; padding: 9px; border: 1px solid rgba(255,255,255,.09); border-radius: 7px; color: #9bb3bd; font-size: 9px; }
+    .workspace-main { min-width: 0; background: #f6f8f9; }
+    .workspace-bar { padding: 11px 16px; display: flex; justify-content: space-between; border-bottom: 1px solid var(--line); background: white; font-size: 10px; }
+    .workspace-bar span { color: var(--muted); }
+    .workspace-content { padding: 18px; }
+    .leadership-head { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+    .leadership-head h3 { margin-bottom: 2px; font-size: 23px; }
+    .leadership-head p { margin-bottom: 0; color: var(--muted); font-size: 11px; }
+    .health-badge { padding: 7px 12px; border: 1px solid #e5c17d; border-radius: 999px; color: var(--amber); background: var(--amber-soft); font-size: 11px; font-weight: 800; }
+    .metric-grid { margin: 15px 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 9px; }
+    .metric-card { padding: 12px; border: 1px solid var(--line); border-radius: 9px; background: white; }
+    .metric-card span, .metric-card small { display: block; color: var(--muted); font-size: 9px; }
+    .metric-card strong { display: block; margin: 3px 0; color: var(--navy-900); font-size: 20px; }
+    .leadership-lower { display: grid; grid-template-columns: 1.25fr .75fr; gap: 10px; }
+    .schedule-card, .attention-card { padding: 14px; border: 1px solid var(--line); border-radius: 9px; background: white; }
+    .schedule-card header, .attention-card header { display: flex; justify-content: space-between; gap: 12px; color: var(--muted); font-size: 9px; }
+    .schedule-card header strong, .attention-card header strong { color: var(--navy-800); font-size: 11px; }
+    .schedule-axis { margin: 18px 0 3px; display: flex; justify-content: space-between; color: var(--muted); font-size: 8px; }
+    .schedule-track { position: relative; height: 34px; padding-top: 9px; border-top: 1px solid var(--line); }
+    .schedule-bar { position: relative; width: 90%; height: 9px; border-radius: 9px; background: #d9e4e8; }
+    .schedule-bar i { position: absolute; right: 0; width: var(--exposure, 42%); height: 100%; border-radius: inherit; background: var(--amber); transition: width .35s ease, background .35s ease; }
+    body.approved .schedule-bar i { background: var(--green); }
+    .milestone-pin { position: absolute; right: 0; top: 3px; color: var(--navy-800); font-size: 9px; font-weight: 800; }
+    .schedule-caption { display: flex; justify-content: space-between; color: var(--muted); font-size: 9px; }
+    .attention-card h4 { margin: 12px 0 5px; font-size: 16px; }
+    .attention-card p { margin-bottom: 12px; color: var(--muted); font-size: 10px; }
+
+    /* Work and page */
+    .detail-grid { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(300px, .55fr); gap: 15px; }
+    .issue-card, .trace-card, .page-card { padding: 20px; }
+    .record-line { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .record-id { color: var(--teal-700); font: 800 11px var(--mono); }
+    .issue-card h3 { margin: 13px 0 6px; font-size: 25px; }
+    .issue-card > p { color: var(--muted); }
+    .field-grid { margin: 20px 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; }
+    .field { padding: 10px; border: 1px solid var(--line); border-radius: 8px; background: #f8fafb; }
+    .field span { display: block; color: var(--muted); font-size: 9px; text-transform: uppercase; }
+    .field strong { display: block; margin-top: 3px; font-size: 12px; }
+    .dependency-list, .trace-list, .evidence-list, .update-list { margin: 0; padding: 0; list-style: none; }
+    .dependency-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 7px; }
+    .dependency-list li { padding: 8px 10px; border-left: 3px solid var(--amber); background: var(--amber-soft); font-size: 10px; }
+    body.approved .dependency-list li { border-left-color: var(--green); background: var(--green-soft); }
+    .issue-actions { margin-top: 18px; display: flex; gap: 9px; }
+    .trace-card { background: linear-gradient(180deg, #fff, #f6fafb); }
+    .trace-card h3 { margin-bottom: 5px; font-size: 18px; }
+    .trace-card > p { color: var(--muted); font-size: 12px; }
+    .trace-list { margin-top: 18px; display: grid; gap: 4px; }
+    .trace-list li { position: relative; padding: 10px 10px 10px 35px; border: 1px solid var(--line); border-radius: 7px; background: white; font-size: 11px; }
+    .trace-list li::before { content: attr(data-index); position: absolute; left: 10px; top: 9px; width: 17px; height: 17px; display: grid; place-items: center; border-radius: 50%; color: white; background: var(--teal-700); font: 700 8px var(--mono); }
+    .trace-list strong { display: block; }
+    .trace-list span { color: var(--muted); font-size: 9px; }
+
+    .page-shell { overflow: hidden; display: grid; grid-template-columns: 175px minmax(0,1fr); border: 1px solid var(--line-strong); border-radius: 13px; background: white; box-shadow: var(--shadow); }
+    .page-tree { padding: 17px 12px; background: #eef3f5; border-right: 1px solid var(--line); }
+    .page-tree strong { display: block; margin: 0 7px 14px; color: var(--navy-800); font-size: 11px; }
+    .page-tree span { display: block; padding: 7px; border-radius: 5px; color: var(--muted); font-size: 9px; }
+    .page-tree .active { color: var(--teal-700); background: white; font-weight: 800; }
+    .page-card { min-width: 0; }
+    .page-meta { display: flex; align-items: center; justify-content: space-between; gap: 15px; color: var(--muted); font-size: 10px; }
+    .page-card h3 { margin: 14px 0 4px; font-size: 24px; }
+    .page-card > p { color: var(--muted); font-size: 12px; }
+    .decision-layout { display: grid; grid-template-columns: 1.2fr .8fr; gap: 12px; }
+    .decision-copy h4 { margin: 15px 0 4px; font-size: 12px; }
+    .decision-copy p, .option-row { color: var(--muted); font-size: 11px; }
+    .option-row { margin-top: 6px; padding: 9px; border: 1px solid var(--line); border-radius: 7px; }
+    .option-row.recommended { border-color: var(--teal-600); background: var(--teal-050); }
+    .option-row strong { color: var(--navy-800); }
+    .knowledge-rail { padding-left: 12px; border-left: 1px solid var(--line); }
+    .knowledge-rail h4 { margin-bottom: 8px; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; }
+    .evidence-list { display: grid; gap: 6px; }
+    .evidence-list li { padding: 8px; border-radius: 6px; background: #f2f6f7; font-size: 9px; }
+    .comment { margin-top: 10px; padding: 9px; border-left: 3px solid var(--teal-500); background: var(--teal-050); font-size: 9px; }
+    .version-row { margin-top: 10px; display: flex; justify-content: space-between; color: var(--muted); font-size: 9px; }
+
+    /* Controlled update */
+    .update-layout { display: grid; grid-template-columns: .85fr 1.15fr; gap: 15px; }
+    .approval-card { padding: 22px; color: white; background: linear-gradient(145deg, var(--navy-900), var(--navy-700)); }
+    .approval-card .tag { color: #bceae7; background: rgba(24,167,162,.17); }
+    .approval-card h3 { margin: 15px 0 7px; color: white; font-size: 24px; }
+    .approval-card > p { color: #c6d8df; }
+    .choice { margin: 16px 0; padding: 13px; border: 1px solid rgba(255,255,255,.16); border-radius: 8px; background: rgba(255,255,255,.06); }
+    .choice strong { display: block; margin-bottom: 3px; }
+    .choice span { color: #bdd0d7; font-size: 11px; }
+    .assurance { margin: 13px 0; color: #9fb8c1; font-size: 10px; }
+    .approval-card .primary-button { width: 100%; border-color: var(--teal-500); background: var(--teal-600); }
+    .update-board { padding: 18px; }
+    .update-board h3 { margin-bottom: 4px; font-size: 18px; }
+    .update-board > p { color: var(--muted); font-size: 11px; }
+    .update-list { margin-top: 14px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 7px; }
+    .update-list li { min-height: 65px; padding: 10px; display: grid; grid-template-columns: 25px 1fr; gap: 8px; align-items: start; border: 1px solid var(--line); border-radius: 8px; background: #fafcfc; }
+    .update-icon { width: 25px; height: 25px; display: grid; place-items: center; border-radius: 50%; color: var(--amber); background: var(--amber-soft); font-size: 11px; font-weight: 800; }
+    body.approved .update-icon { color: var(--green); background: var(--green-soft); }
+    .update-list strong { display: block; font-size: 11px; }
+    .update-list span { color: var(--muted); font-size: 9px; }
+    .update-banner { margin-top: 10px; padding: 10px; border: 1px solid var(--line); border-radius: 8px; color: var(--muted); background: #f7fafb; font-size: 10px; }
+    body.approved .update-banner { border-color: #a8d8c3; color: var(--green); background: var(--green-soft); }
+
+    /* Readout */
+    .readout { overflow: hidden; display: grid; grid-template-columns: minmax(0,1.45fr) minmax(300px,.55fr); border: 1px solid var(--line-strong); border-radius: 13px; background: white; box-shadow: var(--shadow); }
+    .readout-main { padding: 19px; }
+    .readout-head { padding-bottom: 13px; display: flex; justify-content: space-between; gap: 16px; border-bottom: 1px solid var(--line); }
+    .readout-head h3 { margin-bottom: 2px; font-size: 22px; }
+    .readout-head p { margin-bottom: 0; color: var(--muted); font-size: 10px; }
+    .status-block { text-align: right; }
+    .status-block strong { display: block; color: var(--amber); font-size: 18px; }
+    .status-block span { color: var(--muted); font-size: 9px; }
+    .readout-metrics { margin: 13px 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; }
+    .readout-metrics div { padding: 9px; border: 1px solid var(--line); border-radius: 7px; background: #f8fafb; }
+    .readout-metrics span, .readout-metrics small { display: block; color: var(--muted); font-size: 8px; }
+    .readout-metrics strong { display: block; margin: 2px 0; font-size: 17px; }
+    .readout-facts { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    .readout-facts article { padding: 10px; border-left: 3px solid var(--teal-600); background: var(--teal-050); }
+    .readout-facts h4 { margin-bottom: 3px; font-size: 11px; }
+    .readout-facts p { margin-bottom: 0; color: var(--muted); font-size: 9px; }
+    .discussion { padding: 20px; color: white; background: var(--navy-900); }
+    .discussion .tag { color: #bde9e7; background: rgba(24,167,162,.16); }
+    .discussion h3 { margin: 14px 0 5px; color: white; font-size: 20px; }
+    .discussion > p { color: #b8ccd4; font-size: 11px; }
+    .questions { margin: 17px 0 0; padding: 0; display: grid; gap: 10px; list-style: none; counter-reset: q; }
+    .questions li { position: relative; padding: 10px 9px 10px 38px; border: 1px solid rgba(255,255,255,.11); border-radius: 8px; background: rgba(255,255,255,.05); font-size: 11px; }
+    .questions li::before { counter-increment: q; content: counter(q); position: absolute; left: 10px; top: 9px; width: 19px; height: 19px; display: grid; place-items: center; border-radius: 50%; color: white; background: var(--teal-700); font: 700 9px var(--mono); }
+    .concept-boundary { margin-top: 14px; color: #98b1bb; font-size: 9px; }
+
+    .presenter-controls {
+      min-height: 58px;
+      padding: 8px clamp(18px, 3vw, 46px);
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 16px;
+      border-top: 1px solid var(--line);
+      background: white;
+    }
+    .control-group { display: flex; gap: 8px; }
+    .control-group:last-child { justify-self: end; }
+    .control-button { min-width: 100px; min-height: 37px; padding: 7px 12px; border: 1px solid var(--line-strong); border-radius: 7px; color: var(--navy-700); background: white; font-weight: 700; cursor: pointer; }
+    .control-button:hover:not(:disabled) { border-color: var(--teal-600); background: var(--teal-050); }
+    .control-button.primary { border-color: var(--teal-700); color: white; background: var(--teal-700); }
+    .control-button:disabled { opacity: .42; cursor: not-allowed; }
+    .progress-copy { color: var(--muted); font-size: 11px; text-align: center; }
+    .progress-copy strong { color: var(--navy-800); }
+    .keyboard-hint { color: var(--muted); font-size: 9px; }
+    .sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
+    @media (max-width: 1040px) {
+      .topbar { grid-template-columns: 1fr auto; }
+      .concept-label { display: none; }
+      .privacy-note { display: none; }
+      .step-copy span { display: none; }
+      .friction-layout, .detail-grid, .update-layout, .readout { grid-template-columns: 1fr; }
+      .tool-grid { grid-template-columns: repeat(3, 1fr); }
+      .trace-card, .discussion { display: none; }
+    }
+    @media (max-width: 760px) {
+      .topbar { grid-template-columns: 1fr; gap: 8px; }
+      .top-actions { justify-self: start; }
+      .journey { position: static; overflow-x: auto; padding: 0; }
+      .journey ol { min-width: 720px; }
+      .scene-heading { align-items: flex-start; flex-direction: column; }
+      .scene-kicker { width: 100%; }
+      .tool-grid, .metric-grid, .field-grid, .update-list, .readout-metrics { grid-template-columns: repeat(2, 1fr); }
+      .tool-card:nth-child(3) { grid-column: 1 / -1; }
+      .workspace-preview, .page-shell { grid-template-columns: 1fr; }
+      .mini-sidebar, .page-tree { display: none; }
+      .leadership-lower, .decision-layout { grid-template-columns: 1fr; }
+      .knowledge-rail { padding: 0; border: 0; }
+      .presenter-controls { grid-template-columns: 1fr auto; }
+      .progress-copy, .keyboard-hint { display: none; }
+    }
+    @media (max-height: 800px) and (min-width: 900px) {
+      .topbar { min-height: 62px; padding-top: 7px; padding-bottom: 7px; }
+      .journey button { min-height: 58px; }
+      .panel { min-height: auto; }
+      .panel-inner { padding-top: 18px; padding-bottom: 16px; }
+      .scene-heading { margin-bottom: 14px; }
+      h1, h2 { font-size: 30px; }
+      .workspace-preview { min-height: 396px; }
+      .mini-safety { margin-top: 18px; }
+      .friction-summary, .approval-card { padding: 18px; }
+      .tool-card { padding: 15px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .001ms !important; animation-duration: .001ms !important; animation-iteration-count: 1 !important; }
+    }
+    @media print {
+      .top-actions, .journey, .presenter-controls { display: none !important; }
+      .panel[hidden] { display: none !important; }
+      .panel { min-height: auto; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand" aria-label="Unified Project Management Suite">
+        <span class="brand-mark" aria-hidden="true">UP</span>
+        <span class="brand-copy"><strong>Unified Project Management Suite</strong><span>Senior leadership concept</span></span>
+      </div>
+      <div class="concept-label">Concept demo &middot; synthetic data</div>
+      <div class="top-actions">
+        <span class="privacy-note">Offline &middot; nothing saved or transmitted</span>
+        <a class="top-action" href="index.html" aria-label="Open the full Unified Project Management Suite prototype"><span aria-hidden="true">←</span> Full suite</a>
+        <button class="top-action" id="resetButton" type="button" aria-label="Reset the concept demo to step 1"><span aria-hidden="true">↺</span> Reset</button>
+      </div>
+    </header>
+
+    <nav class="journey" aria-label="Six-step leadership story">
+      <ol role="tablist" aria-label="Leadership concept demo scenes">
+        <li><button id="step-tab-1" type="button" role="tab" aria-selected="true" aria-controls="step-panel-1" tabindex="0" data-step="1"><span class="step-number">01</span><span class="step-copy"><strong>Current friction</strong><span>Three disconnected views</span></span></button></li>
+        <li><button id="step-tab-2" type="button" role="tab" aria-selected="false" aria-controls="step-panel-2" tabindex="-1" data-step="2"><span class="step-number">02</span><span class="step-copy"><strong>Leadership home</strong><span>See where to intervene</span></span></button></li>
+        <li><button id="step-tab-3" type="button" role="tab" aria-selected="false" aria-controls="step-panel-3" tabindex="-1" data-step="3"><span class="step-number">03</span><span class="step-copy"><strong>Accountable work</strong><span>Trace the signal</span></span></button></li>
+        <li><button id="step-tab-4" type="button" role="tab" aria-selected="false" aria-controls="step-panel-4" tabindex="-1" data-step="4"><span class="step-number">04</span><span class="step-copy"><strong>Decision page</strong><span>Context stays connected</span></span></button></li>
+        <li><button id="step-tab-5" type="button" role="tab" aria-selected="false" aria-controls="step-panel-5" tabindex="-1" data-step="5"><span class="step-number">05</span><span class="step-copy"><strong>Controlled update</strong><span>Approve once</span></span></button></li>
+        <li><button id="step-tab-6" type="button" role="tab" aria-selected="false" aria-controls="step-panel-6" tabindex="-1" data-step="6"><span class="step-number">06</span><span class="step-copy"><strong>Leadership readout</strong><span>One refreshed story</span></span></button></li>
+      </ol>
+    </nav>
+
+    <main id="demo-main" tabindex="-1">
+      <section class="panel" id="step-panel-1" role="tabpanel" aria-labelledby="step-tab-1">
+        <div class="panel-inner">
+          <div class="scene-heading">
+            <div class="scene-heading-copy"><span class="eyebrow">01 &middot; Current friction</span><h1 id="step-title-1" tabindex="-1">The work is visible. The whole story is not.</h1><p>A leadership answer has to be reconstructed from issue tracking, knowledge pages, and a manually refreshed briefing.</p></div>
+            <div class="scene-kicker"><strong>Leadership asks</strong><span>Can the 30 September demonstration stay on plan?</span></div>
+          </div>
+          <div class="friction-layout">
+            <article class="friction-summary">
+              <span class="tag">Fragmented operating picture</span><h3>Three tools. One consequential decision.</h3><p>Each tool is useful on its own. The gap appears when a decision must connect work, evidence, schedule, risk, and the leadership narrative.</p>
+              <div class="friction-metrics" aria-label="Synthetic current-state metrics"><div><strong>3</strong><span>source tools</span></div><div><strong>14</strong><span>manual handoffs</span></div><div><strong>2 days</strong><span>briefing latency</span></div></div>
+            </article>
+            <div class="tool-grid" aria-label="Disconnected Jira, Confluence, and briefing views">
+              <article class="tool-card"><div class="tool-head"><span class="tool-name"><i class="tool-icon">J</i> Jira</span><span>Current</span></div><div class="tool-record"><span>SMN-191 &middot; BLOCKED</span><h4>Complete environmental certification</h4><p>Six dependent items are waiting. Schedule impact is tracked elsewhere.</p></div><div class="tool-lines" aria-hidden="true"><i></i><i></i><i></i></div></article>
+              <article class="tool-card"><div class="tool-head"><span class="tool-name"><i class="tool-icon">C</i> Confluence</span><span>Updated 4h</span></div><div class="tool-record"><span>DEC-014 &middot; PENDING</span><h4>Certification recovery path</h4><p>The recommendation and evidence exist, but are not tied to briefing facts.</p></div><div class="tool-lines" aria-hidden="true"><i></i><i></i><i></i></div></article>
+              <article class="tool-card"><div class="tool-head"><span class="tool-name"><i class="tool-icon">R</i> Report</span><span>2 days old</span></div><div class="tool-record"><span>FRIDAY STATUS &middot; AMBER</span><h4>Sentinel Mesh Node remains on watch</h4><p>The readout does not show the pending decision or current exposure.</p></div><div class="tool-lines" aria-hidden="true"><i></i><i></i><i></i></div></article>
+              <div class="manual-reconcile" aria-hidden="true"><span>Manual reconciliation</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="step-panel-2" role="tabpanel" aria-labelledby="step-tab-2" hidden>
+        <div class="panel-inner">
+          <div class="scene-heading">
+            <div class="scene-heading-copy"><span class="eyebrow">02 &middot; Leadership home</span><h2 id="step-title-2" tabindex="-1">Start with the intervention, not the tool.</h2><p>The suite brings accountable work, knowledge, risk, and schedule facts into one governed decision surface.</p></div>
+            <div class="scene-kicker"><strong>Signal</strong><span>Certification delay threatens one key milestone.</span></div>
+          </div>
+          <div class="workspace-preview" aria-label="Unified Project Management Suite leadership dashboard preview">
+            <aside class="mini-sidebar" aria-label="Unified Project Management Suite navigation preview">
+              <div class="mini-sidebar-head"><i class="mini-mark">UP</i> Unified PM Suite</div><span class="mini-project">Sentinel Mesh Node</span>
+              <div class="mini-nav" aria-hidden="true"><span class="active">Leadership home</span><span>My work</span><span>Delivery board</span><span>Timeline</span><span>Knowledge</span><span>Controls &amp; audit</span></div>
+              <div class="mini-safety">Synthetic concept workspace<br>No production records</div>
+            </aside>
+            <div class="workspace-main">
+              <div class="workspace-bar"><strong>Portfolio / Sentinel Mesh Node</strong><span>Status as of 24 Aug 2026 &middot; 10:42 MST</span></div>
+              <div class="workspace-content">
+                <div class="leadership-head"><div><h3>Sentinel Mesh Node</h3><p>FY27 operational demonstration &middot; accountable executive view</p></div><span class="health-badge">Amber</span></div>
+                <div class="metric-grid" aria-label="Project metrics">
+                  <article class="metric-card"><span>Forecast milestone</span><strong data-value="forecast">23 Sep</strong><small data-value="forecast-note">5-day exposure</small></article>
+                  <article class="metric-card"><span>Dependent work</span><strong data-value="blocked">6 blocked</strong><small data-value="blocked-note">Certification path</small></article>
+                  <article class="metric-card"><span>Delivery confidence</span><strong data-value="confidence">72%</strong><small data-value="confidence-note">Decision pending</small></article>
+                  <article class="metric-card"><span>Risk score</span><strong data-value="risk">16 / 25</strong><small data-value="risk-note">High exposure</small></article>
+                </div>
+                <div class="leadership-lower">
+                  <article class="schedule-card"><header><strong>Certification to operational demonstration</strong><span>Controlled timeline</span></header><div class="schedule-axis" aria-hidden="true"><span>24 Aug</span><span>7 Sep</span><span>21 Sep</span><span>30 Sep</span></div><div class="schedule-track"><div class="schedule-bar"><i data-exposure></i></div><span class="milestone-pin">◆ Demo</span></div><div class="schedule-caption"><span>Certification evidence</span><span data-value="schedule-caption">5-day exposure threatens rehearsal</span></div></article>
+                  <article class="attention-card"><header><strong>Leadership attention</strong><span data-value="decision-state">Decision required</span></header><h4 data-value="attention-title">Approve certification recovery path</h4><p data-value="attention-copy">Option B uses a parallel accredited path to protect the operational demonstration.</p><button class="secondary-button" type="button" data-goto="3">Open affected work <span aria-hidden="true">→</span></button></article>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="step-panel-3" role="tabpanel" aria-labelledby="step-tab-3" hidden>
+        <div class="panel-inner">
+          <div class="scene-heading">
+            <div class="scene-heading-copy"><span class="eyebrow">03 &middot; Accountable work</span><h2 id="step-title-3" tabindex="-1">Every signal traces to accountable work.</h2><p>The affected item carries its owner, dependency chain, schedule exposure, risk, and linked evidence in one record.</p></div>
+            <div class="scene-kicker"><strong>Traceability</strong><span>Leadership can see who owns the next move and why it matters.</span></div>
+          </div>
+          <div class="detail-grid">
+            <article class="card issue-card">
+              <div class="record-line"><span class="record-id">SMN-191 &middot; CERTIFICATION</span><span class="status-pill amber" data-value="work-status">Blocked</span></div>
+              <h3>Complete environmental certification</h3><p>The shared test environment moved to 9 September. A controlled decision is needed to protect the 30 September demonstration.</p>
+              <div class="field-grid"><div class="field"><span>Accountable owner</span><strong>Jordan Lee</strong></div><div class="field"><span>Target</span><strong data-value="forecast">23 Sep</strong></div><div class="field"><span>Schedule exposure</span><strong data-value="forecast-note">5-day exposure</strong></div><div class="field"><span>Risk</span><strong data-value="risk">16 / 25</strong></div><div class="field"><span>Decision</span><strong data-value="decision-id">DEC-014 pending</strong></div><div class="field"><span>Evidence</span><strong>4 controlled items</strong></div></div>
+              <h4>Dependent work</h4>
+              <ul class="dependency-list" aria-label="Six dependent work items"><li>SMN-203 &middot; Integration test</li><li>SMN-207 &middot; Safety review</li><li>SMN-211 &middot; Field rehearsal</li><li>SMN-218 &middot; Operator training</li><li>SMN-224 &middot; Site acceptance</li><li>SMN-229 &middot; Demo readiness</li></ul>
+              <div class="issue-actions"><button class="primary-button" type="button" data-goto="4">Open linked decision page <span aria-hidden="true">→</span></button><button class="secondary-button" type="button" data-goto="2">Back to leadership</button></div>
+            </article>
+            <aside class="card trace-card"><span class="tag">Connected record</span><h3>From signal to evidence</h3><p>No search across tools or manual reconciliation is required.</p><ol class="trace-list"><li data-index="1"><strong>Leadership signal</strong><span>Milestone forecast and risk</span></li><li data-index="2"><strong>Accountable work</strong><span>SMN-191 with owner and dependencies</span></li><li data-index="3"><strong>Living decision</strong><span>DEC-014 options and recommendation</span></li><li data-index="4"><strong>Supporting evidence</strong><span>Certification plan and test constraints</span></li><li data-index="5"><strong>Controlled history</strong><span>Who changed what and when</span></li></ol></aside>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="step-panel-4" role="tabpanel" aria-labelledby="step-tab-4" hidden>
+        <div class="panel-inner">
+          <div class="scene-heading">
+            <div class="scene-heading-copy"><span class="eyebrow">04 &middot; Living decision page</span><h2 id="step-title-4" tabindex="-1">Context stays connected to the work.</h2><p>A collaborative knowledge page carries the problem, options, recommendation, discussion, evidence, and version history.</p></div>
+            <div class="scene-kicker"><strong>Decision quality</strong><span>The recommendation can be challenged without losing its operational context.</span></div>
+          </div>
+          <div class="page-shell">
+            <aside class="page-tree" aria-label="Knowledge page tree"><strong>Sentinel Mesh Node</strong><span>Program overview</span><span>System design</span><span>Test strategy</span><span class="active">Certification recovery</span><span>Decision register</span><span>Lessons learned</span></aside>
+            <article class="page-card">
+              <div class="page-meta"><span>Knowledge / Decisions / DEC-014</span><span data-value="page-version">Version 7 &middot; updated 10:31</span></div>
+              <div class="record-line"><h3>Certification recovery path</h3><span class="status-pill amber" data-value="decision-status">Pending approval</span></div><p>Owner: Jordan Lee &middot; Decision authority: Program Executive &middot; Needed by 25 Aug</p>
+              <div class="decision-layout">
+                <div class="decision-copy"><h4>Problem</h4><p>The primary accredited chamber is unavailable until 9 September, placing the integration rehearsal and operational demonstration at risk.</p><h4>Options</h4><div class="option-row"><strong>Option A &middot; Wait for primary chamber</strong><br>Lowest execution cost; forecast moves to 23 September with high schedule exposure.</div><div class="option-row recommended"><strong>Option B &middot; Parallel accredited path — recommended</strong><br>Use the partner chamber, accept controlled cost growth, and recover five schedule days.</div><div class="option-row"><strong>Option C &middot; Reduce test scope</strong><br>Protects date but creates unacceptable evidence and acceptance gaps.</div><h4>Recommendation</h4><p>Approve Option B with daily evidence checks through certification closeout.</p></div>
+                <aside class="knowledge-rail"><h4>Supporting evidence</h4><ul class="evidence-list"><li>Certification plan v4.2 &middot; approved</li><li>Partner chamber accreditation &middot; verified</li><li>Cost estimate &middot; reviewed</li><li>Integrated schedule impact &middot; current</li></ul><div class="comment"><strong>Morgan Chen &middot; Systems Lead</strong><br>“The partner path preserves the full evidence set and avoids scope reduction.”</div><div class="version-row"><span>v7 &middot; recommendation added</span><span>History ▸</span></div></aside>
+              </div>
+              <div class="issue-actions"><button class="primary-button" type="button" data-goto="5">Continue to controlled update <span aria-hidden="true">→</span></button><button class="secondary-button" type="button" data-goto="3">Return to work item</button></div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="step-panel-5" role="tabpanel" aria-labelledby="step-tab-5" hidden>
+        <div class="panel-inner">
+          <div class="scene-heading">
+            <div class="scene-heading-copy"><span class="eyebrow">05 &middot; One controlled update</span><h2 id="step-title-5" tabindex="-1">Approve once. Update the operating record everywhere.</h2><p>The simulation shows one decision updating dependent work, schedule, risk, notifications, audit history, and briefing facts.</p></div>
+            <div class="scene-kicker"><strong>Presenter action</strong><span>Select the approval button to run the local, reversible simulation.</span></div>
+          </div>
+          <div class="update-layout">
+            <article class="card approval-card"><span class="tag">DEC-014 &middot; Decision authority</span><h3>Approve Option B</h3><p>Use the parallel accredited chamber and hold daily evidence checks through certification closeout.</p><div class="choice"><strong>Expected outcome</strong><span>Recover five schedule days, unblock six dependent items, and reduce risk while the program remains amber/recovering.</span></div><div class="assurance">This synthetic action changes only the in-memory demo state. Nothing is saved, uploaded, or transmitted.</div><button class="primary-button" id="approveButton" type="button"><span data-value="approve-label">Simulate approval</span> <span aria-hidden="true">→</span></button></article>
+            <article class="card update-board"><div class="record-line"><div><h3>Controlled cascade</h3><p>Six linked operating views refresh from the same governed event.</p></div><span class="status-pill amber" data-value="cascade-status">Awaiting decision</span></div>
+              <ul class="update-list"><li><span class="update-icon" aria-hidden="true">1</span><div><strong>Dependent work</strong><span data-value="cascade-work">6 items remain blocked</span></div></li><li><span class="update-icon" aria-hidden="true">2</span><div><strong>Integrated schedule</strong><span data-value="cascade-schedule">Forecast remains 23 Sep</span></div></li><li><span class="update-icon" aria-hidden="true">3</span><div><strong>Risk register</strong><span data-value="cascade-risk">Risk remains 16 / 25</span></div></li><li><span class="update-icon" aria-hidden="true">4</span><div><strong>Audit history</strong><span data-value="cascade-audit">Decision event not recorded</span></div></li><li><span class="update-icon" aria-hidden="true">5</span><div><strong>Notifications</strong><span data-value="cascade-notify">No owner notifications sent</span></div></li><li><span class="update-icon" aria-hidden="true">6</span><div><strong>Briefing facts</strong><span data-value="cascade-brief">Leadership readout is unchanged</span></div></li></ul>
+              <div class="update-banner" role="status" aria-live="polite" data-value="update-banner">Ready to simulate. The change is local and can be reset at any time.</div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="step-panel-6" role="tabpanel" aria-labelledby="step-tab-6" hidden>
+        <div class="panel-inner">
+          <div class="scene-heading">
+            <div class="scene-heading-copy"><span class="eyebrow">06 &middot; Leadership readout</span><h2 id="step-title-6" tabindex="-1">One current story, ready for leadership.</h2><p>The one-page status now traces every claim to accountable work, a governed decision, and supporting evidence.</p></div>
+            <div class="scene-kicker"><strong>Meeting objective</strong><span>Discover where this connected workflow would create the most value.</span></div>
+          </div>
+          <div class="readout">
+            <article class="readout-main"><div class="readout-head"><div><span class="tag" data-value="readout-tag">Decision pending</span><h3>Sentinel Mesh Node</h3><p>Executive program status &middot; synthetic data &middot; 24 Aug 2026</p></div><div class="status-block"><strong>AMBER</strong><span data-value="health-note">Intervention required</span></div></div>
+              <div class="readout-metrics"><div><span>Forecast</span><strong data-value="forecast">23 Sep</strong><small data-value="forecast-note">5-day exposure</small></div><div><span>Dependent work</span><strong data-value="blocked">6 blocked</strong><small data-value="blocked-note">Certification path</small></div><div><span>Risk</span><strong data-value="risk">16 / 25</strong><small data-value="risk-note">High exposure</small></div><div><span>Confidence</span><strong data-value="confidence">72%</strong><small data-value="confidence-note">Decision pending</small></div></div>
+              <div class="readout-facts"><article><h4>What changed</h4><p data-value="readout-change">DEC-014 is awaiting approval; the alternate accredited path has not yet been activated.</p></article><article><h4>Leadership assessment</h4><p data-value="readout-assessment">The demonstration remains achievable if the recovery decision is made by 25 August.</p></article><article><h4>Accountable next move</h4><p data-value="readout-next">Program Executive approves Option B; Jordan Lee then coordinates certification closeout.</p></article><article><h4>Evidence trail</h4><p>SMN-191 → DEC-014 → certification plan v4.2 → integrated schedule → controlled audit history.</p></article></div>
+              <div class="issue-actions"><button class="secondary-button" type="button" data-goto="5">Review the decision</button></div>
+            </article>
+            <aside class="discussion"><span class="tag">Leadership discussion</span><h3>What should we demonstrate next?</h3><p>This concept tests workflow value, not completed production capability.</p><ol class="questions"><li>Where would a governed operating record create the most value?</li><li>Which existing workflow should be demonstrated next?</li><li>What requirement or concern must be addressed before considering a pilot?</li></ol><div class="concept-boundary">Concept boundary: fictional scenario, synthetic values, no production data, identity, integrations, hosting, or persistence.</div></aside>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="presenter-controls" aria-label="Presenter navigation">
+      <div class="control-group"><button class="control-button" id="backButton" type="button">← Back</button></div>
+      <div class="progress-copy" aria-live="polite"><strong id="progressText">Step 1 of 6</strong><br><span id="progressTitle">Current friction</span></div>
+      <div class="control-group"><span class="keyboard-hint" aria-hidden="true">← → or 1–6</span><button class="control-button primary" id="nextButton" type="button">Next →</button></div>
+    </footer>
+    <div class="sr-only" id="liveRegion" role="status" aria-live="polite"></div>
+  </div>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const steps = ["Current friction", "Leadership home", "Accountable work", "Decision page", "Controlled update", "Leadership readout"];
+      const DemoState = { step: 1, approved: false };
+      const before = {
+        forecast: "23 Sep", "forecast-note": "5-day exposure", blocked: "6 blocked", "blocked-note": "Certification path",
+        confidence: "72%", "confidence-note": "Decision pending", risk: "16 / 25", "risk-note": "High exposure",
+        "schedule-caption": "5-day exposure threatens rehearsal", "decision-state": "Decision required",
+        "attention-title": "Approve certification recovery path", "attention-copy": "Option B uses a parallel accredited path to protect the operational demonstration.",
+        "work-status": "Blocked", "decision-id": "DEC-014 pending", "decision-status": "Pending approval", "page-version": "Version 7 · updated 10:31",
+        "approve-label": "Simulate approval", "cascade-status": "Awaiting decision", "cascade-work": "6 items remain blocked",
+        "cascade-schedule": "Forecast remains 23 Sep", "cascade-risk": "Risk remains 16 / 25", "cascade-audit": "Decision event not recorded",
+        "cascade-notify": "No owner notifications sent", "cascade-brief": "Leadership readout is unchanged",
+        "update-banner": "Ready to simulate. The change is local and can be reset at any time.", "readout-tag": "Decision pending",
+        "health-note": "Intervention required", "readout-change": "DEC-014 is awaiting approval; the alternate accredited path has not yet been activated.",
+        "readout-assessment": "The demonstration remains achievable if the recovery decision is made by 25 August.",
+        "readout-next": "Program Executive approves Option B; Jordan Lee then coordinates certification closeout."
+      };
+      const after = {
+        forecast: "18 Sep", "forecast-note": "5 days recovered", blocked: "6 ready", "blocked-note": "Dependencies unblocked",
+        confidence: "86%", "confidence-note": "Recovery underway", risk: "6 / 25", "risk-note": "Moderate / controlled",
+        "schedule-caption": "Recovered path protects rehearsal", "decision-state": "Approved · recovering",
+        "attention-title": "Execute certification recovery path", "attention-copy": "Option B is approved. Owners are executing the parallel accredited path.",
+        "work-status": "Ready", "decision-id": "DEC-014 approved", "decision-status": "Approved", "page-version": "Version 8 · approval recorded 10:42",
+        "approve-label": "Approval simulated", "cascade-status": "Update complete", "cascade-work": "6 items changed to Ready",
+        "cascade-schedule": "Forecast moved to 18 Sep", "cascade-risk": "Risk reduced to 6 / 25", "cascade-audit": "Approval appended with authority and time",
+        "cascade-notify": "7 accountable owners notified", "cascade-brief": "One-page readout refreshed",
+        "update-banner": "Decision applied to the synthetic workspace. Six connected views now share the same current fact.", "readout-tag": "Decision applied",
+        "health-note": "Recovering on controlled path", "readout-change": "DEC-014 approved Option B; six dependent items are ready and the forecast moved to 18 September.",
+        "readout-assessment": "The program remains amber while recovery executes, with materially lower schedule and risk exposure.",
+        "readout-next": "Jordan Lee closes certification evidence; accountable owners begin the six unblocked work items."
+      };
+
+      const qsa = (selector) => Array.from(document.querySelectorAll(selector));
+
+      function renderValues() {
+        const values = DemoState.approved ? after : before;
+        Object.entries(values).forEach(([key, value]) => {
+          qsa(`[data-value="${key}"]`).forEach((node) => { node.textContent = value; });
+        });
+        document.body.classList.toggle("approved", DemoState.approved);
+        document.documentElement.style.setProperty("--exposure", DemoState.approved ? "16%" : "42%");
+
+        qsa(".status-pill").forEach((pill) => {
+          const nowGreen = DemoState.approved && (pill.matches('[data-value="work-status"]') || pill.matches('[data-value="decision-status"]') || pill.matches('[data-value="cascade-status"]'));
+          pill.classList.toggle("green", nowGreen);
+          pill.classList.toggle("amber", !nowGreen);
+        });
+        const readoutTag = document.querySelector('[data-value="readout-tag"]');
+        if (readoutTag) {
+          readoutTag.classList.toggle("green", DemoState.approved);
+          readoutTag.classList.toggle("amber", !DemoState.approved);
+        }
+        const approveButton = document.getElementById("approveButton");
+        approveButton.disabled = DemoState.approved;
+        approveButton.setAttribute("aria-disabled", String(DemoState.approved));
+      }
+
+      function renderStep({ focusHeading = false } = {}) {
+        qsa("[data-step]").forEach((tab) => {
+          const active = Number(tab.dataset.step) === DemoState.step;
+          tab.setAttribute("aria-selected", String(active));
+          tab.tabIndex = active ? 0 : -1;
+        });
+        qsa(".panel").forEach((panel, index) => { panel.hidden = index + 1 !== DemoState.step; });
+        document.getElementById("backButton").disabled = DemoState.step === 1;
+        document.getElementById("nextButton").disabled = DemoState.step === steps.length;
+        document.getElementById("progressText").textContent = `Step ${DemoState.step} of ${steps.length}`;
+        document.getElementById("progressTitle").textContent = steps[DemoState.step - 1];
+        if (focusHeading) {
+          const heading = document.getElementById(`step-title-${DemoState.step}`);
+          if (heading) heading.focus({ preventScroll: true });
+        }
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      function goTo(step, options = {}) {
+        const next = Math.max(1, Math.min(steps.length, Number(step) || 1));
+        DemoState.step = next;
+        renderStep(options);
+      }
+
+      function approve() {
+        if (DemoState.approved) return;
+        DemoState.approved = true;
+        renderValues();
+        document.getElementById("liveRegion").textContent = "Option B approved in the synthetic workspace. Six dependent items are ready, the forecast is 18 September, risk is 6 out of 25, and the leadership readout is refreshed.";
+      }
+
+      function reset() {
+        DemoState.approved = false;
+        DemoState.step = 1;
+        renderValues();
+        renderStep();
+        document.getElementById("liveRegion").textContent = "Concept demo reset to step 1.";
+        document.getElementById("step-tab-1").focus({ preventScroll: true });
+      }
+
+      document.addEventListener("click", (event) => {
+        const stepTab = event.target.closest("[data-step]");
+        if (stepTab) { goTo(stepTab.dataset.step); return; }
+        const go = event.target.closest("[data-goto]");
+        if (go) { goTo(go.dataset.goto, { focusHeading: true }); }
+      });
+
+      document.getElementById("approveButton").addEventListener("click", approve);
+      document.getElementById("resetButton").addEventListener("click", reset);
+      document.getElementById("backButton").addEventListener("click", () => goTo(DemoState.step - 1, { focusHeading: true }));
+      document.getElementById("nextButton").addEventListener("click", () => goTo(DemoState.step + 1, { focusHeading: true }));
+
+      document.querySelector('[role="tablist"]').addEventListener("keydown", (event) => {
+        const current = Number(document.activeElement?.dataset?.step);
+        if (!current) return;
+        let target = current;
+        if (event.key === "ArrowRight") target = current === steps.length ? 1 : current + 1;
+        else if (event.key === "ArrowLeft") target = current === 1 ? steps.length : current - 1;
+        else if (event.key === "Home") target = 1;
+        else if (event.key === "End") target = steps.length;
+        else return;
+        event.preventDefault();
+        goTo(target);
+        document.getElementById(`step-tab-${target}`).focus();
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (event.altKey || event.ctrlKey || event.metaKey || event.target.closest("button, a, input, textarea, select, [contenteditable]")) return;
+        if (/^[1-6]$/.test(event.key)) { event.preventDefault(); goTo(Number(event.key), { focusHeading: true }); }
+        else if (event.key === "PageDown" || event.key === "ArrowRight") { event.preventDefault(); goTo(DemoState.step + 1, { focusHeading: true }); }
+        else if (event.key === "PageUp" || event.key === "ArrowLeft") { event.preventDefault(); goTo(DemoState.step - 1, { focusHeading: true }); }
+        else if (event.key.toLowerCase() === "r") { event.preventDefault(); reset(); }
+      });
+
+      renderValues();
+      renderStep();
+    })();
+  </script>
+</body>
+</html>
