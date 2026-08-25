@@ -14,7 +14,7 @@
   <a class="skip-link" href="#appContent">Skip to main content</a>
   <div class="prototype-banner" role="note">
     <span class="prototype-dot" aria-hidden="true"></span>
-    Interactive product prototype <span aria-hidden="true">·</span> synthetic data <span aria-hidden="true">·</span> no data is saved
+    Interactive product prototype <span aria-hidden="true">·</span> synthetic data <span aria-hidden="true">·</span> changes are saved in this browser only <span aria-hidden="true">·</span> no server sync
   </div>
 
   <div class="app-shell" id="appShell">
@@ -42,6 +42,14 @@
           <button class="nav-item" type="button" data-view="board"><span class="nav-glyph" aria-hidden="true">▦</span><span>Board</span></button>
           <button class="nav-item" type="button" data-view="timeline"><span class="nav-glyph" aria-hidden="true">↔</span><span>Timeline</span></button>
           <button class="nav-item" type="button" data-view="releases"><span class="nav-glyph" aria-hidden="true">◆</span><span>Releases</span></button>
+          <button class="nav-item" type="button" data-view="filters"><span class="nav-glyph" aria-hidden="true">⌕</span><span>Filters</span></button>
+        </div>
+
+        <div class="nav-group">
+          <div class="nav-label">Service management</div>
+          <button class="nav-item" type="button" data-view="portal"><span class="nav-glyph" aria-hidden="true">◇</span><span>Portal</span></button>
+          <button class="nav-item" type="button" data-view="queues"><span class="nav-glyph" aria-hidden="true">☷</span><span>Queues</span></button>
+          <button class="nav-item" type="button" data-view="slas"><span class="nav-glyph" aria-hidden="true">◷</span><span>SLAs</span></button>
         </div>
 
         <div class="nav-group">
@@ -67,8 +75,8 @@
 
       <div class="sidebar-footer">
         <div class="capacity-meter" aria-label="Prototype capability coverage">
-          <div class="capacity-label"><span>Concept coverage</span><strong>16 modules</strong></div>
-          <div class="capacity-track"><span style="width: 84%"></span></div>
+          <div class="capacity-label"><span>Concept coverage</span><strong>20 modules</strong></div>
+          <div class="capacity-track"><span style="width: 92%"></span></div>
         </div>
         <a class="tour-link" href="leadership-demo.html"><span aria-hidden="true">▶</span> Open 5-minute leadership tour</a>
       </div>
@@ -93,13 +101,36 @@
         </div>
         <button class="button primary create-button" id="createButton" type="button"><span aria-hidden="true">＋</span> Create</button>
         <button class="icon-button notification-button" id="notificationButton" type="button" aria-label="Open notifications"><span aria-hidden="true">♢</span><span class="notification-pip" id="notificationPip">3</span></button>
-        <button class="profile-button" id="profileButton" type="button" aria-label="Open user menu" aria-expanded="false"><span>MO</span></button>
+        <button class="profile-button" id="profileButton" type="button" aria-label="Open user and role simulation menu" aria-expanded="false" aria-controls="profileMenu"><span id="profileCurrentInitials">MO</span></button>
         <div class="profile-menu" id="profileMenu" hidden>
-          <div class="profile-menu-head"><strong>Maya Okafor</strong><span>Program Director · Demo user</span></div>
-          <button type="button" data-view="my-work">View my work</button>
-          <a href="downloads/unified-project-management-suite-leadership-brief.pptx" download>Download leadership deck</a>
-          <a href="downloads/unified-project-management-suite-leadership-brief.pdf" download>Download leadership PDF</a>
-          <button type="button" data-action="reset-demo">Reset synthetic demo</button>
+          <div class="profile-menu-head">
+            <strong id="profileCurrentName">Maya Okafor</strong>
+            <span id="profileCurrentRole">Program Director · Administrator persona</span>
+            <span class="profile-save-state" id="profileSavedAt" role="status">Browser-local changes · Ready</span>
+          </div>
+          <section class="role-simulator" aria-labelledby="roleSimulatorLabel">
+            <div class="role-simulator-heading" id="roleSimulatorLabel">
+              <strong>Role simulator</strong>
+              <span>Demonstration only — not security enforcement</span>
+            </div>
+            <div class="role-option-list" role="group" aria-label="Preview the demo as another persona">
+              <button class="role-option active" type="button" data-role-option="Maya Okafor" aria-pressed="true"><span class="role-avatar">MO</span><span><strong>Maya Okafor</strong><small>Administrator</small></span></button>
+              <button class="role-option" type="button" data-role-option="Lena Ortiz" aria-pressed="false"><span class="role-avatar">LO</span><span><strong>Lena Ortiz</strong><small>Project lead</small></span></button>
+              <button class="role-option" type="button" data-role-option="Theo Bennett" aria-pressed="false"><span class="role-avatar">TB</span><span><strong>Theo Bennett</strong><small>Contributor</small></span></button>
+              <button class="role-option" type="button" data-role-option="Dana Kessler" aria-pressed="false"><span class="role-avatar">DK</span><span><strong>Dana Kessler</strong><small>Executive approver</small></span></button>
+              <button class="role-option" type="button" data-role-option="Amina Cole" aria-pressed="false"><span class="role-avatar">AC</span><span><strong>Amina Cole</strong><small>Portal customer</small></span></button>
+              <button class="role-option" type="button" data-role-option="Jordan Lee" aria-pressed="false"><span class="role-avatar">JL</span><span><strong>Jordan Lee</strong><small>Service agent</small></span></button>
+            </div>
+          </section>
+          <div class="profile-menu-actions">
+            <button type="button" data-view="my-work">View my work</button>
+            <button type="button" data-action="export-state">Export browser-local demo</button>
+            <button type="button" data-action="import-state" aria-controls="stateImportInput">Import browser-local demo</button>
+            <input id="stateImportInput" type="file" accept="application/json,.json" data-state-import aria-label="Choose a previously exported demo JSON file" hidden>
+            <a href="downloads/unified-project-management-suite-leadership-brief.pptx" download>Download leadership deck</a>
+            <a href="downloads/unified-project-management-suite-leadership-brief.pdf" download>Download leadership PDF</a>
+            <button class="profile-danger-action" type="button" data-action="reset-demo">Reset synthetic demo</button>
+          </div>
         </div>
       </header>
 

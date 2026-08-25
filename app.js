@@ -2,6 +2,8 @@
   "use strict";
 
   const FIXTURE = {
+    schemaVersion: 2,
+    lastSavedAt: null,
     route: "home",
     projectMode: "list",
     activePage: null,
@@ -13,6 +15,10 @@
     migrationComplete: false,
     decisionApproved: false,
     currentUser: "Maya Okafor",
+    filterQuery: 'project = SMN AND sprint = "Sprint 12" AND status IN ("Blocked", "In Review") ORDER BY priority DESC',
+    activeSavedFilter: "filter-102",
+    serviceQueue: "unassigned",
+    activeRequest: null,
     currentProject: "SMN",
     projects: [
       {
@@ -57,7 +63,9 @@
       { name: "Priya Nair", role: "Knowledge Owner", team: "Program Delivery", capacity: 63, initials: "PN", color: "coral" },
       { name: "Evan Kim", role: "Cybersecurity Lead", team: "Cybersecurity", capacity: 69, initials: "EK", color: "slate" },
       { name: "Dana Kessler", role: "Executive Sponsor", team: "Executive Leadership", capacity: 48, initials: "DK", color: "sky" },
-      { name: "Maya Okafor", role: "Program Director", team: "Program Delivery", capacity: 67, initials: "MO", color: "slate" }
+      { name: "Maya Okafor", role: "Suite Administrator", team: "Program Delivery", capacity: 67, initials: "MO", color: "slate" },
+      { name: "Amina Cole", role: "Request portal customer", team: "Mission Operations", capacity: 0, initials: "AC", color: "coral" },
+      { name: "Jordan Lee", role: "Service Agent", team: "Enterprise Service Desk", capacity: 58, initials: "JL", color: "green" }
     ],
     issues: [
       {
@@ -210,10 +218,10 @@
     },
     pageVersions: {
       "alternate-path": [
-        { version: 7, author: "Priya Nair", time: "Today, 09:12", note: "Accreditation evidence added" },
-        { version: 6, author: "Lena Ortiz", time: "Yesterday, 16:44", note: "Recommendation revised" },
-        { version: 5, author: "Priya Nair", time: "Yesterday, 11:20", note: "Options added" },
-        { version: 4, author: "Imani Brooks", time: "22 Aug, 14:08", note: "Initial review draft" }
+        { version: 7, author: "Priya Nair", time: "Today, 09:12", note: "Accreditation evidence added", title: "Alternate Path Decision Brief", content: "The primary certification laboratory is unavailable through 11 September. Accreditation scope for the proposed partner laboratory has been verified.", bodyHtml: "<h2>Problem</h2><p>The primary certification laboratory is unavailable through 11 September, threatening the 18 September readiness review.</p><h2>Recommendation</h2><p>Use the accredited partner laboratory with parallel evidence review. The accreditation evidence is attached and control ownership is assigned.</p>" },
+        { version: 6, author: "Lena Ortiz", time: "Yesterday, 16:44", note: "Recommendation revised", title: "Alternate Path Decision Brief", content: "The primary certification laboratory is unavailable. Option B is recommended with parallel evidence review.", bodyHtml: "<h2>Problem</h2><p>The primary certification laboratory is unavailable through 11 September.</p><h2>Recommendation</h2><p>Use the partner laboratory and perform evidence review in parallel to protect the readiness-review date.</p>" },
+        { version: 5, author: "Priya Nair", time: "Yesterday, 11:20", note: "Options added", title: "Alternate Path Decision Brief", content: "Three execution options are under review.", bodyHtml: "<h2>Problem</h2><p>The primary certification laboratory is unavailable.</p><h2>Options</h2><ul><li>Wait for the primary laboratory</li><li>Use the partner laboratory</li><li>Defer the readiness review</li></ul>" },
+        { version: 4, author: "Imani Brooks", time: "22 Aug, 14:08", note: "Initial review draft", title: "Alternate Path Decision Brief", content: "The certification laboratory schedule creates delivery exposure.", bodyHtml: "<h2>Problem</h2><p>The certification laboratory schedule creates delivery exposure. Options and a recommendation are still being developed.</p>" }
       ]
     },
     decisions: [
@@ -245,6 +253,37 @@
       { time: "Yesterday, 16:44", actor: "Lena Ortiz", action: "Updated recommendation", object: "DEC-014" },
       { time: "Yesterday, 15:20", actor: "Theo Bennett", action: "Completed work item", object: "SMN-196" }
     ],
+    savedFilters: [
+      { id: "filter-101", name: "My open work", owner: "Maya Okafor", scope: "Personal", starred: true, query: "assignee = currentUser() AND status != Done ORDER BY priority DESC" },
+      { id: "filter-102", name: "Sprint 12 blockers", owner: "Lena Ortiz", scope: "Shared", starred: true, query: 'project = SMN AND sprint = "Sprint 12" AND status IN ("Blocked", "In Review") ORDER BY priority DESC' },
+      { id: "filter-103", name: "Certification scope", owner: "Imani Brooks", scope: "Shared", starred: false, query: "project = SMN AND epic = SMN-100 ORDER BY priority DESC" },
+      { id: "filter-104", name: "Changes awaiting approval", owner: "Lena Ortiz", scope: "Shared", starred: false, query: 'type = "Decision Task" AND status = "In Review"' },
+      { id: "filter-105", name: "Breaching service requests", owner: "Jordan Lee", scope: "Shared", starred: true, kind: "service", query: "sla = breached" }
+    ],
+    sprints: [
+      { id: "sprint-11", name: "Sprint 11", goal: "Integration Baseline", start: "10 Aug 2026", end: "21 Aug 2026", capacity: 38, committed: 38, completed: 34, status: "completed" },
+      { id: "sprint-12", name: "Sprint 12", goal: "Certification Recovery", start: "24 Aug 2026", end: "04 Sep 2026", capacity: 44, committed: 44, completed: 23, status: "active" },
+      { id: "sprint-13", name: "Sprint 13", goal: "Readiness Closure", start: "07 Sep 2026", end: "18 Sep 2026", capacity: 36, committed: 11, completed: 0, status: "future" }
+    ],
+    pageDrafts: {},
+    service: {
+      demoNow: "24 Aug 2026 · 10:00",
+      elapsedHours: 0,
+      requestTypes: [
+        { id: "incident", name: "Report an incident", icon: "!", description: "Something is unavailable, degraded, or failing." },
+        { id: "access", name: "Request access", icon: "↗", description: "Access a system, repository, or controlled resource." },
+        { id: "software", name: "Request software", icon: "▣", description: "Request an approved application or license." },
+        { id: "change", name: "Request a change", icon: "↺", description: "Propose a governed service or configuration change." },
+        { id: "question", name: "Ask a question", icon: "?", description: "Get help finding an answer or owner." }
+      ],
+      requests: [
+        { key: "HELP-1042", summary: "Access to partner evidence repository", type: "access", status: "Submitted", priority: "High", requester: "Amina Cole", organization: "Mission Operations", assignee: "Unassigned", created: "Today, 06:36", description: "Certification reviewers need controlled read access to the partner evidence repository.", firstResponse: { goal: 4, elapsed: 3.4, met: false }, resolution: { goal: 24, elapsed: 3.4, met: false }, participants: ["Imani Brooks"], linkedIssue: "SMN-184", linkedPage: "evidence-index", comments: [{ author: "Amina Cole", time: "Today, 06:36", visibility: "public", text: "Access is needed before the evidence review begins." }] },
+        { key: "HELP-1038", summary: "Test environment unavailable", type: "incident", status: "In progress", priority: "Highest", requester: "Theo Bennett", organization: "Systems Integration", assignee: "Jordan Lee", created: "Today, 03:18", description: "The controlled test environment returns an unavailable response for the integration team.", firstResponse: { goal: 1, elapsed: 0.4, met: true }, resolution: { goal: 8, elapsed: 7.2, met: false }, participants: ["Marcus Reed"], linkedIssue: "SMN-216", linkedPage: "irr-hub", comments: [{ author: "Jordan Lee", time: "Today, 03:42", visibility: "public", text: "We have reproduced the outage and are restoring the environment." }, { author: "Jordan Lee", time: "Today, 04:10", visibility: "internal", text: "Infrastructure escalation INC-88 is active." }] },
+        { key: "HELP-1029", summary: "Partner-lab reviewer account", type: "access", status: "Pending approval", priority: "High", requester: "Imani Brooks", organization: "Certification & Assurance", assignee: "Jordan Lee", created: "Yesterday", description: "Create a time-limited reviewer identity for the accredited partner laboratory.", firstResponse: { goal: 4, elapsed: 0.8, met: true }, resolution: { goal: 24, elapsed: 9.5, met: false }, participants: ["Dana Kessler"], linkedIssue: "SMN-191", linkedPage: "alternate-path", comments: [{ author: "Jordan Lee", time: "Yesterday", visibility: "public", text: "The request is waiting for the assigned approver." }] },
+        { key: "HELP-1017", summary: "Telemetry export intermittently fails", type: "incident", status: "Waiting for customer", priority: "Medium", requester: "Theo Bennett", organization: "Systems Integration", assignee: "Jordan Lee", created: "22 Aug", description: "CSV telemetry exports fail intermittently for disconnected-mode runs.", firstResponse: { goal: 4, elapsed: 1.1, met: true }, resolution: { goal: 32, elapsed: 12.8, met: false }, participants: [], linkedIssue: "SMN-205", linkedPage: "interface-matrix", comments: [{ author: "Jordan Lee", time: "23 Aug", visibility: "public", text: "Please attach the timestamp from the next failed export." }] },
+        { key: "HELP-1004", summary: "Update controlled distribution list", type: "change", status: "Resolved", priority: "Low", requester: "Lena Ortiz", organization: "Program Delivery", assignee: "Jordan Lee", created: "19 Aug", description: "Add the certification reviewers to the controlled weekly distribution.", firstResponse: { goal: 4, elapsed: 0.6, met: true }, resolution: { goal: 40, elapsed: 14.2, met: true }, participants: [], linkedIssue: "SMN-219", linkedPage: "working-agreements", resolutionSummary: "Distribution list updated and confirmed with the request owner.", comments: [{ author: "Jordan Lee", time: "20 Aug", visibility: "public", text: "The list is updated and the next distribution is scheduled." }] }
+      ]
+    },
     automations: [
       { id: "rule-1", name: "Decision unblocks dependent work", detail: "When an approved decision closes a blocker, move dependent items to Ready and notify owners.", enabled: true, runs: 18, last: "2 days ago" },
       { id: "rule-2", name: "Overdue evidence escalation", detail: "Alert the certification lead when required evidence is overdue by one business day.", enabled: true, runs: 7, last: "Yesterday" },
@@ -253,9 +292,217 @@
     ]
   };
 
-  let DemoState = clone(FIXTURE);
+  const SCHEMA_VERSION = 2;
+  const STORAGE_KEY = "upms-demo-v2";
+  const PERSONAS = {
+    "Maya Okafor": { role: "Suite administrator", key: "administrator", defaultRoute: "home", capabilities: ["all"] },
+    "Lena Ortiz": { role: "Project lead", key: "project-lead", defaultRoute: "home", capabilities: ["edit-work", "create-work", "manage-sprint", "edit-knowledge", "publish-knowledge", "archive-knowledge", "comment"] },
+    "Theo Bennett": { role: "Contributor", key: "contributor", defaultRoute: "my-work", capabilities: ["edit-assigned-work", "draft-knowledge", "comment"] },
+    "Dana Kessler": { role: "Executive approver", key: "executive", defaultRoute: "leadership", capabilities: ["approve", "comment"] },
+    "Amina Cole": { role: "Requester", key: "customer", defaultRoute: "portal", capabilities: ["request-service", "comment"] },
+    "Jordan Lee": { role: "Service agent", key: "agent", defaultRoute: "queues", capabilities: ["manage-service", "comment"] }
+  };
+  const ROUTE_ACCESS = {
+    customer: ["portal"],
+    agent: ["home", "inbox", "portal", "queues", "slas", "spaces"],
+    executive: ["home", "inbox", "projects", "timeline", "releases", "spaces", "decisions", "reports", "leadership"],
+    contributor: ["home", "my-work", "inbox", "projects", "backlog", "board", "timeline", "releases", "spaces", "decisions", "filters", "reports", "people"],
+    "project-lead": ["home", "my-work", "inbox", "projects", "backlog", "board", "timeline", "releases", "spaces", "decisions", "filters", "reports", "leadership", "people", "automation", "portal", "queues", "slas"],
+    administrator: ["home", "my-work", "inbox", "projects", "backlog", "board", "timeline", "releases", "spaces", "decisions", "filters", "reports", "leadership", "people", "automation", "admin", "migration", "portal", "queues", "slas"]
+  };
+  const SAFE_RECORD_ID = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,79}$/;
+  const ISSUE_STATUSES = new Set(["To Do", "Ready", "In Progress", "In Review", "Blocked", "Done"]);
+  const PRIORITIES = new Set(["Low", "Medium", "High", "Highest"]);
+  const SERVICE_STATUSES = new Set(["Submitted", "Triage", "In progress", "Waiting for customer", "Pending approval", "Resolved", "Closed"]);
+  const SPRINT_STATUSES = new Set(["completed", "active", "future"]);
+  const PERSON_COLORS = new Set(["coral", "deep", "green", "orange", "sky", "slate"]);
+  const MAX_IMPORT_BYTES = 5 * 1024 * 1024;
+
+  let storageHealthy = true;
+  let pendingImportState = null;
+  let draftTimer = null;
+
+  function validateStateCandidate(candidate) {
+    if (!candidate || typeof candidate !== "object" || Array.isArray(candidate)) return "The snapshot root must be an object.";
+    if (Number(candidate.schemaVersion) !== SCHEMA_VERSION) return `Expected schema ${SCHEMA_VERSION}.`;
+
+    const requiredArrays = ["projects", "people", "issues", "pages", "decisions", "risks", "milestones", "notifications", "audit", "automations", "savedFilters", "sprints"];
+    for (const key of requiredArrays) {
+      if (!Array.isArray(candidate[key])) return `Required collection “${key}” is missing.`;
+      if (candidate[key].length > 5000) return `Collection “${key}” exceeds the demo import limit.`;
+      if (candidate[key].some((item) => !item || typeof item !== "object" || Array.isArray(item))) return `Collection “${key}” contains an invalid record.`;
+    }
+    if (!candidate.service || typeof candidate.service !== "object" || !Array.isArray(candidate.service.requests) || !Array.isArray(candidate.service.requestTypes)) return "Service-management collections are missing.";
+    if (!candidate.pageVersions || typeof candidate.pageVersions !== "object" || Array.isArray(candidate.pageVersions)) return "Page version history is missing.";
+    if (!candidate.pageComments || typeof candidate.pageComments !== "object" || Array.isArray(candidate.pageComments)) return "Page comments are missing.";
+    if (!PERSONAS[candidate.currentUser]) return "The selected persona is not recognized.";
+
+    const requireSafeIds = (records, field, label) => {
+      const seen = new Set();
+      for (const record of records) {
+        const value = record[field];
+        if (typeof value !== "string" || !SAFE_RECORD_ID.test(value)) return `${label} contains an unsafe ${field}.`;
+        if (seen.has(value)) return `${label} contains duplicate ${field} “${value}”.`;
+        seen.add(value);
+      }
+      return "";
+    };
+    const idChecks = [
+      [candidate.projects, "key", "Projects"],
+      [candidate.issues, "key", "Work items"],
+      [candidate.pages, "id", "Pages"],
+      [candidate.decisions, "id", "Decisions"],
+      [candidate.risks, "id", "Risks"],
+      [candidate.sprints, "id", "Sprints"],
+      [candidate.savedFilters, "id", "Saved filters"],
+      [candidate.automations, "id", "Automation rules"],
+      [candidate.service.requestTypes, "id", "Request types"],
+      [candidate.service.requests, "key", "Service requests"]
+    ];
+    for (const [records, field, label] of idChecks) {
+      const error = requireSafeIds(records, field, label);
+      if (error) return error;
+    }
+
+    const projectKeys = new Set(candidate.projects.map((item) => item.key));
+    const issueKeys = new Set(candidate.issues.map((item) => item.key));
+    const pageIds = new Set(candidate.pages.map((item) => item.id));
+    const decisionIds = new Set(candidate.decisions.map((item) => item.id));
+    const riskIds = new Set(candidate.risks.map((item) => item.id));
+    const requestTypeIds = new Set(candidate.service.requestTypes.map((item) => item.id));
+    if (!projectKeys.has("SMN") || !issueKeys.has("SMN-191") || !pageIds.has("program-hub") || !pageIds.has("alternate-path") || !decisionIds.has("DEC-014") || !riskIds.has("RISK-07")) return "The required Sentinel demonstration records are missing.";
+    if (!candidate.sprints.some((item) => item.status === "active" || item.status === "future")) return "An active or future sprint is required.";
+    if (!["Integration Readiness Review", "Alternate path decision", "Evidence review"].every((name) => candidate.milestones.some((item) => item.name === name))) return "Required schedule milestones are missing.";
+
+    const finiteInRange = (value, min, max) => typeof value === "number" && Number.isFinite(value) && value >= min && value <= max;
+    const hasTextFields = (record, fields, maxLength = 100000) => fields.every((field) => typeof record[field] === "string" && record[field].length <= maxLength);
+    for (const project of candidate.projects) {
+      if (!hasTextFields(project, ["key", "name", "health", "release", "owner", "description"]) || !finiteInRange(project.completion, 0, 100) || !finiteInRange(project.confidence, 0, 100)) return `Project ${project.key} has invalid fields or metrics.`;
+    }
+    for (const person of candidate.people) {
+      if (!hasTextFields(person, ["name", "initials", "color", "role", "team"]) || !person.name.trim() || !PERSON_COLORS.has(person.color) || !finiteInRange(person.capacity, 0, 100)) return "A people record is invalid.";
+    }
+    for (const issue of candidate.issues) {
+      if (!hasTextFields(issue, ["key", "summary", "type", "status", "priority", "assignee", "reporter", "sprint", "epic", "due", "description", "linkedPage", "risk", "milestone"]) || !ISSUE_STATUSES.has(issue.status) || !PRIORITIES.has(issue.priority) || !finiteInRange(issue.points, 0, 100)) return `Work item ${issue.key} has invalid fields, status, priority, or estimate data.`;
+      if (!Array.isArray(issue.dependencies) || issue.dependencies.some((key) => !issueKeys.has(key))) return `Work item ${issue.key} has an invalid dependency.`;
+      if (issue.linkedPage && !pageIds.has(issue.linkedPage)) return `Work item ${issue.key} links to an unknown page.`;
+      if (issue.risk && !riskIds.has(issue.risk)) return `Work item ${issue.key} links to an unknown risk.`;
+      if (![issue.checklist, issue.checked, issue.comments, issue.history].every(Array.isArray)) return `Work item ${issue.key} has incomplete activity data.`;
+    }
+    for (const page of candidate.pages) {
+      if (!hasTextFields(page, ["id", "title", "owner", "updated", "summary", "content"]) || !finiteInRange(page.depth, 0, 10) || !finiteInRange(page.version, 1, 100000)) return `Page ${page.id} has invalid fields, hierarchy, or version data.`;
+      if (page.parent && !pageIds.has(page.parent)) return `Page ${page.id} has an unknown parent.`;
+      const versions = candidate.pageVersions[page.id];
+      if (versions !== undefined && (!Array.isArray(versions) || !versions.length || versions.length > 500 || versions.some((version) => !finiteInRange(version.version, 1, 100000) || !hasTextFields(version, ["author", "time", "note"])))) return `Page ${page.id} has invalid version history.`;
+      if (candidate.pageComments[page.id] && !Array.isArray(candidate.pageComments[page.id])) return `Page ${page.id} has invalid comments.`;
+    }
+    for (const decision of candidate.decisions) {
+      if (!hasTextFields(decision, ["id", "title", "status", "owner", "approver", "due", "recommendation", "rationale", "page", "linkedIssue"])) return `Decision ${decision.id} has invalid fields.`;
+      if (decision.page && !pageIds.has(decision.page)) return `Decision ${decision.id} links to an unknown page.`;
+      if (decision.linkedIssue && !issueKeys.has(decision.linkedIssue)) return `Decision ${decision.id} links to an unknown work item.`;
+    }
+    for (const risk of candidate.risks) {
+      if (!hasTextFields(risk, ["id", "title", "level", "owner", "response", "issue"]) || !finiteInRange(risk.score, 0, 25) || (risk.issue && !issueKeys.has(risk.issue))) return `Risk ${risk.id} has invalid fields, exposure, or linked work.`;
+    }
+    for (const sprint of candidate.sprints) {
+      if (!hasTextFields(sprint, ["id", "name", "goal", "start", "end", "status"]) || !SPRINT_STATUSES.has(sprint.status) || !finiteInRange(sprint.capacity, 1, 200)) return `Sprint ${sprint.id} has invalid fields, lifecycle, or capacity data.`;
+      if (sprint.committed !== undefined && !finiteInRange(sprint.committed, 0, 10000)) return `Sprint ${sprint.id} has invalid commitment data.`;
+      if (sprint.completed !== undefined && !finiteInRange(sprint.completed, 0, 10000)) return `Sprint ${sprint.id} has invalid completion data.`;
+    }
+    if (!finiteInRange(candidate.service.elapsedHours, 0, 10000) || typeof candidate.service.demoNow !== "string") return "The service demo clock is invalid.";
+    for (const requestType of candidate.service.requestTypes) {
+      if (!hasTextFields(requestType, ["id", "name", "description", "icon"])) return `Request type ${requestType.id} has invalid fields.`;
+    }
+    for (const request of candidate.service.requests) {
+      if (!hasTextFields(request, ["key", "summary", "type", "status", "priority", "requester", "organization", "assignee", "created", "description", "linkedIssue", "linkedPage"]) || !SERVICE_STATUSES.has(request.status) || !PRIORITIES.has(request.priority) || !requestTypeIds.has(request.type)) return `Service request ${request.key} has invalid fields or workflow data.`;
+      if (!pageIds.has(request.linkedPage) || !issueKeys.has(request.linkedIssue)) return `Service request ${request.key} has an invalid linked record.`;
+      if (!Array.isArray(request.comments) || request.comments.some((comment) => !["public", "internal"].includes(comment.visibility))) return `Service request ${request.key} has invalid conversation data.`;
+      for (const metric of [request.firstResponse, request.resolution]) {
+        if (!metric || !finiteInRange(metric.goal, 0.1, 10000) || !finiteInRange(metric.elapsed, 0, 10000)) return `Service request ${request.key} has invalid SLA data.`;
+      }
+    }
+    for (const notification of candidate.notifications) {
+      if (!(Number.isFinite(Number(notification.id)) || (typeof notification.id === "string" && SAFE_RECORD_ID.test(notification.id)))) return "A notification has an unsafe identifier.";
+      if (!hasTextFields(notification, ["kind", "title", "detail", "time", "target"])) return "A notification has invalid fields.";
+    }
+    if (candidate.automations.some((rule) => !hasTextFields(rule, ["id", "name", "detail", "last"]) || !finiteInRange(rule.runs, 0, 1000000))) return "An automation rule is invalid.";
+    if (candidate.savedFilters.some((filter) => !hasTextFields(filter, ["id", "name", "owner", "scope", "query"]))) return "A saved filter is invalid.";
+    if (candidate.audit.some((event) => !hasTextFields(event, ["time", "actor", "action", "object"]))) return "An audit event is invalid.";
+    if (candidate.milestones.some((item) => !hasTextFields(item, ["name", "target", "forecast", "status", "issue"]))) return "A milestone is invalid.";
+    return "";
+  }
+
+  function normalizeState(candidate) {
+    const base = clone(FIXTURE);
+    if (validateStateCandidate(candidate)) return base;
+    const state = { ...base, ...candidate };
+    state.issueFilter = { ...base.issueFilter, ...(candidate.issueFilter || {}) };
+    state.service = { ...base.service, ...(candidate.service || {}) };
+    state.service.requests = Array.isArray(candidate.service?.requests) ? candidate.service.requests : base.service.requests;
+    state.service.requestTypes = Array.isArray(candidate.service?.requestTypes) ? candidate.service.requestTypes : base.service.requestTypes;
+    ["projects", "people", "issues", "pages", "decisions", "risks", "milestones", "notifications", "audit", "automations", "savedFilters", "sprints"].forEach((key) => {
+      if (!Array.isArray(state[key])) state[key] = base[key];
+    });
+    state.issues = state.issues.map((issue, index) => ({ key: `IMP-${index + 1}`, summary: "Imported work item", type: "Task", status: "To Do", priority: "Medium", assignee: "Maya Okafor", reporter: "Maya Okafor", sprint: "Backlog", epic: "—", points: 0, due: "Not set", description: "", dependencies: [], linkedPage: "program-hub", risk: "", milestone: "Not set", checklist: [], checked: [], comments: [], history: [], ...issue, dependencies: Array.isArray(issue.dependencies) ? issue.dependencies : [], checklist: Array.isArray(issue.checklist) ? issue.checklist : [], checked: Array.isArray(issue.checked) ? issue.checked : [], comments: Array.isArray(issue.comments) ? issue.comments : [], history: Array.isArray(issue.history) ? issue.history : [] }));
+    state.service.requests = state.service.requests.map((request, index) => ({ key: `HELP-${2000 + index}`, summary: "Imported service request", type: "question", status: "Submitted", priority: "Medium", requester: "Amina Cole", organization: "Mission Operations", assignee: "Unassigned", created: "Imported", description: "", firstResponse: { goal: 4, elapsed: 0, met: false }, resolution: { goal: 24, elapsed: 0, met: false }, participants: [], linkedIssue: "SMN-100", linkedPage: "program-hub", comments: [], ...request, firstResponse: { goal: 4, elapsed: 0, met: false, ...(request.firstResponse || {}) }, resolution: { goal: 24, elapsed: 0, met: false, ...(request.resolution || {}) }, comments: Array.isArray(request.comments) ? request.comments : [] }));
+    state.pageComments = state.pageComments && typeof state.pageComments === "object" ? state.pageComments : base.pageComments;
+    state.pageVersions = state.pageVersions && typeof state.pageVersions === "object" ? state.pageVersions : base.pageVersions;
+    state.pageDrafts = state.pageDrafts && typeof state.pageDrafts === "object" ? state.pageDrafts : {};
+    if (!PERSONAS[state.currentUser]) state.currentUser = "Maya Okafor";
+    state.pages.forEach((page) => {
+      page.archived = Boolean(page.archived);
+      const records = Array.isArray(state.pageVersions[page.id]) ? state.pageVersions[page.id] : [];
+      state.pageVersions[page.id] = records.length ? records : [{ version: page.version, author: page.owner, time: page.updated, note: "Current version" }];
+      state.pageVersions[page.id].forEach((version) => {
+        if (!version.title) version.title = page.title;
+        if (!version.content) version.content = page.content;
+        if (!version.bodyHtml) version.bodyHtml = page.bodyHtml || `<p>${esc(page.content)}</p>`;
+      });
+    });
+    state.route = "home";
+    state.activePage = null;
+    state.activeDecision = null;
+    state.activeRequest = null;
+    state.migrationProgress = state.migrationComplete ? 100 : 0;
+    return state;
+  }
+
+  function loadState() {
+    try {
+      const raw = window.localStorage.getItem(STORAGE_KEY);
+      return raw ? normalizeState(JSON.parse(raw)) : normalizeState(clone(FIXTURE));
+    } catch (_) {
+      storageHealthy = false;
+      return normalizeState(clone(FIXTURE));
+    }
+  }
+
+  function persistState() {
+    if (!storageHealthy) return;
+    try {
+      DemoState.schemaVersion = SCHEMA_VERSION;
+      DemoState.lastSavedAt = new Date().toISOString();
+      const snapshot = clone(DemoState);
+      snapshot.route = "home";
+      snapshot.activePage = null;
+      snapshot.activeDecision = null;
+      snapshot.activeRequest = null;
+      snapshot.migrationProgress = snapshot.migrationComplete ? 100 : 0;
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(snapshot));
+      const savedAt = document.getElementById("profileSavedAt");
+      if (savedAt) savedAt.textContent = "Saved locally · " + new Date(DemoState.lastSavedAt).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+    } catch (_) {
+      storageHealthy = false;
+      const warning = document.getElementById("storageWarning");
+      if (warning) warning.hidden = false;
+    }
+  }
+
+  let DemoState = loadState();
   let draggedIssueKey = null;
   let migrationTimer = null;
+  let drawerCloseTimer = null;
+  let drawerOpenFrame = null;
   const appContent = document.getElementById("appContent");
   const detailDrawer = document.getElementById("detailDrawer");
   const drawerScrim = document.getElementById("drawerScrim");
@@ -276,12 +523,63 @@
     })[char]);
   }
 
+  function sanitizeRichText(input) {
+    const source = document.createElement("template");
+    source.innerHTML = String(input || "");
+    const allowed = new Set(["P", "H2", "H3", "STRONG", "EM", "UL", "OL", "LI", "BLOCKQUOTE", "A", "BR"]);
+    const clean = (node) => {
+      [...node.childNodes].forEach((child) => {
+        if (child.nodeType !== Node.ELEMENT_NODE) return;
+        if (!allowed.has(child.tagName)) {
+          child.replaceWith(document.createTextNode(child.textContent || ""));
+          return;
+        }
+        const href = child.tagName === "A" ? child.getAttribute("href") || "" : "";
+        [...child.attributes].forEach((attribute) => child.removeAttribute(attribute.name));
+        if (child.tagName === "A" && /^(https?:|mailto:|#)/i.test(href)) child.setAttribute("href", href);
+        clean(child);
+      });
+    };
+    clean(source.content);
+    return source.innerHTML;
+  }
+
   function slug(value) {
     return String(value).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
   }
 
   function initials(name) {
     return String(name).split(/\s+/).map((part) => part[0]).join("").slice(0, 2).toUpperCase();
+  }
+
+  function actor() {
+    return DemoState.currentUser || "Maya Okafor";
+  }
+
+  function persona() {
+    return PERSONAS[actor()] || PERSONAS["Maya Okafor"];
+  }
+
+  function can(capability, object = null) {
+    const capabilities = persona().capabilities;
+    if (capabilities.includes("all") || capabilities.includes(capability)) return true;
+    if (capability === "edit-work" && capabilities.includes("edit-assigned-work")) return object?.assignee === actor();
+    if (capability === "edit-knowledge" && capabilities.includes("draft-knowledge")) return true;
+    return false;
+  }
+
+  function requireCapability(capability, object, message) {
+    if (can(capability, object)) return true;
+    toast("Action unavailable in this role", message || "Switch personas to preview a role with this permission.");
+    return false;
+  }
+
+  function canViewRoute(route) {
+    return (ROUTE_ACCESS[persona().key] || []).includes(route);
+  }
+
+  function recordAudit(action, object, eventActor = actor()) {
+    DemoState.audit.unshift({ time: "Just now", actor: eventActor, action, object });
   }
 
   function getPerson(name) {
@@ -347,6 +645,58 @@
     return Math.max(Number(page?.version) || 0, ...recorded, 0) + 1;
   }
 
+  function activeSprint() {
+    return DemoState.sprints.find((sprint) => sprint.status === "active") || DemoState.sprints.find((sprint) => sprint.status === "future") || DemoState.sprints[0];
+  }
+
+  function issuesForSprint(sprint) {
+    return DemoState.issues.filter((issue) => issue.sprint === sprint.name);
+  }
+
+  function sprintStats(sprint) {
+    const issues = issuesForSprint(sprint);
+    const committed = issues.reduce((sum, issue) => sum + Number(issue.points || 0), 0);
+    const completed = issues.filter((issue) => issue.status === "Done").reduce((sum, issue) => sum + Number(issue.points || 0), 0);
+    return { issues, committed, completed, blocked: issues.filter((issue) => issue.status === "Blocked").length };
+  }
+
+  function requestByKey(key) {
+    return DemoState.service.requests.find((request) => request.key === key);
+  }
+
+  function slaState(request, kind) {
+    const metric = request[kind];
+    if (metric.met) return "met";
+    if (["Waiting for customer", "Pending approval", "Resolved", "Closed"].includes(request.status)) return "paused";
+    const remaining = metric.goal - metric.elapsed;
+    if (remaining <= 0) return "breached";
+    if (remaining <= Math.max(1, metric.goal * 0.2)) return "approaching";
+    return "running";
+  }
+
+  function slaLabel(request, kind) {
+    const metric = request[kind];
+    const state = slaState(request, kind);
+    if (state === "met") return `Met in ${metric.elapsed.toFixed(1)}h`;
+    if (state === "paused") return `Paused · ${(metric.goal - metric.elapsed).toFixed(1)}h left`;
+    if (state === "breached") return `Breached by ${Math.abs(metric.goal - metric.elapsed).toFixed(1)}h`;
+    return `${(metric.goal - metric.elapsed).toFixed(1)}h remaining`;
+  }
+
+  function primarySlaKind(request) {
+    return request.firstResponse.met ? "resolution" : "firstResponse";
+  }
+
+  function requestsForQueue(queueId) {
+    const requests = DemoState.service.requests;
+    if (queueId === "mine") return requests.filter((request) => request.assignee === actor() && !["Resolved", "Closed"].includes(request.status));
+    if (queueId === "approaching") return requests.filter((request) => [slaState(request, "firstResponse"), slaState(request, "resolution")].includes("approaching"));
+    if (queueId === "breached") return requests.filter((request) => [slaState(request, "firstResponse"), slaState(request, "resolution")].includes("breached"));
+    if (queueId === "waiting") return requests.filter((request) => request.status === "Waiting for customer");
+    if (queueId === "approval") return requests.filter((request) => request.status === "Pending approval");
+    return requests.filter((request) => request.assignee === "Unassigned");
+  }
+
   function toast(title, detail = "", type = "") {
     const region = document.getElementById("toastRegion");
     const node = document.createElement("div");
@@ -410,13 +760,15 @@
     const blocked = blockedCount();
     const confidence = currentConfidence();
     const variance = scheduleVariance();
-    const myIssues = DemoState.issues.filter((issue) => ["Lena Ortiz", "Maya Okafor"].includes(issue.assignee) && issue.status !== "Done").slice(0, 4);
+    const sprint = activeSprint();
+    const sprintSummary = sprintStats(sprint);
+    const myIssues = DemoState.issues.filter((issue) => (issue.assignee === actor() || issue.reporter === actor() || (persona().key === "administrator" && issue.assignee === "Lena Ortiz")) && issue.status !== "Done").slice(0, 4);
     return `<div class="page page-enter">
       ${pageHeader(
         "Demonstration Portfolio",
-        "Good morning, Maya",
+        `Good morning, ${actor().split(" ")[0]}`,
         "Work, knowledge, decisions, and reporting in one governed system.",
-        `<button class="button" type="button" data-view="leadership">Open leadership view</button><button class="button primary" type="button" data-action="open-create">Create work</button>`
+        `<button class="button" type="button" data-view="leadership">Open leadership view</button>${can("create-work") ? '<button class="button primary" type="button" data-action="open-create">Create work</button>' : ""}`
       )}
       <section class="metric-grid" aria-label="Portfolio summary">
         ${metric("Portfolio health", DemoState.decisionApproved ? "2 green · 1 amber" : "2 green · 1 amber", DemoState.decisionApproved ? '<span class="delta good">Recovering</span> after alternate-path approval' : '<span class="delta bad">1 intervention</span> can change the outcome', "warning")}
@@ -459,12 +811,12 @@
         <div class="stack">
           <section class="card surface-dark">
             <div class="eyebrow" style="color:var(--sky)">Current sprint</div>
-            <h2 style="font-size:16px">Sprint 12 · Certification Recovery</h2>
-            <p style="font-size:10px">Approve the alternate path and restore integration work.</p>
+            <h2 style="font-size:16px">${esc(sprint.name)} · ${esc(sprint.goal)}</h2>
+            <p style="font-size:10px">${esc(sprint.start)}–${esc(sprint.end)} · governed sprint scope.</p>
             <div style="margin-top:18px">
-              ${progress("Story points", 56, "23 of 41 complete")}
+              ${progress("Story points", sprintSummary.committed ? sprintSummary.completed / sprintSummary.committed * 100 : 0, `${sprintSummary.completed} of ${sprintSummary.committed} complete`)}
               ${progress("Sprint time", 61, "7 of 12 days")}
-              ${progress("Scope unblocked", DemoState.decisionApproved ? 100 : 54, DemoState.decisionApproved ? "0 blocked" : "6 blocked", DemoState.decisionApproved ? "success" : "warning")}
+              ${progress("Scope unblocked", DemoState.decisionApproved ? 100 : 54, `${sprintSummary.blocked} blocked`, DemoState.decisionApproved ? "success" : "warning")}
             </div>
             <button class="button small" style="margin-top:18px;background:transparent;color:var(--alabaster);border-color:rgba(221,221,221,.35)" type="button" data-view="board">Open sprint board</button>
           </section>
@@ -480,10 +832,10 @@
   }
 
   function renderMyWork() {
-    let issues = DemoState.issues.filter((issue) => ["Lena Ortiz", "Maya Okafor"].includes(issue.assignee));
+    let issues = DemoState.issues.filter((issue) => issue.assignee === actor() || issue.reporter === actor() || (persona().key === "administrator" && issue.assignee === "Lena Ortiz"));
     issues = filterIssues(issues);
     return `<div class="page page-enter">
-      ${pageHeader("Personal workspace", "My work", "Assigned, reported, and watched work—without losing the knowledge or decisions behind it.", `<button class="button" type="button" data-action="save-view">Save view</button><button class="button primary" type="button" data-action="open-create">Create work item</button>`)}
+      ${pageHeader("Personal workspace", "My work", `Assigned, reported, and watched work for ${actor()}—without losing the knowledge or decisions behind it.`, `<button class="button" type="button" data-action="save-view">Save as filter</button>${can("create-work") ? '<button class="button primary" type="button" data-action="open-create">Create work item</button>' : ""}`)}
       ${issueToolbar()}
       <div class="data-table-wrap">
         <table class="data-table"><thead><tr><th>Key</th><th>Work item</th><th>Type</th><th>Status</th><th>Priority</th><th>Owner</th><th>Due</th></tr></thead><tbody>${issueRows(issues)}</tbody></table>
@@ -515,7 +867,7 @@
   function renderProjects() {
     if (DemoState.projectMode === "overview") return renderProjectOverview();
     return `<div class="page page-enter">
-      ${pageHeader("Demonstration Portfolio", "Projects", "Plan and govern delivery work while keeping every decision, page, risk, and briefing fact connected.", `<button class="button primary" type="button" data-action="open-create">Create project</button>`)}
+      ${pageHeader("Demonstration Portfolio", "Projects", "Plan and govern delivery work while keeping every decision, page, risk, and briefing fact connected.", can("create-work") ? `<button class="button primary" type="button" data-action="open-create-project">Create project</button>` : "")}
       <div class="project-grid">
         ${DemoState.projects.map((project) => `
           <article class="card project-card" data-project="${project.key}" tabindex="0">
@@ -611,16 +963,106 @@
     });
   }
 
+  function queryValue(issue, field) {
+    if (field === "project") return issue.key.split("-")[0];
+    if (field === "text") return `${issue.key} ${issue.summary} ${issue.description} ${issue.type} ${issue.assignee}`;
+    return issue[field] ?? "";
+  }
+
+  function cleanQueryValue(value) {
+    const trimmed = String(value).trim();
+    if (/^currentUser\(\)$/i.test(trimmed)) return actor();
+    return trimmed.replace(/^(["'])(.*)\1$/, "$2");
+  }
+
+  function runIssueQuery(query) {
+    const fields = ["project", "key", "type", "status", "priority", "assignee", "reporter", "sprint", "epic", "text"];
+    const text = String(query || "").trim();
+    if (!text) return { items: DemoState.issues.slice(), error: "" };
+    const orderMatch = text.match(/\s+ORDER\s+BY\s+([a-z-]+)(?:\s+(ASC|DESC))?\s*$/i);
+    const filterText = orderMatch ? text.slice(0, orderMatch.index).trim() : text;
+    const clauses = filterText ? filterText.split(/\s+AND\s+/i) : [];
+    const tests = [];
+    for (const clause of clauses) {
+      const match = clause.match(/^([a-z-]+)\s*(IN|!=|=|~)\s*(.+)$/i);
+      if (!match) return { items: [], error: `Could not parse “${clause}”. Use FIELD = value, FIELD != value, FIELD IN (...), or FIELD ~ text.` };
+      const field = match[1].toLowerCase();
+      const operator = match[2].toUpperCase();
+      if (!fields.includes(field)) return { items: [], error: `“${field}” is not available in this demo query language.` };
+      let values;
+      if (operator === "IN") {
+        const list = match[3].trim();
+        if (!list.startsWith("(") || !list.endsWith(")")) return { items: [], error: `IN requires a parenthesized list in “${clause}”.` };
+        values = list.slice(1, -1).split(",").map(cleanQueryValue).filter(Boolean);
+      } else values = [cleanQueryValue(match[3])];
+      tests.push((issue) => {
+        const actual = String(queryValue(issue, field)).toLowerCase();
+        const expected = values.map((value) => String(value).toLowerCase());
+        if (operator === "=") return actual === expected[0];
+        if (operator === "!=") return actual !== expected[0];
+        if (operator === "~") return actual.includes(expected[0]);
+        return expected.includes(actual);
+      });
+    }
+    let items = DemoState.issues.filter((issue) => tests.every((test) => test(issue)));
+    if (orderMatch) {
+      const field = orderMatch[1].toLowerCase();
+      if (!fields.includes(field)) return { items: [], error: `Cannot order by “${field}” in this demo.` };
+      const direction = String(orderMatch[2] || "ASC").toUpperCase() === "DESC" ? -1 : 1;
+      const priorities = { Highest: 4, High: 3, Medium: 2, Low: 1 };
+      items = items.slice().sort((a, b) => {
+        const av = field === "priority" ? priorities[a.priority] || 0 : String(queryValue(a, field));
+        const bv = field === "priority" ? priorities[b.priority] || 0 : String(queryValue(b, field));
+        return (av > bv ? 1 : av < bv ? -1 : 0) * direction;
+      });
+    }
+    return { items, error: "" };
+  }
+
+  function renderFilters() {
+    const active = DemoState.savedFilters.find((filter) => filter.id === DemoState.activeSavedFilter);
+    const result = runIssueQuery(DemoState.filterQuery);
+    return `<div class="page page-enter">
+      ${pageHeader("Work management", "Filters & advanced search", "Find accountable work with a safe Jira-style query subset, then save the view for repeat use.", `<button class="button" type="button" data-action="reset-query">New search</button>`) }
+      <div class="filter-workspace">
+        <aside class="saved-filter-panel" aria-label="Saved filters">
+          <div class="panel-header"><h2>Saved filters</h2><span class="tag">${DemoState.savedFilters.length}</span></div>
+          ${DemoState.savedFilters.map((filter) => `<div class="saved-filter-row ${filter.id === DemoState.activeSavedFilter ? "active" : ""}" data-saved-filter-id="${filter.id}"><button type="button" data-action="apply-saved-filter" data-filter-id="${filter.id}"><span>${filter.starred ? "★" : "☆"}</span><span><strong>${esc(filter.name)}</strong><small>${esc(filter.scope)} · ${esc(filter.owner)}</small></span></button>${persona().key === "administrator" || filter.owner === actor() ? `<button class="icon-button" type="button" data-action="delete-filter" data-filter-id="${filter.id}" aria-label="Delete ${esc(filter.name)}">×</button>` : ""}</div>`).join("")}
+        </aside>
+        <section class="stack">
+          <div class="card query-card">
+            <div class="field"><label for="advancedQuery">Advanced query</label><textarea id="advancedQuery" data-filter-query spellcheck="false">${esc(DemoState.filterQuery)}</textarea></div>
+            <div class="query-actions"><span class="query-help">Fields: project, key, type, status, priority, assignee, reporter, sprint, epic, text · Operators: =, !=, IN, ~, AND, ORDER BY</span><button class="button primary" type="button" data-action="run-filter">Run query</button></div>
+            ${result.error ? `<div class="callout danger" role="alert"><strong>Query needs attention</strong><p>${esc(result.error)}</p></div>` : ""}
+          </div>
+          <form class="card save-filter-form" data-save-filter-form>
+            <div class="field"><label for="filterName">Save this search as</label><input id="filterName" name="name" required value="${active ? esc(active.name) : ""}" placeholder="e.g., Certification work at risk"></div>
+            <div class="field"><label for="filterScope">Visibility</label><select id="filterScope" name="scope"><option>Personal</option><option ${active?.scope === "Shared" ? "selected" : ""}>Shared</option></select></div>
+            <button class="button" type="submit">Save filter</button>
+          </form>
+          <section><div class="section-heading"><div><h2>Results</h2><p>${result.error ? "Correct the query to see results." : `${result.items.length} work item${result.items.length === 1 ? "" : "s"} matched.`}</p></div>${active ? `<span class="tag">${esc(active.name)}</span>` : ""}</div>
+            <div class="data-table-wrap"><table class="data-table"><thead><tr><th>Key</th><th>Work item</th><th>Type</th><th>Status</th><th>Priority</th><th>Owner</th><th>Due</th></tr></thead><tbody>${result.error ? "" : issueRows(result.items)}</tbody></table></div>
+          </section>
+        </section>
+      </div>
+    </div>`;
+  }
+
   function renderBacklog() {
-    const sprint = DemoState.issues.filter((issue) => issue.sprint === "Sprint 12");
+    const active = activeSprint();
+    const stats = sprintStats(active);
+    const sprint = stats.issues;
     const backlog = DemoState.issues.filter((issue) => issue.sprint === "Backlog");
     const portfolio = DemoState.issues.filter((issue) => issue.sprint === "Portfolio backlog");
+    const future = DemoState.sprints.find((item) => item.status === "future");
+    const futureStats = future ? sprintStats(future) : null;
     return `<div class="page page-enter">
-      ${pageHeader("SMN · Work management", "Backlog", "Shape scope, plan Sprint 12, manage estimates, and keep delivery dependencies visible.", `<button class="button" type="button" data-action="start-sprint">Sprint settings</button><button class="button primary" type="button" data-action="open-create">Create work item</button>`)}
-      <section class="panel sprint-panel">
-        <div class="sprint-header"><span class="sprint-title"><h2>Sprint 12 · Certification Recovery</h2><span>24 Aug–4 Sep · 41 points · ${blockedCount()} blocked</span></span><span style="display:flex;gap:8px"><span class="tag">Active sprint</span><button class="button small" type="button" data-view="board">Open board</button></span></div>
+      ${pageHeader("SMN · Work management", "Backlog", `Shape scope, plan ${active.name}, manage estimates, and keep delivery dependencies visible.`, `${can("manage-sprint") ? '<button class="button" type="button" data-action="start-sprint">Sprint settings</button>' : ""}${can("create-work") ? '<button class="button primary" type="button" data-action="open-create">Create work item</button>' : ""}`)}
+      <section class="panel sprint-panel" data-sprint-id="${active.id}" data-sprint-status="${active.status}">
+        <div class="sprint-header"><span class="sprint-title"><h2>${esc(active.name)} · ${esc(active.goal)}</h2><span>${esc(active.start)}–${esc(active.end)} · ${stats.committed} points · ${stats.blocked} blocked</span></span><span style="display:flex;gap:8px"><span class="tag">${esc(active.status === "active" ? "Active sprint" : "Planned sprint")}</span><button class="button small" type="button" data-view="board">Open board</button></span></div>
         <div>${backlogRows(sprint, false)}</div>
       </section>
+      ${future && future.id !== active.id ? `<section class="panel sprint-panel" data-sprint-id="${future.id}" data-sprint-status="${future.status}"><div class="sprint-header"><span class="sprint-title"><h2>${esc(future.name)} · ${esc(future.goal)}</h2><span>${esc(future.start)}–${esc(future.end)} · ${futureStats.committed} planned points · ${future.capacity} point capacity</span></span><span class="tag">Future sprint</span></div><div>${futureStats.issues.length ? backlogRows(futureStats.issues, false) : '<div class="empty-state">No work planned yet.</div>'}</div></section>` : ""}
       <section class="panel sprint-panel">
         <div class="sprint-header"><span class="sprint-title"><h2>Product backlog</h2><span>Prioritized future scope</span></span><span class="tag">${backlog.reduce((sum, issue) => sum + issue.points, 0)} points</span></div>
         <div>${backlogRows(backlog, true)}</div>
@@ -636,18 +1078,20 @@
     return issues.map((issue) => `
       <div class="backlog-row" data-issue="${issue.key}" tabindex="0">
         <span>☷</span><span class="backlog-key">${esc(issue.key)}</span><span class="backlog-summary">${esc(issue.summary)}</span><span>${statusBadge(issue.status)}</span><span>${avatar(issue.assignee, "table-avatar")}</span><span class="story-points" title="Story points">${issue.points}</span>
-        ${allowMove ? `<button class="sr-only" type="button" data-action="move-to-sprint" data-key="${issue.key}">Move to Sprint 12</button>` : ""}
+        ${allowMove && can("manage-sprint") ? `<button class="sr-only" type="button" data-action="move-to-sprint" data-key="${issue.key}">Move to ${esc(activeSprint().name)}</button>` : ""}
       </div>
     `).join("");
   }
 
   function renderBoard() {
     const order = ["Ready", "In Progress", "In Review", "Blocked", "Done"];
-    const sprintIssues = DemoState.issues.filter((issue) => issue.sprint === "Sprint 12");
+    const sprint = activeSprint();
+    const stats = sprintStats(sprint);
+    const sprintIssues = stats.issues;
     return `<div class="page page-enter">
-      ${pageHeader("SMN · Sprint 12", "Delivery board", "Move work through the configured workflow. Drag cards or use the arrow controls.", `<button class="button" type="button" data-view="backlog">Backlog</button><button class="button primary" type="button" data-action="open-create">Create work item</button>`)}
+      ${pageHeader(`SMN · ${sprint.name}`, "Delivery board", "Move work through the configured workflow. Drag cards or use the arrow controls.", `<button class="button" type="button" data-view="backlog">Backlog</button>${can("create-work") ? '<button class="button primary" type="button" data-action="open-create">Create work item</button>' : ""}`)}
       <div class="data-toolbar">
-        <span class="tag">Sprint 12 · 24 Aug–4 Sep</span><span class="tag">Goal · Certification recovery</span><span class="tag">23 / 41 points</span><span class="tag">${blockedCount()} blocked</span>
+        <span class="tag">${esc(sprint.name)} · ${esc(sprint.start)}–${esc(sprint.end)}</span><span class="tag">Goal · ${esc(sprint.goal)}</span><span class="tag">${stats.completed} / ${stats.committed} points</span><span class="tag">${stats.blocked} blocked</span>
       </div>
       <div class="board-scroll"><div class="board">
         ${order.map((status, columnIndex) => {
@@ -728,6 +1172,60 @@
     </div>`;
   }
 
+  function renderPortal() {
+    const customerName = persona().key === "customer" ? actor() : "Amina Cole";
+    const ownRequests = DemoState.service.requests.filter((request) => request.requester === customerName);
+    return `<div class="page page-enter" data-service-tab="portal">
+      ${pageHeader("Service management", "Help center", "Request help, find governed guidance, and follow every request through resolution.", canViewRoute("queues") ? '<button class="button" type="button" data-view="queues">Agent queues</button>' : "") }
+      <div class="portal-hero">
+        <section class="portal-welcome"><div class="eyebrow" style="color:var(--sky)">Unified service portal</div><h2>How can we help, ${esc(customerName.split(" ")[0])}?</h2><p>Search connected knowledge or choose a request type. Every submission receives a traceable key, owner, status, activity, and service target.</p><div class="global-search-wrap" style="margin-top:18px;max-width:620px"><input type="search" aria-label="Search help articles" placeholder="Search help and knowledge" data-portal-search></div><div class="portal-search-results" data-portal-results hidden></div></section>
+        <section class="card"><div class="eyebrow">Service promise</div><h2 style="font-size:16px">Clear ownership from request to resolution.</h2><p>Public replies, approvals, linked work, and SLA status stay together. Internal agent notes remain private.</p><div class="tag" style="margin-top:12px">Synthetic service data</div></section>
+      </div>
+      <div class="service-section-head"><h2>What do you need?</h2><span class="tag">5 request types</span></div>
+      <div class="request-type-grid" style="margin-top:10px">${DemoState.service.requestTypes.map((type) => `<button class="request-type-card" type="button" data-action="open-request-create" data-request-type="${type.id}" ${can("request-service") ? "" : "disabled"}><span class="request-type-icon">${esc(type.icon)}</span><span><strong>${esc(type.name)}</strong><span>${esc(type.description)}</span></span></button>`).join("")}</div>
+      <div class="service-section-head" style="margin-top:24px"><h2>${esc(customerName)}’s requests</h2><span class="tag">${ownRequests.length} tracked</span></div>
+      <div class="portal-request-list" style="margin-top:10px">${ownRequests.length ? ownRequests.map((request) => `<button class="portal-request-card" type="button" data-request-key="${request.key}"><span class="request-key">${request.key}</span><span class="request-summary"><strong>${esc(request.summary)}</strong><span>${esc(request.type)} · Updated ${esc(request.created)}</span></span>${statusBadge(request.status)}<span class="sla-badge ${slaState(request, primarySlaKind(request)) === "approaching" ? "at-risk" : slaState(request, primarySlaKind(request))}">${esc(slaLabel(request, primarySlaKind(request)))}</span></button>`).join("") : '<div class="empty-state">No requests yet. Choose a request type to begin.</div>'}</div>
+    </div>`;
+  }
+
+  function queueDefinition(id) {
+    return ({
+      unassigned: ["Unassigned", "New requests awaiting an owner"],
+      mine: ["My open requests", "Assigned to the current service agent"],
+      approaching: ["Approaching SLA", "Service targets with less than 20% remaining"],
+      breached: ["Breached", "Requests outside a service target"],
+      waiting: ["Waiting for customer", "Resolution clock paused for a customer response"],
+      approval: ["Changes awaiting approval", "Access and change requests with an approval gate"]
+    })[id] || ["Unassigned", "New requests awaiting an owner"];
+  }
+
+  function renderQueues() {
+    const queueId = DemoState.serviceQueue || "unassigned";
+    const requests = requestsForQueue(queueId);
+    const [title, description] = queueDefinition(queueId);
+    const queues = ["unassigned", "mine", "approaching", "breached", "waiting", "approval"];
+    return `<div class="page page-enter" data-service-tab="queues">
+      ${pageHeader("Service management", "Agent queues", "Triage, assign, respond, transition, and resolve requests against visible service targets.", `<button class="button" type="button" data-view="portal">Open portal</button><button class="button" type="button" data-view="slas">SLA controls</button>`) }
+      <div class="queue-layout">
+        <aside class="queue-sidebar"><div class="queue-panel-head"><h2>Queues</h2><span class="tag">Live</span></div><div class="queue-list" style="margin-top:10px">${queues.map((id) => { const definition = queueDefinition(id); const count = requestsForQueue(id).length; return `<button class="queue-card ${queueId === id ? "active" : ""}" type="button" data-action="select-queue" data-queue-id="${id}" aria-current="${queueId === id}"><strong>${esc(definition[0])}</strong><span class="queue-count ${id === "breached" && count ? "danger" : id === "approaching" && count ? "warning" : ""}">${count}</span><small>${esc(definition[1])}</small></button>`; }).join("")}</div></aside>
+        <section class="queue-main"><div class="queue-panel-head"><div><h2>${esc(title)}</h2><p>${esc(description)}</p></div><span class="tag">${requests.length} requests</span></div><div class="request-list">${requests.length ? requests.map((request) => `<button class="request-row" type="button" data-request-key="${request.key}"><span class="request-key">${request.key}</span><span class="request-summary"><strong>${esc(request.summary)}</strong><span>${esc(request.requester)} · ${esc(request.assignee)}</span></span>${statusBadge(request.status)}<span class="sla-badge ${slaState(request, primarySlaKind(request)) === "approaching" ? "at-risk" : slaState(request, primarySlaKind(request))}" data-sla-kind="${primarySlaKind(request) === "firstResponse" ? "first-response" : "resolution"}" data-sla-state="${slaState(request, primarySlaKind(request))}" data-minutes-remaining="${Math.round((request[primarySlaKind(request)].goal - request[primarySlaKind(request)].elapsed) * 60)}">${esc(slaLabel(request, primarySlaKind(request)))}</span></button>`).join("") : '<div class="empty-state"><strong>Queue is clear</strong>No requests currently match this queue.</div>'}</div></section>
+      </div>
+    </div>`;
+  }
+
+  function renderSlas() {
+    const requests = DemoState.service.requests;
+    const approaching = requests.filter((request) => [slaState(request, "firstResponse"), slaState(request, "resolution")].includes("approaching")).length;
+    const breached = requests.filter((request) => [slaState(request, "firstResponse"), slaState(request, "resolution")].includes("breached")).length;
+    const met = requests.filter((request) => request.firstResponse.met && request.resolution.met).length;
+    return `<div class="page page-enter" data-service-tab="slas">
+      ${pageHeader("Service management", "Service-level agreements", "Preview deterministic response and resolution clocks without relying on the viewer’s real time.", `<button class="button" type="button" data-view="queues">Agent queues</button>${can("manage-service") ? '<button class="button primary" type="button" data-action="advance-clock">Advance demo clock by 1 hour</button>' : '<span class="tag">Read-only preview</span>'}`) }
+      <div class="service-hero"><section class="card surface-dark"><div class="eyebrow" style="color:var(--sky)">Deterministic demo clock</div><h2 style="font-size:18px">${esc(DemoState.service.demoNow)}</h2><p>Advanced ${DemoState.service.elapsedHours} hour${DemoState.service.elapsedHours === 1 ? "" : "s"} from the fixture baseline. Waiting and approval states pause resolution time.</p></section><section class="card"><div class="eyebrow">Current service posture</div><div class="capacity-summary" style="margin-top:12px"><div class="capacity-stat"><strong>${approaching}</strong><span>Approaching</span></div><div class="capacity-stat"><strong>${breached}</strong><span>Breached</span></div><div class="capacity-stat"><strong>${met}</strong><span>Fully met</span></div></div></section></div>
+      <div class="sla-grid">${requests.slice(0, 5).map((request) => { const state = slaState(request, "resolution"); return `<article class="sla-card"><div class="sla-card-head"><div><h3>${request.key}</h3><p>${esc(request.summary)}</p></div><span class="sla-badge ${state === "approaching" ? "at-risk" : state}" data-sla-kind="resolution" data-sla-state="${state}">${esc(state)}</span></div><div class="sla-clock">${esc(slaLabel(request, "resolution"))}</div><div class="sla-progress ${state === "approaching" ? "at-risk" : state}"><span style="width:${Math.min(100, request.resolution.elapsed / request.resolution.goal * 100)}%"></span></div></article>`; }).join("")}</div>
+      <div class="section-heading"><div><h2>Service policies</h2><p>Targets vary by calculated priority and pause on controlled workflow states.</p></div></div><div class="sla-policy-list">${[["P1 critical incident", "15 minutes", "8 hours", "24×7"], ["High priority", "4 hours", "24 hours", "Business hours"], ["Standard request", "8 hours", "40 hours", "Business hours"]].map((policy) => `<div class="sla-policy-row"><strong>${policy[0]}</strong><span>First response · ${policy[1]}</span><span>Resolution · ${policy[2]}</span><span>${policy[3]}</span><span class="tag">Active</span></div>`).join("")}</div>
+    </div>`;
+  }
+
   function renderSpaces() {
     if (DemoState.activePage) return renderPage();
     const spaces = [
@@ -736,7 +1234,7 @@
       { key: "PMO", name: "Program Delivery", owner: "Lena Ortiz", pages: 18, updated: "2 days ago", description: "Portfolio governance, planning guidance, reporting, and working agreements." }
     ];
     return `<div class="page page-enter">
-      ${pageHeader("Knowledge", "Spaces", "Create, govern, discover, and connect organizational knowledge directly to accountable work.", `<button class="button primary" type="button" data-action="create-page">Create page</button>`)}
+      ${pageHeader("Knowledge", "Spaces", "Create, govern, discover, and connect organizational knowledge directly to accountable work.", `<button class="button" type="button" data-action="show-archived-pages">Archived pages</button>${can("edit-knowledge") ? '<button class="button primary" type="button" data-action="create-page">Create page</button>' : ""}`)}
       <div class="space-grid">${spaces.map((space, index) => `
         <article class="card space-card" tabindex="0" data-space="${space.key}">
           <span class="space-card-icon">${space.key}</span><h2>${esc(space.name)}</h2><p>${esc(space.description)}</p>
@@ -746,7 +1244,7 @@
       `).join("")}</div>
       <div class="section-heading"><div><h2>Recently updated</h2><p>Knowledge changes with linked work and decisions.</p></div></div>
       <div class="data-table-wrap"><table class="data-table"><thead><tr><th>Page</th><th>Space</th><th>Owner</th><th>Version</th><th>Updated</th></tr></thead><tbody>
-        ${DemoState.pages.slice().sort((a, b) => a.updated.localeCompare(b.updated)).slice(0, 7).map((page) => `<tr data-page="${page.id}" tabindex="0"><td class="summary-cell">${esc(page.title)}</td><td>Sentinel Mesh Node</td><td>${personCell(page.owner)}</td><td>v${page.version}</td><td>${esc(page.updated)}</td></tr>`).join("")}
+        ${DemoState.pages.filter((page) => !page.archived).slice().sort((a, b) => a.updated.localeCompare(b.updated)).slice(0, 7).map((page) => `<tr data-page="${page.id}" tabindex="0"><td class="summary-cell">${esc(page.title)}</td><td>Sentinel Mesh Node</td><td>${personCell(page.owner)}</td><td>v${page.version}</td><td>${esc(page.updated)}</td></tr>`).join("")}
       </tbody></table></div>
     </div>`;
   }
@@ -756,17 +1254,20 @@
     const comments = DemoState.pageComments[page.id] || [];
     const versions = DemoState.pageVersions[page.id] || [{ version: page.version, author: page.owner, time: page.updated, note: "Current version" }];
     const isDecisionPage = page.id === "alternate-path";
+    const draft = DemoState.pageDrafts[page.id];
+    const pageActions = `<button class="button" type="button" data-action="page-history" data-page-id="${page.id}">Version history</button>${page.id !== "program-hub" && can("archive-knowledge") ? `<button class="button" type="button" data-action="${page.archived ? "restore-page" : "archive-page"}" data-page-id="${page.id}">${page.archived ? "Restore" : "Archive"}</button>` : ""}${can("edit-knowledge") ? `<button class="button primary" type="button" data-action="edit-page" data-page-id="${page.id}">${draft ? "Resume draft" : "Edit page"}</button>` : ""}`;
     return `<div class="page page-enter">
-      ${pageHeader("Sentinel Mesh Node · Space", page.title, page.summary, `<button class="button" type="button" data-action="page-history">Version history</button><button class="button primary" type="button" data-action="edit-page" data-page-id="${page.id}">Edit page</button>`, '<button type="button" data-action="all-spaces">Spaces</button><span>›</span><span>Sentinel Mesh Node</span>')}
+      ${pageHeader("Sentinel Mesh Node · Space", page.title, page.summary, pageActions, '<button type="button" data-action="all-spaces">Spaces</button><span>›</span><span>Sentinel Mesh Node</span>')}
       <div class="knowledge-layout">
-        <nav class="page-tree" aria-label="Page tree"><div class="page-tree-header"><span>Pages</span><button class="section-link" type="button" data-action="create-page">＋</button></div>
-          ${DemoState.pages.map((item) => `<button class="tree-item depth-${item.depth} ${item.id === page.id ? "active" : ""}" type="button" data-page="${item.id}"><span class="page-ico" aria-hidden="true">${item.depth ? "└" : "▤"}</span><span>${esc(item.title)}</span></button>`).join("")}
+        <nav class="page-tree" aria-label="Page tree"><div class="page-tree-header"><span>Pages</span>${can("edit-knowledge") ? '<button class="section-link" type="button" data-action="create-page">＋</button>' : ""}</div>
+          ${DemoState.pages.filter((item) => !item.archived || item.id === page.id).map((item) => `<button class="tree-item depth-${item.depth} ${item.id === page.id ? "active" : ""}" type="button" data-page="${item.id}"><span class="page-ico" aria-hidden="true">${item.depth ? "└" : "▤"}</span><span>${esc(item.title)}</span></button>`).join("")}
         </nav>
         <article class="knowledge-document">
+          ${page.archived ? '<div class="callout warning" data-page-status="archived"><strong>Archived page</strong><p>This version remains available for traceability but is hidden from the normal page tree and search.</p></div>' : ""}
+          ${draft ? `<div class="callout"><strong>Unpublished local draft</strong><p>${esc(draft.updatedBy)} saved changes ${esc(draft.updated)}. The governed page remains at v${page.version}.</p></div>` : ""}
           <div class="document-toolbar"><span class="document-meta">Owned by ${esc(page.owner)} · Updated ${esc(page.updated)} · v${page.version}</span><span class="tag">Governed page</span></div>
           <h1>${esc(page.title)}</h1>
-          <p class="lead">${esc(page.content)}</p>
-          ${isDecisionPage ? renderDecisionPageBody() : renderGenericPageBody(page)}
+          ${page.bodyHtml ? `<div class="published-page-body">${sanitizeRichText(page.bodyHtml)}</div>` : `<p class="lead">${esc(page.content)}</p>${isDecisionPage ? renderDecisionPageBody() : renderGenericPageBody(page)}`}
           <section style="margin-top:32px;padding-top:20px;border-top:1px solid var(--line)">
             <h2 style="margin-top:0">Comments</h2>
             <ul class="comment-list">${comments.length ? comments.map((comment) => `<li class="comment-item"><div class="comment-head"><strong>${esc(comment.author)}</strong><time>${esc(comment.time)}</time></div><p>${esc(comment.text)}</p></li>`).join("") : '<li class="empty-state" style="padding:18px">No comments yet.</li>'}</ul>
@@ -784,7 +1285,7 @@
           <section class="document-sidebar-section"><h3>Evidence</h3>
             ${["Partner Laboratory Accreditation Letter.pdf", "Control Crosswalk v3.xlsx", "Test Plan SMN-TP-17.pdf"].map((file, index) => `<div class="attachment-row"><span class="attachment-icon">${index === 1 ? "XL" : "PDF"}</span><span>${esc(file)}</span></div>`).join("")}
           </section>
-          <section class="document-sidebar-section"><h3>Version history</h3><ul class="version-list">${versions.slice(0, 5).map((version) => `<li class="version-item"><div class="version-head"><strong>v${version.version} · ${esc(version.author)}</strong><time>${esc(version.time)}</time></div><p>${esc(version.note)}</p></li>`).join("")}</ul></section>
+          <section class="document-sidebar-section"><h3>Version history</h3><ul class="version-list">${versions.slice(0, 5).map((version) => `<li class="version-item" data-version-row="${version.version}"><div class="version-head"><strong>v${version.version} · ${esc(version.author)}</strong><time>${esc(version.time)}</time></div><p>${esc(version.note)}</p><button class="section-link" type="button" data-action="compare-version" data-page-id="${page.id}" data-version="${version.version}">Compare</button></li>`).join("")}</ul></section>
         </aside>
       </div>
     </div>`;
@@ -842,7 +1343,7 @@
     const isPrimary = decision.id === "DEC-014";
     const approved = decision.status === "Approved";
     return `<div class="page page-enter">
-      ${pageHeader("Governed decision", `${decision.id} · ${decision.title}`, decision.rationale, `<button class="button" type="button" data-page="${decision.page}">Open decision page</button>${isPrimary && !approved ? '<button class="button primary" type="button" data-action="confirm-approval">Approve Option B</button>' : ""}`, '<button type="button" data-action="all-decisions">Decisions</button><span>›</span><span>' + esc(decision.id) + '</span>')}
+      ${pageHeader("Governed decision", `${decision.id} · ${decision.title}`, decision.rationale, `<button class="button" type="button" data-page="${decision.page}">Open decision page</button>${isPrimary && !approved && can("approve") ? '<button class="button primary" type="button" data-action="confirm-approval">Approve Option B</button>' : ""}`, '<button type="button" data-action="all-decisions">Decisions</button><span>›</span><span>' + esc(decision.id) + '</span>')}
       <div class="decision-hero">
         <section class="decision-impact ${approved ? "approved" : ""}">
           <div class="eyebrow">${approved ? "Decision recorded" : "Decision required"}</div><h2>${approved ? "Alternate path approved; delivery is recovering." : "One approval changes the delivery outcome."}</h2>
@@ -877,10 +1378,13 @@
   function renderReports() {
     const completed = DemoState.issues.filter((issue) => issue.status === "Done").length;
     const total = DemoState.issues.length;
+    const sprint = activeSprint();
+    const stats = sprintStats(sprint);
+    const sprintPercent = stats.committed ? Math.round(stats.completed / stats.committed * 100) : 0;
     return `<div class="page page-enter">
       ${pageHeader("Insights", "Reports & dashboards", "Analyze delivery, quality, risk, sprint, decision, and knowledge signals from the same governed data.", `<button class="button" type="button" data-action="export-csv">Export CSV</button><button class="button primary" type="button" data-view="leadership">Leadership brief</button>`)}
       <section class="metric-grid">
-        ${metric("Sprint completion", "56%", "23 of 41 story points")}
+        ${metric("Sprint completion", sprintPercent + "%", `${stats.completed} of ${stats.committed} story points · ${esc(sprint.name)}`)}
         ${metric("Flow efficiency", "71%", '<span class="delta good">+6%</span> vs. last sprint', "success")}
         ${metric("Blocked items", blockedCount(), DemoState.decisionApproved ? '<span class="delta good">All decision blockers cleared</span>' : "6 trace to DEC-014", blockedCount() ? "danger" : "success")}
         ${metric("Page-to-work linkage", "94%", "27 of 29 priority pages", "success")}
@@ -888,7 +1392,7 @@
       <div class="report-grid" style="margin-top:14px">
         <section class="card chart-card">
           <div class="chart-header"><div><h2>Sprint burnup</h2><p>Completed versus planned story points</p></div><div class="chart-legend"><span><i class="legend-dot"></i>Complete</span><span><i class="legend-dot secondary"></i>Plan</span></div></div>
-          <div class="bar-chart">${[3, 6, 9, 12, 16, 19, 23].map((value, index) => `<div class="bar-group"><span class="bar" style="height:${value / 41 * 100}%"></span><span class="bar secondary" style="height:${(index + 1) / 7 * 100}%"></span><span class="bar-label">D${index + 1}</span></div>`).join("")}</div>
+          <div class="bar-chart">${[3, 6, 9, 12, 16, 19, stats.completed].map((value, index) => `<div class="bar-group"><span class="bar" style="height:${stats.committed ? value / stats.committed * 100 : 0}%"></span><span class="bar secondary" style="height:${(index + 1) / 7 * 100}%"></span><span class="bar-label">D${index + 1}</span></div>`).join("")}</div>
         </section>
         <section class="card chart-card">
           <div class="chart-header"><div><h2>Work distribution</h2><p>${total} tracked items by state</p></div></div>
@@ -959,7 +1463,7 @@
         ${metric("Manual handoffs removed", "43", "Estimated from configured rules")}
         ${metric("Exceptions", "0", "No failed executions", "success")}
       </section>
-      <section class="panel" style="margin-top:14px"><div class="panel-header"><h2>Automation rules</h2><span class="tag">Session-only simulation</span></div><div>
+      <section class="panel" style="margin-top:14px"><div class="panel-header"><h2>Automation rules</h2><span class="tag">Browser-local simulation</span></div><div>
         ${DemoState.automations.map((rule) => `<div class="automation-rule"><button class="toggle ${rule.enabled ? "on" : ""}" type="button" role="switch" aria-checked="${rule.enabled}" aria-label="Toggle ${esc(rule.name)}" data-action="toggle-rule" data-rule="${rule.id}"></button><span class="rule-copy"><strong>${esc(rule.name)}</strong><span>${esc(rule.detail)}</span></span><span class="rule-stat">${rule.runs} runs · ${esc(rule.last)}</span><span class="tag">${rule.enabled ? "Enabled" : "Paused"}</span></div>`).join("")}
       </div></section>
     </div>`;
@@ -983,10 +1487,10 @@
     const tab = DemoState.adminTab;
     if (tab === "workflows") return `<h2>Workflows</h2><p>Configure accountable states and transitions for project work.</p><div class="workflow"><span class="workflow-node">To Do</span><span class="workflow-arrow">→</span><span class="workflow-node">Ready</span><span class="workflow-arrow">→</span><span class="workflow-node">In Progress</span><span class="workflow-arrow">→</span><span class="workflow-node">In Review</span><span class="workflow-arrow">→</span><span class="workflow-node done">Done</span><span class="workflow-node blocked">Blocked</span></div><div class="config-grid"><div class="config-card"><h3>Delivery workflow</h3><p>7 statuses · 13 transitions · used by 3 projects</p></div><div class="config-card"><h3>Decision workflow</h3><p>Draft → In review → Pending → Approved or Rejected</p></div><div class="config-card"><h3>Knowledge workflow</h3><p>Draft → Review → Governed · version required on publish</p></div><div class="config-card"><h3>Risk workflow</h3><p>Identified → Assessed → Treating → Accepted or Closed</p></div></div>`;
     if (tab === "issue-types") return `<h2>Work item types</h2><p>Define the hierarchy and fields used across delivery projects.</p><div class="config-grid">${["Epic", "Story", "Task", "Bug", "Decision Task", "Risk Action"].map((type, index) => `<div class="config-card"><h3>${esc(type)}</h3><p>${index < 3 ? "Standard delivery type" : "Governed specialized type"} · ${index + 7} configured fields</p></div>`).join("")}</div>`;
-    if (tab === "permissions") return `<h2>Permissions</h2><p>Role-based access model for work, spaces, approvals, administration, and reporting.</p><div class="data-table-wrap"><table class="data-table"><thead><tr><th>Role</th><th>Work</th><th>Knowledge</th><th>Approve</th><th>Administer</th></tr></thead><tbody><tr><td class="summary-cell">Program administrator</td><td>Manage</td><td>Manage</td><td>Yes</td><td>Yes</td></tr><tr><td class="summary-cell">Project lead</td><td>Manage</td><td>Edit</td><td>Configured</td><td>No</td></tr><tr><td class="summary-cell">Contributor</td><td>Edit assigned</td><td>Edit</td><td>No</td><td>No</td></tr><tr><td class="summary-cell">Executive viewer</td><td>Read</td><td>Read</td><td>Assigned</td><td>No</td></tr></tbody></table></div>`;
+    if (tab === "permissions") return `<h2>Permissions</h2><p>Role-based access model for work, spaces, approvals, service management, administration, and reporting.</p><div class="data-table-wrap"><table class="data-table"><thead><tr><th>Role</th><th>Work</th><th>Knowledge</th><th>Service</th><th>Approve</th><th>Administer</th></tr></thead><tbody><tr><td class="summary-cell">Suite administrator</td><td>Manage</td><td>Manage</td><td>Manage</td><td>Yes</td><td>Yes</td></tr><tr><td class="summary-cell">Project lead</td><td>Manage</td><td>Publish</td><td>Read</td><td>Configured</td><td>No</td></tr><tr><td class="summary-cell">Contributor</td><td>Edit assigned</td><td>Draft</td><td>None</td><td>No</td><td>No</td></tr><tr><td class="summary-cell">Executive approver</td><td>Read</td><td>Read</td><td>Assigned</td><td>Assigned</td><td>No</td></tr><tr><td class="summary-cell">Service agent</td><td>Linked read</td><td>Read</td><td>Manage</td><td>No</td><td>No</td></tr><tr><td class="summary-cell">Requester</td><td>None</td><td>Suggested</td><td>Own requests</td><td>No</td><td>No</td></tr></tbody></table></div>`;
     if (tab === "templates") return `<h2>Templates</h2><p>Standardize common project, work, page, and decision structures.</p><div class="config-grid">${["Delivery project", "Sprint planning", "Decision brief", "Integration review", "Risk assessment", "Leadership readout"].map((name) => `<div class="config-card"><h3>${esc(name)}</h3><p>Governed template · Available to Demonstration Portfolio</p></div>`).join("")}</div>`;
     if (tab === "integrations") return `<h2>Integrations</h2><p>Connect identity, source control, communication, and enterprise reporting in production.</p><div class="config-grid">${[["Microsoft Entra ID", "Identity and group synchronization"], ["GitHub", "Commits, pull requests, and deployments"], ["Microsoft Teams", "Notifications and collaborative actions"], ["Power BI", "Governed reporting data"], ["Email", "Inbound requests and notifications"], ["REST API", "Enterprise interoperability"]].map(([name, detail]) => `<div class="config-card"><h3>${esc(name)}</h3><p>${esc(detail)} · Not connected in concept</p></div>`).join("")}</div>`;
-    return `<h2>Audit log</h2><p>Immutable production audit semantics represented here with session-only synthetic events.</p><div class="data-table-wrap"><table class="data-table"><thead><tr><th>Time</th><th>Actor</th><th>Action</th><th>Object</th></tr></thead><tbody>${DemoState.audit.map((event) => `<tr><td>${esc(event.time)}</td><td>${esc(event.actor)}</td><td>${esc(event.action)}</td><td class="summary-cell">${esc(event.object)}</td></tr>`).join("")}</tbody></table></div>`;
+    return `<h2>Audit log</h2><p>Browser-local synthetic events demonstrate the shape of an audit trail. Production immutability would require server-side controls.</p><div class="data-table-wrap"><table class="data-table"><thead><tr><th>Time</th><th>Actor</th><th>Action</th><th>Object</th></tr></thead><tbody>${DemoState.audit.map((event) => `<tr><td>${esc(event.time)}</td><td>${esc(event.actor)}</td><td>${esc(event.action)}</td><td class="summary-cell">${esc(event.object)}</td></tr>`).join("")}</tbody></table></div>`;
   }
 
   function renderMigration() {
@@ -1016,6 +1520,10 @@
     board: renderBoard,
     timeline: renderTimeline,
     releases: renderReleases,
+    filters: renderFilters,
+    portal: renderPortal,
+    queues: renderQueues,
+    slas: renderSlas,
     spaces: renderSpaces,
     decisions: renderDecisions,
     reports: renderReports,
@@ -1065,15 +1573,25 @@
     closeSidebar();
   }
 
+  function renderAccessBoundary(route) {
+    return `<div class="page page-enter" data-permission-boundary>${pageHeader("Role simulation", "This view is outside the current persona", `${actor()} is previewing the ${persona().role} experience. Direct links are checked against that simulated role as well.`, `<button class="button primary" type="button" data-action="return-role-home">Return to ${esc(persona().defaultRoute.replace(/-/g, " "))}</button>`)}<div class="callout warning"><strong>Demonstration boundary</strong><p>This interface preview is useful for requirement discovery, but it is not authentication or enforceable security. A production system would require server-side authorization and identity integration.</p></div><section class="card"><div class="eyebrow">Requested route</div><h2 style="font-size:16px">${esc(route)}</h2><p>Switch personas from the profile menu to preview who would normally use this part of the suite.</p></section></div>`;
+  }
+
   function render() {
     const renderer = VIEW_RENDERERS[DemoState.route] || renderHome;
-    appContent.innerHTML = renderer();
-    document.querySelectorAll(".nav-item").forEach((item) => item.classList.toggle("active", item.dataset.view === DemoState.route));
+    appContent.innerHTML = canViewRoute(DemoState.route) ? renderer() : renderAccessBoundary(DemoState.route);
+    if (persona().key !== "administrator" && canViewRoute(DemoState.route)) appContent.insertAdjacentHTML("afterbegin", `<div class="role-preview-strip" data-role-preview><span><strong>Viewing as ${esc(actor())}</strong> · ${esc(persona().role)} simulation only — not identity or security enforcement.</span><button type="button" data-action="open-role-menu">Change persona</button></div>`);
+    document.querySelectorAll(".nav-item").forEach((item) => {
+      item.classList.toggle("active", item.dataset.view === DemoState.route);
+      item.hidden = !canViewRoute(item.dataset.view);
+    });
+    document.querySelectorAll(".nav-group").forEach((group) => { group.hidden = !group.querySelector(".nav-item:not([hidden])"); });
     updateChrome();
     appContent.scrollTop = 0;
     initializeViewInteractions();
     const deepLink = hashState();
-    if (deepLink.kind === "issue" && issueByKey(deepLink.id)) openIssue(deepLink.id);
+    if (deepLink.kind === "issue" && issueByKey(deepLink.id) && canViewRoute("board")) openIssue(deepLink.id);
+    persistState();
   }
 
   function updateChrome() {
@@ -1084,7 +1602,37 @@
     document.getElementById("notificationPip").hidden = unread === 0;
     document.getElementById("decisionCount").textContent = DemoState.decisions.filter((decision) => decision.status === "Pending").length;
     document.getElementById("decisionCount").hidden = DemoState.decisions.every((decision) => decision.status !== "Pending");
-    document.getElementById("myWorkCount").textContent = DemoState.issues.filter((issue) => ["Lena Ortiz", "Maya Okafor"].includes(issue.assignee) && issue.status !== "Done").length;
+    document.getElementById("myWorkCount").textContent = DemoState.issues.filter((issue) => (issue.assignee === actor() || issue.reporter === actor() || (persona().key === "administrator" && issue.assignee === "Lena Ortiz")) && issue.status !== "Done").length;
+    const person = getPerson(actor());
+    const currentName = document.getElementById("profileCurrentName");
+    const currentRole = document.getElementById("profileCurrentRole");
+    const currentInitials = document.getElementById("profileCurrentInitials");
+    if (currentName) currentName.textContent = actor();
+    if (currentRole) currentRole.textContent = `${persona().role} · simulated persona`;
+    if (currentInitials) currentInitials.textContent = person.initials;
+    document.querySelectorAll("[data-role-option]").forEach((button) => {
+      const active = button.dataset.roleOption === actor();
+      button.classList.toggle("active", active);
+      button.setAttribute("aria-pressed", String(active));
+    });
+    const createButton = document.getElementById("createButton");
+    if (createButton) createButton.hidden = !can("create-work");
+    const projectSwitcher = document.querySelector(".project-switcher");
+    if (projectSwitcher) projectSwitcher.hidden = !canViewRoute("projects");
+    const notificationButton = document.getElementById("notificationButton");
+    if (notificationButton) notificationButton.hidden = !canViewRoute("inbox");
+    const myWorkMenu = profileMenu.querySelector('[data-view="my-work"]');
+    if (myWorkMenu) myWorkMenu.hidden = !canViewRoute("my-work");
+    ["export-state", "import-state"].forEach((action) => {
+      const control = profileMenu.querySelector(`[data-action="${action}"]`);
+      if (control) control.hidden = persona().key !== "administrator";
+    });
+    const searchWrap = globalSearch.closest(".global-search-wrap");
+    if (searchWrap) searchWrap.hidden = persona().key === "customer";
+    if (!storageHealthy) {
+      const savedAt = document.getElementById("profileSavedAt");
+      if (savedAt) savedAt.textContent = "Session only · browser storage unavailable";
+    }
   }
 
   function initializeViewInteractions() {
@@ -1119,8 +1667,10 @@
   }
 
   function openIssue(key) {
+    window.clearTimeout(drawerCloseTimer);
     const issue = issueByKey(key);
     if (!issue) return;
+    if (!canViewRoute("board")) { toast("Project work is outside this persona", "Switch to a project persona to preview linked delivery work."); return; }
     const dependent = DemoState.issues.filter((candidate) => candidate.dependencies.includes(issue.key));
     const linkedPage = pageById(issue.linkedPage);
     detailDrawer.innerHTML = `
@@ -1129,8 +1679,8 @@
         <h2 class="drawer-title">${esc(issue.summary)}</h2>
         <div class="drawer-actions">${statusBadge(issue.status)}${priorityBadge(issue.priority)}<button class="button small" type="button" data-action="copy-link" data-key="${issue.key}">Copy link</button></div>
         <div class="drawer-grid">
-          <div class="field"><label for="drawerStatus">Status</label><select id="drawerStatus" data-issue-status="${issue.key}">${["To Do", "Ready", "In Progress", "In Review", "Blocked", "Done"].map((status) => `<option ${status === issue.status ? "selected" : ""}>${status}</option>`).join("")}</select></div>
-          <div class="field"><label for="drawerAssignee">Assignee</label><select id="drawerAssignee" data-issue-assignee="${issue.key}">${DemoState.people.map((person) => `<option ${person.name === issue.assignee ? "selected" : ""}>${esc(person.name)}</option>`).join("")}</select></div>
+          <div class="field"><label for="drawerStatus">Status</label><select id="drawerStatus" data-issue-status="${issue.key}" ${can("edit-work", issue) ? "" : "disabled"}>${["To Do", "Ready", "In Progress", "In Review", "Blocked", "Done"].map((status) => `<option ${status === issue.status ? "selected" : ""}>${status}</option>`).join("")}</select></div>
+          <div class="field"><label for="drawerAssignee">Assignee</label><select id="drawerAssignee" data-issue-assignee="${issue.key}" ${can("edit-work", issue) ? "" : "disabled"}>${DemoState.people.filter((person) => !["Amina Cole", "Jordan Lee"].includes(person.name)).map((person) => `<option ${person.name === issue.assignee ? "selected" : ""}>${esc(person.name)}</option>`).join("")}</select></div>
           <div class="field"><span class="field-label">Sprint</span><div>${esc(issue.sprint)}</div></div>
           <div class="field"><span class="field-label">Due date</span><div>${esc(issue.due)}</div></div>
           <div class="field"><span class="field-label">Epic</span><div>${esc(issue.epic)}</div></div>
@@ -1144,7 +1694,7 @@
           ${dependent.length ? `<p style="margin-top:12px"><strong>Blocks ${dependent.length} item${dependent.length === 1 ? "" : "s"}:</strong></p><ul class="dependency-list">${dependent.map((item) => `<li><button class="dependency-item" type="button" data-issue="${item.key}"><span class="dependency-key">${item.key}</span><span>${esc(item.summary)}</span>${statusBadge(item.status)}</button></li>`).join("")}</ul>` : ""}
           ${issue.risk ? `<div class="callout warning" style="margin-bottom:0"><strong>${esc(issue.risk)} · ${esc(riskById(issue.risk)?.title || "Linked risk")}</strong><p>Current exposure: ${riskById(issue.risk)?.score || 0}/25. ${esc(riskById(issue.risk)?.response || "")}</p></div>` : ""}
         </section>
-        <section class="drawer-section"><h3>Checklist</h3><ul class="checklist">${issue.checklist.map((item, index) => `<li><input type="checkbox" data-checklist-key="${issue.key}" data-checklist-index="${index}" ${issue.checked[index] ? "checked" : ""}><span>${esc(item)}</span></li>`).join("")}</ul></section>
+        <section class="drawer-section"><h3>Checklist</h3><ul class="checklist">${issue.checklist.map((item, index) => `<li><input type="checkbox" data-checklist-key="${issue.key}" data-checklist-index="${index}" ${issue.checked[index] ? "checked" : ""} ${can("edit-work", issue) ? "" : "disabled"}><span>${esc(item)}</span></li>`).join("")}</ul></section>
         <section class="drawer-section"><h3>Linked knowledge & evidence</h3>
           <button class="linked-object" type="button" data-page="${issue.linkedPage}"><span class="linked-icon">PG</span><span class="linked-copy"><strong>${esc(linkedPage?.title || "Program Hub")}</strong><span>v${linkedPage?.version || 1} · ${esc(linkedPage?.updated || "Today")}</span></span></button>
           <div class="attachment-row"><span class="attachment-icon">PDF</span><span>Supporting Evidence Summary.pdf</span></div>
@@ -1157,17 +1707,74 @@
     `;
     drawerScrim.hidden = false;
     detailDrawer.setAttribute("aria-hidden", "false");
-    requestAnimationFrame(() => detailDrawer.classList.add("open"));
+    drawerOpenFrame = requestAnimationFrame(() => { detailDrawer.classList.add("open"); drawerOpenFrame = null; });
+    document.body.dataset.overlay = "drawer";
+    detailDrawer.querySelector("[data-action='close-drawer']").focus();
+  }
+
+  function openRequestCreate(typeId = "incident") {
+    const selected = DemoState.service.requestTypes.find((type) => type.id === typeId) || DemoState.service.requestTypes[0];
+    openModal(`
+      <div class="modal-header"><h2>${esc(selected.name)}</h2><button class="icon-button" type="button" data-action="close-modal" aria-label="Close">×</button></div>
+      <form data-request-create>
+        <div class="modal-body"><div class="callout" style="margin-top:0"><strong>Portal request</strong><p>Your synthetic request will be saved in this browser and appear immediately in the Unassigned agent queue.</p></div><div class="form-grid">
+          <div class="field"><label for="requestType">Request type</label><select id="requestType" name="type">${DemoState.service.requestTypes.map((type) => `<option value="${type.id}" ${type.id === selected.id ? "selected" : ""}>${esc(type.name)}</option>`).join("")}</select></div>
+          <div class="field"><label for="requestUrgency">Urgency</label><select id="requestUrgency" name="urgency"><option>Normal</option><option>High</option><option>Critical</option></select></div>
+          <div class="field full"><label for="requestSummary">Summary</label><input id="requestSummary" name="summary" required autofocus placeholder="Briefly describe what you need"></div>
+          <div class="field full"><label for="requestDescription">Details</label><textarea id="requestDescription" name="description" required placeholder="Include the outcome, impact, people affected, and any deadline."></textarea></div>
+          <div class="field full"><label for="requestAttachment">Attachment (metadata only)</label><input id="requestAttachment" name="attachment" type="file" disabled><small>No files are uploaded or stored in this concept.</small></div>
+        </div></div>
+        <div class="modal-footer"><button class="button" type="button" data-action="close-modal">Cancel</button><button class="button primary" type="submit">Submit request</button></div>
+      </form>
+    `, true);
+  }
+
+  function openRequest(key) {
+    window.clearTimeout(drawerCloseTimer);
+    const request = requestByKey(key);
+    if (!request) return;
+    const isCustomer = persona().key === "customer";
+    const isAgent = can("manage-service");
+    const comments = request.comments.filter((comment) => isAgent || comment.visibility === "public");
+    const statusOptions = ["Submitted", "Triage", "In progress", "Waiting for customer", "Pending approval", "Resolved", "Closed"];
+    detailDrawer.innerHTML = `
+      <div class="drawer-header"><span class="type-badge tag">Service request</span><span class="drawer-key">${request.key}</span><button class="icon-button" type="button" data-action="close-drawer" aria-label="Close details">×</button></div>
+      <div class="drawer-body">
+        <h2 class="drawer-title">${esc(request.summary)}</h2><div class="drawer-actions">${statusBadge(request.status)}${priorityBadge(request.priority)}${request.status === "Pending approval" && can("approve") ? `<button class="button small" type="button" data-action="approve-request" data-request-key="${request.key}">Approve request</button>` : ""}${isAgent ? `<button class="button small" type="button" data-action="advance-sla-clock" data-minutes="60" data-request-key="${request.key}">Advance clock 1h</button>` : ""}</div>
+        <div class="sla-grid" style="grid-template-columns:repeat(2,minmax(0,1fr));margin:16px 0">${["firstResponse", "resolution"].map((kind) => { const state = slaState(request, kind); return `<article class="sla-card"><div class="sla-card-head"><h3>${kind === "firstResponse" ? "First response" : "Resolution"}</h3><span class="sla-badge ${state === "approaching" ? "at-risk" : state}" data-sla-kind="${kind === "firstResponse" ? "first-response" : "resolution"}" data-sla-state="${state}" data-minutes-remaining="${Math.round((request[kind].goal - request[kind].elapsed) * 60)}">${esc(state)}</span></div><div class="sla-clock">${esc(slaLabel(request, kind))}</div></article>`; }).join("")}</div>
+        <div class="drawer-grid">
+          <div class="field"><span class="field-label">Requester</span><div>${personCell(request.requester)}</div></div><div class="field"><span class="field-label">Organization</span><div>${esc(request.organization)}</div></div>
+          <div class="field"><label for="requestStatus">Status</label><select id="requestStatus" data-request-status="${request.key}" ${isAgent ? "" : "disabled"}>${statusOptions.map((status) => `<option ${request.status === status ? "selected" : ""}>${status}</option>`).join("")}</select></div>
+          <div class="field"><label for="requestAssignee">Assignee</label><select id="requestAssignee" data-request-assignee="${request.key}" ${isAgent ? "" : "disabled"}><option ${request.assignee === "Unassigned" ? "selected" : ""}>Unassigned</option><option ${request.assignee === "Jordan Lee" ? "selected" : ""}>Jordan Lee</option></select></div>
+          <div class="field"><span class="field-label">Request type</span><div>${esc(DemoState.service.requestTypes.find((type) => type.id === request.type)?.name || request.type)}</div></div><div class="field"><span class="field-label">Created</span><div>${esc(request.created)}</div></div>
+        </div>
+        <section class="drawer-section"><h3>Description</h3><p>${esc(request.description)}</p></section>
+        <section class="drawer-section"><h3>Linked work & knowledge</h3><button class="linked-object" type="button" data-issue="${request.linkedIssue}"><span class="linked-icon">WK</span><span class="linked-copy"><strong>${request.linkedIssue}</strong><span>Accountable delivery work</span></span></button><button class="linked-object" type="button" data-page="${request.linkedPage}"><span class="linked-icon">PG</span><span class="linked-copy"><strong>${esc(pageById(request.linkedPage)?.title || "Program Hub")}</strong><span>Supporting guidance</span></span></button></section>
+        <section class="drawer-section"><h3>Activity & conversation</h3><ul class="comment-list">${comments.map((comment) => `<li class="comment-item" data-comment-visibility="${comment.visibility}"><div class="comment-head"><strong>${esc(comment.author)}</strong><time>${esc(comment.time)}</time></div><span class="comment-visibility ${comment.visibility}">${comment.visibility === "internal" ? "Internal note" : "Public reply"}</span><p>${esc(comment.text)}</p></li>`).join("")}</ul>
+          <form class="comment-form" data-request-comment="${request.key}" data-request-comment-form>${isAgent ? '<select name="visibility" aria-label="Comment visibility"><option value="public">Public reply</option><option value="internal">Internal note</option></select>' : '<input type="hidden" name="visibility" value="public">'}<textarea name="comment" required aria-label="Add a request reply" placeholder="${isAgent ? "Reply to the customer or add an internal note" : "Add a reply"}"></textarea><button class="button primary" type="submit">${isAgent ? "Add update" : "Reply"}</button></form>
+        </section>
+      </div>`;
+    drawerScrim.hidden = false;
+    detailDrawer.setAttribute("aria-hidden", "false");
+    drawerOpenFrame = requestAnimationFrame(() => { detailDrawer.classList.add("open"); drawerOpenFrame = null; });
     document.body.dataset.overlay = "drawer";
     detailDrawer.querySelector("[data-action='close-drawer']").focus();
   }
 
   function closeDrawer() {
+    window.clearTimeout(drawerCloseTimer);
+    if (drawerOpenFrame !== null) { cancelAnimationFrame(drawerOpenFrame); drawerOpenFrame = null; }
+    if (!detailDrawer.classList.contains("open") && drawerScrim.hidden) {
+      detailDrawer.innerHTML = "";
+      detailDrawer.setAttribute("aria-hidden", "true");
+      return;
+    }
     detailDrawer.classList.remove("open");
     detailDrawer.setAttribute("aria-hidden", "true");
-    window.setTimeout(() => {
+    drawerCloseTimer = window.setTimeout(() => {
       drawerScrim.hidden = true;
       detailDrawer.innerHTML = "";
+      drawerCloseTimer = null;
     }, 190);
     delete document.body.dataset.overlay;
     if (hashState().kind === "issue") history.replaceState(null, "", "#" + DemoState.route);
@@ -1187,7 +1794,28 @@
     delete document.body.dataset.overlay;
   }
 
+  function openProjectCreate() {
+    if (!requireCapability("create-work", null, "Only project leads and administrators can create a project in this preview.")) return;
+    openModal(`
+      <div class="modal-header"><h2>Create project</h2><button class="icon-button" type="button" data-action="close-modal" aria-label="Close">×</button></div>
+      <form data-create-form="project">
+        <div class="modal-body"><div class="callout" style="margin-top:0"><strong>Browser-local project shell</strong><p>The new synthetic project will appear in the portfolio and remain after refresh. Sentinel Mesh Node remains the fully populated demonstration workspace.</p></div><div class="form-grid">
+          <div class="field"><label for="newProjectKey">Project key</label><input id="newProjectKey" name="key" required autofocus maxlength="10" pattern="[A-Za-z][A-Za-z0-9\\-]{1,9}" placeholder="e.g., ORB"></div>
+          <div class="field"><label for="newProjectOwner">Project lead</label><select id="newProjectOwner" name="owner">${DemoState.people.filter((person) => !["Amina Cole", "Jordan Lee"].includes(person.name)).map((person) => `<option>${esc(person.name)}</option>`).join("")}</select></div>
+          <div class="field full"><label for="newProjectName">Project name</label><input id="newProjectName" name="name" required maxlength="80" placeholder="e.g., Orbital Relay Modernization"></div>
+          <div class="field"><label for="newProjectRelease">Target release</label><input id="newProjectRelease" name="release" required maxlength="40" placeholder="e.g., 15 Dec 2026"></div>
+          <div class="field"><label for="newProjectHealth">Initial health</label><select id="newProjectHealth" name="health"><option>Green</option><option selected>Amber</option><option>Red</option></select></div>
+          <div class="field full"><label for="newProjectDescription">Description</label><textarea id="newProjectDescription" name="description" required maxlength="500" placeholder="Describe the outcome, scope, and operating purpose."></textarea></div>
+        </div></div>
+        <div class="modal-footer"><button class="button" type="button" data-action="close-modal">Cancel</button><button class="button primary" type="submit">Create project</button></div>
+      </form>
+    `, true);
+  }
+
   function openCreateModal(type = "work") {
+    if (type === "work" && !requireCapability("create-work", null, "Only project leads and administrators can create new delivery work in this preview.")) return;
+    if (type === "page" && !requireCapability("edit-knowledge", null, "This persona cannot create knowledge pages.")) return;
+    if (type === "decision" && !requireCapability("create-work", null, "Only project leads and administrators can open new governed decisions.")) return;
     openModal(`
       <div class="modal-header"><h2>Create in the suite</h2><button class="icon-button" type="button" data-action="close-modal" aria-label="Close">×</button></div>
       <div class="modal-body">
@@ -1204,43 +1832,124 @@
   function createForm(type) {
     if (type === "page") return `<form id="createEntityForm" data-create-form="page"><div class="form-grid"><div class="field full"><label for="newPageTitle">Page title</label><input id="newPageTitle" name="title" required autofocus placeholder="e.g., Release readiness checklist"></div><div class="field"><label for="newPageParent">Parent page</label><select id="newPageParent" name="parent"><option value="">No parent</option>${DemoState.pages.map((page) => `<option value="${page.id}">${esc(page.title)}</option>`).join("")}</select></div><div class="field"><label for="newPageOwner">Owner</label><select id="newPageOwner" name="owner">${DemoState.people.map((person) => `<option>${esc(person.name)}</option>`).join("")}</select></div><div class="field full"><label for="newPageSummary">Purpose</label><textarea id="newPageSummary" name="summary" required placeholder="What should this page help the team understand or do?"></textarea></div></div><div class="modal-footer" style="margin:20px -20px -20px"><button class="button" type="button" data-action="close-modal">Cancel</button><button class="button primary" type="submit">Create page</button></div></form>`;
     if (type === "decision") return `<form id="createEntityForm" data-create-form="decision"><div class="form-grid"><div class="field full"><label for="newDecisionTitle">Decision title</label><input id="newDecisionTitle" name="title" required autofocus placeholder="What needs to be decided?"></div><div class="field"><label for="newDecisionOwner">Owner</label><select id="newDecisionOwner" name="owner">${DemoState.people.map((person) => `<option>${esc(person.name)}</option>`).join("")}</select></div><div class="field"><label for="newDecisionApprover">Approver</label><select id="newDecisionApprover" name="approver">${DemoState.people.map((person) => `<option>${esc(person.name)}</option>`).join("")}</select></div><div class="field full"><label for="newDecisionRecommendation">Recommendation</label><textarea id="newDecisionRecommendation" name="recommendation" required placeholder="State the recommended option and why."></textarea></div></div><div class="modal-footer" style="margin:20px -20px -20px"><button class="button" type="button" data-action="close-modal">Cancel</button><button class="button primary" type="submit">Create decision</button></div></form>`;
-    return `<form id="createEntityForm" data-create-form="work"><div class="form-grid"><div class="field"><label for="newIssueType">Type</label><select id="newIssueType" name="type">${["Story", "Task", "Bug", "Decision Task", "Risk Action", "Epic"].map((value) => `<option>${value}</option>`).join("")}</select></div><div class="field"><label for="newIssuePriority">Priority</label><select id="newIssuePriority" name="priority">${["Medium", "High", "Highest", "Low"].map((value) => `<option>${value}</option>`).join("")}</select></div><div class="field full"><label for="newIssueSummary">Summary</label><input id="newIssueSummary" name="summary" required autofocus placeholder="What needs to be done?"></div><div class="field"><label for="newIssueAssignee">Assignee</label><select id="newIssueAssignee" name="assignee">${DemoState.people.map((person) => `<option>${esc(person.name)}</option>`).join("")}</select></div><div class="field"><label for="newIssueSprint">Sprint</label><select id="newIssueSprint" name="sprint"><option>Sprint 12</option><option>Backlog</option></select></div><div class="field full"><label for="newIssueDescription">Description</label><textarea id="newIssueDescription" name="description" placeholder="Add context, outcome, constraints, and acceptance information."></textarea></div></div><div class="modal-footer" style="margin:20px -20px -20px"><button class="button" type="button" data-action="close-modal">Cancel</button><button class="button primary" type="submit">Create work item</button></div></form>`;
+    return `<form id="createEntityForm" data-create-form="work"><div class="form-grid"><div class="field"><label for="newIssueType">Type</label><select id="newIssueType" name="type">${["Story", "Task", "Bug", "Decision Task", "Risk Action", "Epic"].map((value) => `<option>${value}</option>`).join("")}</select></div><div class="field"><label for="newIssuePriority">Priority</label><select id="newIssuePriority" name="priority">${["Medium", "High", "Highest", "Low"].map((value) => `<option>${value}</option>`).join("")}</select></div><div class="field full"><label for="newIssueSummary">Summary</label><input id="newIssueSummary" name="summary" required autofocus placeholder="What needs to be done?"></div><div class="field"><label for="newIssueAssignee">Assignee</label><select id="newIssueAssignee" name="assignee">${DemoState.people.filter((person) => !["Amina Cole", "Jordan Lee"].includes(person.name)).map((person) => `<option>${esc(person.name)}</option>`).join("")}</select></div><div class="field"><label for="newIssueSprint">Sprint</label><select id="newIssueSprint" name="sprint">${DemoState.sprints.filter((sprint) => sprint.status !== "completed").map((sprint) => `<option>${esc(sprint.name)}</option>`).join("")}<option>Backlog</option></select></div><div class="field full"><label for="newIssueDescription">Description</label><textarea id="newIssueDescription" name="description" placeholder="Add context, outcome, constraints, and acceptance information."></textarea></div></div><div class="modal-footer" style="margin:20px -20px -20px"><button class="button" type="button" data-action="close-modal">Cancel</button><button class="button primary" type="submit">Create work item</button></div></form>`;
   }
 
   function openEditPage(pageId) {
     const page = pageById(pageId);
     if (!page) return;
+    if (!requireCapability("edit-knowledge", page, "This persona can read the governed page but cannot edit it.")) return;
+    const draft = DemoState.pageDrafts[page.id];
+    const initialHtml = sanitizeRichText(draft?.bodyHtml || page.bodyHtml || `<p>${esc(page.content)}</p><h2>Current operating guidance</h2><p>Keep knowledge connected to accountable work, evidence, and decisions.</p>`);
     openModal(`
       <div class="modal-header"><h2>Edit page</h2><button class="icon-button" type="button" data-action="close-modal" aria-label="Close">×</button></div>
       <form data-edit-page="${page.id}">
         <div class="modal-body">
-          <div class="field"><label for="editPageTitle">Title</label><input id="editPageTitle" name="title" value="${esc(page.title)}" required></div>
-          <div class="field" style="margin-top:14px"><span class="field-label">Content</span><div class="editor-toolbar" aria-label="Formatting toolbar"><button type="button" data-command="bold" aria-label="Bold">B</button><button type="button" data-command="italic" aria-label="Italic"><em>I</em></button><button type="button" data-command="insertUnorderedList" aria-label="Bulleted list">• List</button><button type="button" data-command="formatBlock" data-value="h2" aria-label="Heading level 2">H2</button><button type="button" data-command="createLink" aria-label="Add link">Link</button></div><div id="pageEditor" class="page-editor" contenteditable="true" role="textbox" aria-multiline="true">${esc(page.content)}<h2>Current operating guidance</h2><p>Keep knowledge connected to accountable work, evidence, and decisions.</p></div></div>
-          <div class="field" style="margin-top:14px"><label for="versionNote">Version note</label><input id="versionNote" name="note" placeholder="Describe what changed" value="Content updated"></div>
+          ${draft ? `<div class="callout" style="margin-top:0"><strong>Draft resumed</strong><p>These browser-local changes have not altered governed version ${page.version}.</p></div>` : ""}
+          <div class="field"><label for="editPageTitle">Title</label><input id="editPageTitle" name="title" value="${esc(draft?.title || page.title)}" required data-page-draft-title></div>
+          <div class="field" style="margin-top:14px"><span class="field-label">Content</span><div class="editor-toolbar" aria-label="Formatting toolbar"><button type="button" data-command="bold" aria-label="Bold">B</button><button type="button" data-command="italic" aria-label="Italic"><em>I</em></button><button type="button" data-command="insertUnorderedList" aria-label="Bulleted list">• List</button><button type="button" data-command="formatBlock" data-value="h2" aria-label="Heading level 2">H2</button><button type="button" data-command="createLink" aria-label="Add link">Link</button></div><div id="pageEditor" class="page-editor" contenteditable="true" role="textbox" aria-multiline="true" data-page-draft-editor="${page.id}">${initialHtml}</div><span class="local-save-status" data-page-draft-state>${draft ? "Draft restored" : "Autosave ready"}</span></div>
+          <div class="field" style="margin-top:14px"><label for="versionNote">Version note</label><input id="versionNote" name="note" placeholder="Describe what changed" value="${esc(draft?.note || "Content updated")}" ${can("publish-knowledge") ? "required" : ""}></div>
         </div>
-        <div class="modal-footer"><button class="button" type="button" data-action="close-modal">Cancel</button><button class="button primary" type="submit">Publish new version</button></div>
+        <div class="modal-footer"><button class="button" type="button" data-action="discard-page-draft" data-page-id="${page.id}" ${draft ? "" : "disabled"}>Discard draft</button><button class="button" type="button" data-action="save-page-draft" data-page-id="${page.id}">Save draft</button>${can("publish-knowledge") ? '<button class="button primary" type="submit">Publish new version</button>' : '<button class="button primary" type="button" disabled title="Contributors can draft but cannot publish">Publish requires page owner</button>'}</div>
       </form>
     `, true);
   }
 
+  function savePageDraft(pageId, silent = false) {
+    const page = pageById(pageId);
+    const editor = document.getElementById("pageEditor");
+    const title = document.getElementById("editPageTitle");
+    if (!page || !editor || !title) return;
+    DemoState.pageDrafts[pageId] = { title: title.value.trim() || page.title, bodyHtml: sanitizeRichText(editor.innerHTML), note: document.getElementById("versionNote")?.value || "Content updated", updated: "Just now", updatedBy: actor() };
+    persistState();
+    const state = document.querySelector("[data-page-draft-state]");
+    if (state) state.textContent = "Draft saved locally · just now";
+    if (!silent) toast("Draft saved", "The governed page remains unchanged until an authorized publisher publishes it.", "success");
+  }
+
+  function showVersionHistory(pageId) {
+    const page = pageById(pageId || DemoState.activePage);
+    if (!page) return;
+    const versions = DemoState.pageVersions[page.id] || [];
+    openModal(`<div class="modal-header"><h2>Version history · ${esc(page.title)}</h2><button class="icon-button" type="button" data-action="close-modal" aria-label="Close">×</button></div><div class="modal-body"><div class="callout" style="margin-top:0"><strong>Stored browser-local snapshots</strong><p>Select two historical versions to compare, or compare one with the current governed page. Production retention and immutability would require server-side controls.</p></div><div class="version-list">${versions.map((version) => `<div class="version-item" data-version-row="${version.version}"><div class="version-head"><label><input type="checkbox" data-compare-version="${version.version}" aria-label="Select version ${version.version} for comparison"> <strong>v${version.version} · ${esc(version.author)}</strong></label><time>${esc(version.time)}</time></div><p>${esc(version.note)}</p><div style="display:flex;gap:8px"><button class="button small" type="button" data-action="compare-version" data-page-id="${page.id}" data-version="${version.version}">Compare with current</button>${can("edit-knowledge") ? `<button class="button small" type="button" data-action="restore-version" data-page-id="${page.id}" data-version="${version.version}">Restore as draft</button>` : ""}</div></div>`).join("")}</div></div><div class="modal-footer"><button class="button" type="button" data-action="close-modal">Close</button><button class="button primary" type="button" data-action="compare-versions" data-page-id="${page.id}">Compare selected</button></div>`, true);
+  }
+
+  function comparePageVersion(pageId, versionNumber) {
+    const page = pageById(pageId);
+    const version = (DemoState.pageVersions[pageId] || []).find((item) => String(item.version) === String(versionNumber));
+    if (!page || !version) return;
+    const currentHtml = sanitizeRichText(page.bodyHtml || `<p>${esc(page.content)}</p>`);
+    const oldHtml = sanitizeRichText(version.bodyHtml || `<p>${esc(version.content || page.content)}</p>`);
+    openModal(`<div class="modal-header"><h2>Compare page versions</h2><button class="icon-button" type="button" data-action="close-modal" aria-label="Close">×</button></div><div class="modal-body"><div class="version-compare" data-version-compare><div class="version-compare-toolbar"><span class="tag">v${version.version} · ${esc(version.note)}</span><span>compared with</span><span class="tag">v${page.version} · Current</span></div><div class="version-compare-grid"><section class="version-column"><div class="version-column-head"><strong>v${version.version}</strong><span>${esc(version.author)}</span></div><div class="version-diff"><div class="diff-line" data-diff="removed"><span class="diff-gutter">−</span><div>${oldHtml}</div></div></div></section><section class="version-column"><div class="version-column-head"><strong>v${page.version}</strong><span>Current governed version</span></div><div class="version-diff"><div class="diff-line" data-diff="added"><span class="diff-gutter">+</span><div>${currentHtml}</div></div></div></section></div></div></div><div class="modal-footer">${can("edit-knowledge") ? `<button class="button" type="button" data-action="restore-version" data-page-id="${page.id}" data-version="${version.version}">Restore v${version.version} as draft</button>` : ""}<button class="button primary" type="button" data-action="page-history" data-page-id="${page.id}">Back to history</button></div>`, true);
+  }
+
+  function compareSelectedVersions(pageId, versionNumbers) {
+    const versions = DemoState.pageVersions[pageId] || [];
+    const selected = versionNumbers.map((number) => versions.find((item) => String(item.version) === String(number))).filter(Boolean).sort((a, b) => Number(a.version) - Number(b.version));
+    if (selected.length !== 2) { toast("Select two versions", "Choose exactly two historical snapshots to compare."); return; }
+    const [older, newer] = selected;
+    const olderHtml = sanitizeRichText(older.bodyHtml || `<p>${esc(older.content || "")}</p>`);
+    const newerHtml = sanitizeRichText(newer.bodyHtml || `<p>${esc(newer.content || "")}</p>`);
+    openModal(`<div class="modal-header"><h2>Compare v${older.version} with v${newer.version}</h2><button class="icon-button" type="button" data-action="close-modal" aria-label="Close">×</button></div><div class="modal-body"><div class="version-compare" data-version-compare><div class="version-compare-toolbar"><span class="tag">v${older.version} · ${esc(older.note)}</span><span>compared with</span><span class="tag">v${newer.version} · ${esc(newer.note)}</span></div><div class="version-compare-grid"><section class="version-column"><div class="version-column-head"><strong>v${older.version}</strong><span>${esc(older.author)}</span></div><div class="version-diff"><div class="diff-line" data-diff="removed"><span class="diff-gutter">−</span><div>${olderHtml}</div></div></div></section><section class="version-column"><div class="version-column-head"><strong>v${newer.version}</strong><span>${esc(newer.author)}</span></div><div class="version-diff"><div class="diff-line" data-diff="added"><span class="diff-gutter">+</span><div>${newerHtml}</div></div></div></section></div></div></div><div class="modal-footer"><button class="button" type="button" data-action="page-history" data-page-id="${pageId}">Back to history</button></div>`, true);
+  }
+
+  function restorePageVersion(pageId, versionNumber) {
+    const page = pageById(pageId);
+    const version = (DemoState.pageVersions[pageId] || []).find((item) => String(item.version) === String(versionNumber));
+    if (!page || !version || !requireCapability("edit-knowledge", page)) return;
+    DemoState.pageDrafts[pageId] = { title: version.title || page.title, bodyHtml: sanitizeRichText(version.bodyHtml || `<p>${esc(version.content || page.content)}</p>`), note: `Restored from v${version.version}`, updated: "Just now", updatedBy: actor() };
+    persistState();
+    openEditPage(pageId);
+    toast(`Version ${version.version} restored as a draft`, "History was not rewritten. Publishing will create the next version.", "success");
+  }
+
+  function showArchivedPages() {
+    const archived = DemoState.pages.filter((page) => page.archived);
+    openModal(`<div class="modal-header"><h2>Archived pages</h2><button class="icon-button" type="button" data-action="close-modal" aria-label="Close">×</button></div><div class="modal-body">${archived.length ? archived.map((page) => `<div class="mapping-row" data-page-status="archived"><strong>${esc(page.title)}</strong><span>${esc(page.archiveReason || "Archived from the space")}</span><span>${esc(page.archivedBy || "Unknown")}</span><button class="button small" type="button" data-action="restore-page" data-page-id="${page.id}">Restore</button></div>`).join("") : '<div class="empty-state"><strong>No archived pages</strong>Archived knowledge remains visible here for administrators and page owners.</div>'}</div><div class="modal-footer"><button class="button" type="button" data-action="close-modal">Close</button></div>`);
+  }
+
+  function openSprintSettings() {
+    const sprint = activeSprint();
+    const stats = sprintStats(sprint);
+    if (!requireCapability("manage-sprint", sprint, "Only project leads and administrators can change sprint settings.")) return;
+    openModal(`<div class="modal-header"><h2>Sprint settings</h2><button class="icon-button" type="button" data-action="close-modal" aria-label="Close">×</button></div><form data-sprint-form data-sprint-id="${sprint.id}"><div class="modal-body"><div class="sprint-config-panel"><div class="sprint-config-head"><div><h2>${esc(sprint.name)} · ${esc(sprint.goal)}</h2><p>${stats.issues.length} work items · ${stats.committed} committed points · ${stats.completed} complete</p></div><span class="tag">${esc(sprint.status)}</span></div><div class="sprint-config-grid"><div class="field"><label for="sprintName">Sprint name</label><input id="sprintName" name="name" value="${esc(sprint.name)}" required></div><div class="field"><label for="sprintCapacity">Capacity</label><input id="sprintCapacity" name="capacity" type="number" min="1" max="200" value="${sprint.capacity}" required></div><div class="field full"><label for="sprintGoal">Goal</label><input id="sprintGoal" name="goal" value="${esc(sprint.goal)}" required></div><div class="sprint-date-grid full"><div class="field"><label for="sprintStart">Start</label><input id="sprintStart" name="start" value="${esc(sprint.start)}" required></div><div class="field"><label for="sprintEnd">End</label><input id="sprintEnd" name="end" value="${esc(sprint.end)}" required></div></div><div class="capacity-summary full"><div class="capacity-stat"><strong>${stats.committed}</strong><span>Committed</span></div><div class="capacity-stat"><strong>${stats.completed}</strong><span>Completed</span></div><div class="capacity-stat"><strong>${Math.max(0, sprint.capacity - stats.committed)}</strong><span>Capacity left</span></div></div></div></div><div class="callout"><strong>Lifecycle behavior</strong><p>Completing this sprint locks its current completed scope and moves every unfinished item to Sprint 13.</p></div></div><div class="modal-footer">${sprint.status === "active" ? `<button class="button" type="button" data-action="complete-sprint" data-sprint-id="${sprint.id}">Complete sprint</button>` : ""}<button class="button" type="button" data-action="close-modal">Cancel</button><button class="button primary" type="submit">Save settings</button></div></form>`, true);
+  }
+
+  function completeSprint(sprintId) {
+    const sprint = DemoState.sprints.find((item) => item.id === sprintId);
+    const future = DemoState.sprints.find((item) => item.status === "future");
+    if (!sprint || !future || !requireCapability("manage-sprint", sprint)) return;
+    const stats = sprintStats(sprint);
+    stats.issues.filter((issue) => issue.status !== "Done").forEach((issue) => { issue.sprint = future.name; });
+    sprint.status = "completed";
+    sprint.committed = stats.committed;
+    sprint.completed = stats.completed;
+    recordAudit("Completed sprint and carried unfinished work to " + future.name, sprint.name);
+    closeModal();
+    render();
+    toast(`${sprint.name} completed`, `${stats.completed} points completed; ${stats.committed - stats.completed} points moved to ${future.name}.`, "success");
+  }
+
   function openApprovalModal() {
+    if (!requireCapability("approve", decisionById("DEC-014"), "Switch to Dana Kessler or the suite administrator to preview the governed approval.")) return;
     const decisionPageVersion = nextPageVersion("alternate-path");
     openModal(`
       <div class="modal-header"><h2>Approve alternate certification path?</h2><button class="icon-button" type="button" data-action="close-modal" aria-label="Close">×</button></div>
-      <div class="modal-body"><div class="callout warning" style="margin-top:0"><strong>Option B · Accredited partner laboratory</strong><p>This controlled update will atomically approve DEC-014, complete SMN-191, release six dependencies, restore the review forecast, reduce RISK-07, publish page v${decisionPageVersion}, notify owners, and refresh the leadership brief.</p></div><p style="color:var(--muted);font-size:9px">Prototype action only. Changes remain in memory until the demo is reset or the page is refreshed.</p></div>
+      <div class="modal-body"><div class="callout warning" style="margin-top:0"><strong>Option B · Accredited partner laboratory</strong><p>This controlled simulation will apply one coordinated cascade: approve DEC-014, complete SMN-191, release six dependencies, restore the review forecast, reduce RISK-07, publish page v${decisionPageVersion}, notify owners, and refresh the leadership brief.</p></div><p style="color:var(--muted);font-size:9px">Synthetic workflow only. The result is stored locally in this browser until the demo is reset.</p></div>
       <div class="modal-footer"><button class="button" type="button" data-action="close-modal">Cancel</button><button class="button primary" type="button" data-action="approve-decision">Approve Option B</button></div>
     `);
   }
 
   function approveDecision() {
     if (DemoState.decisionApproved) return;
+    if (!requireCapability("approve", decisionById("DEC-014"))) return;
     DemoState.decisionApproved = true;
     const decision = decisionById("DEC-014");
     decision.status = "Approved";
     const task = issueByKey("SMN-191");
     task.status = "Done";
     task.checked[2] = true;
-    task.history.unshift("Decision approved by Dana Kessler");
+    task.history.unshift(`Decision approved by ${actor()}`);
     ["SMN-184", "SMN-202", "SMN-205", "SMN-206", "SMN-207", "SMN-214"].forEach((key) => {
       const issue = issueByKey(key);
       issue.status = "Ready";
@@ -1258,9 +1967,9 @@
     const decisionPageVersion = nextPageVersion("alternate-path");
     page.version = decisionPageVersion;
     page.updated = "Just now";
-    DemoState.pageVersions["alternate-path"].unshift({ version: decisionPageVersion, author: "Dana Kessler", time: "Just now", note: "Decision recorded · Option B approved" });
+    DemoState.pageVersions["alternate-path"].unshift({ version: decisionPageVersion, author: actor(), time: "Just now", note: "Decision recorded · Option B approved", title: page.title, content: page.content, bodyHtml: page.bodyHtml || `<p>${esc(page.content)}</p>` });
     const events = [
-      ["Dana Kessler", "Approved decision", "DEC-014"],
+      [actor(), "Approved decision", "DEC-014"],
       ["Automation", "Released six dependent work items", "SMN-191"],
       ["Automation", "Restored milestone forecast", "Integration Readiness Review"],
       ["Automation", "Reduced risk score to 6/25", "RISK-07"],
@@ -1277,10 +1986,11 @@
   function updateIssueStatus(key, status) {
     const issue = issueByKey(key);
     if (!issue || issue.status === status) return;
+    if (!requireCapability("edit-work", issue, "This persona can update only permitted work items.")) return;
     const previous = issue.status;
     issue.status = status;
-    issue.history.unshift(`Status changed from ${previous} to ${status} by Maya Okafor`);
-    DemoState.audit.unshift({ time: "Just now", actor: "Maya Okafor", action: `Changed status from ${previous} to ${status}`, object: key });
+    issue.history.unshift(`Status changed from ${previous} to ${status} by ${actor()}`);
+    recordAudit(`Changed status from ${previous} to ${status}`, key);
     render();
     if (!drawerScrim.hidden) openIssue(key);
     toast(key + " moved to " + status, "Board, reports, and activity updated.", status === "Done" ? "success" : "");
@@ -1308,7 +2018,7 @@
         window.clearInterval(migrationTimer);
         migrationTimer = null;
         DemoState.migrationComplete = true;
-        DemoState.audit.unshift({ time: "Just now", actor: "Maya Okafor", action: "Completed synthetic migration dry run", object: "Jira and Confluence mapping" });
+        recordAudit("Completed synthetic migration dry run", "Jira and Confluence mapping");
         toast("Synthetic dry run complete", "1,722 records mapped; two workflow exceptions require review.", "success");
       }
       render();
@@ -1354,6 +2064,57 @@
     toast("Briefing exported", "A traceable Markdown readout was created locally.", "success");
   }
 
+  function exportState() {
+    const envelope = {
+      product: "Unified Project Management Suite",
+      schemaVersion: SCHEMA_VERSION,
+      exportedAt: new Date().toISOString(),
+      boundary: "Synthetic browser-local demonstration data",
+      state: clone(DemoState)
+    };
+    const blob = new Blob([JSON.stringify(envelope, null, 2)], { type: "application/json;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `unified-suite-demo-${new Date().toISOString().slice(0, 10)}.json`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+    toast("Workspace exported", "Projects, work, pages, service requests, personas, sprints, and filters were written to a local JSON file.", "success");
+  }
+
+  async function previewStateImport(file) {
+    if (!file) return;
+    try {
+      if (file.size > MAX_IMPORT_BYTES) throw new Error("The snapshot exceeds the 5 MB demo import limit.");
+      const parsed = JSON.parse(await file.text());
+      const candidate = parsed.state || parsed;
+      if (parsed.state && parsed.product !== "Unified Project Management Suite") throw new Error("This export was not created by the Unified Project Management Suite demo.");
+      const validationError = validateStateCandidate({ ...candidate, schemaVersion: Number(parsed.schemaVersion || candidate.schemaVersion) });
+      if (validationError) throw new Error(validationError);
+      pendingImportState = normalizeState({ ...candidate, schemaVersion: SCHEMA_VERSION });
+      openModal(`<div class="modal-header"><h2>Import browser-local workspace?</h2><button class="icon-button" type="button" data-action="close-modal" aria-label="Close">×</button></div><div class="modal-body"><div class="callout warning" style="margin-top:0"><strong>Schema-compatible JSON snapshot</strong><p>The current local demo state will be replaced only after you confirm. Required records, identifiers, references, workflow values, and numeric ranges passed the browser-local checks. The file remains on this device.</p></div><div class="migration-result-grid"><div class="migration-result"><strong>${pendingImportState.projects.length}</strong><span>Projects</span></div><div class="migration-result"><strong>${pendingImportState.issues.length}</strong><span>Work items</span></div><div class="migration-result"><strong>${pendingImportState.pages.length}</strong><span>Pages</span></div><div class="migration-result"><strong>${pendingImportState.service.requests.length}</strong><span>Requests</span></div></div></div><div class="modal-footer"><button class="button" type="button" data-action="close-modal">Cancel</button><button class="button primary" type="button" data-action="apply-import">Import snapshot</button></div>`);
+    } catch (error) {
+      pendingImportState = null;
+      toast("Import rejected", `No data changed. ${error.message}`, "danger");
+    } finally {
+      const input = document.querySelector("[data-state-import]");
+      if (input) input.value = "";
+    }
+  }
+
+  function applyStateImport() {
+    if (!pendingImportState) return;
+    DemoState = pendingImportState;
+    pendingImportState = null;
+    closeModal();
+    DemoState.route = persona().defaultRoute;
+    history.replaceState(null, "", "#" + DemoState.route);
+    render();
+    toast("Workspace imported", "The validated synthetic snapshot is active and saved in this browser.", "success");
+  }
+
   function performSearch(query) {
     const q = query.trim().toLowerCase();
     if (!q) {
@@ -1361,17 +2122,22 @@
       searchResults.innerHTML = "";
       return;
     }
-    const issueMatches = DemoState.issues.filter((issue) => `${issue.key} ${issue.summary} ${issue.assignee} ${issue.type}`.toLowerCase().includes(q)).slice(0, 5);
-    const pageMatches = DemoState.pages.filter((page) => `${page.title} ${page.summary} ${page.owner}`.toLowerCase().includes(q)).slice(0, 5);
-    const decisionMatches = DemoState.decisions.filter((decision) => `${decision.id} ${decision.title} ${decision.rationale}`.toLowerCase().includes(q)).slice(0, 4);
-    const riskMatches = DemoState.risks.filter((risk) => `${risk.id} ${risk.title} ${risk.owner} ${risk.response}`.toLowerCase().includes(q)).slice(0, 4);
-    const peopleMatches = DemoState.people.filter((person) => `${person.name} ${person.role} ${person.team}`.toLowerCase().includes(q)).slice(0, 4);
+    if (persona().key === "customer") return;
+    const issueMatches = canViewRoute("board") ? DemoState.issues.filter((issue) => `${issue.key} ${issue.summary} ${issue.assignee} ${issue.type}`.toLowerCase().includes(q)).slice(0, 5) : [];
+    const pageMatches = canViewRoute("spaces") ? DemoState.pages.filter((page) => !page.archived && `${page.title} ${page.summary} ${page.owner}`.toLowerCase().includes(q)).slice(0, 5) : [];
+    const decisionMatches = canViewRoute("decisions") ? DemoState.decisions.filter((decision) => `${decision.id} ${decision.title} ${decision.rationale}`.toLowerCase().includes(q)).slice(0, 4) : [];
+    const riskMatches = canViewRoute("reports") ? DemoState.risks.filter((risk) => `${risk.id} ${risk.title} ${risk.owner} ${risk.response}`.toLowerCase().includes(q)).slice(0, 4) : [];
+    const peopleMatches = canViewRoute("people") ? DemoState.people.filter((person) => `${person.name} ${person.role} ${person.team}`.toLowerCase().includes(q)).slice(0, 4) : [];
+    const requestMatches = canViewRoute("queues") ? DemoState.service.requests.filter((request) => `${request.key} ${request.summary} ${request.requester} ${request.assignee}`.toLowerCase().includes(q)).slice(0, 5) : [];
+    const filterMatches = canViewRoute("filters") ? DemoState.savedFilters.filter((filter) => `${filter.name} ${filter.query} ${filter.owner}`.toLowerCase().includes(q)).slice(0, 4) : [];
     const groups = [];
     if (issueMatches.length) groups.push(searchGroup("Work", issueMatches.map((issue) => searchResult("WK", issue.summary, issue.key + " · " + issue.status, "issue", issue.key))));
     if (pageMatches.length) groups.push(searchGroup("Knowledge", pageMatches.map((page) => searchResult("PG", page.title, "Sentinel Mesh Node · v" + page.version, "page", page.id))));
     if (decisionMatches.length) groups.push(searchGroup("Decisions", decisionMatches.map((decision) => searchResult("DE", decision.title, decision.id + " · " + decision.status, "decision", decision.id))));
     if (riskMatches.length) groups.push(searchGroup("Risks", riskMatches.map((risk) => searchResult("RK", risk.title, risk.id + " · " + risk.score + "/25", "risk", risk.id))));
     if (peopleMatches.length) groups.push(searchGroup("People", peopleMatches.map((person) => searchResult(person.initials, person.name, person.role, "person", person.name))));
+    if (requestMatches.length) groups.push(searchGroup("Service requests", requestMatches.map((request) => searchResult("SR", request.summary, request.key + " · " + request.status, "request", request.key))));
+    if (filterMatches.length) groups.push(searchGroup("Saved filters", filterMatches.map((filter) => searchResult("FL", filter.name, filter.scope + " · " + filter.owner, "filter", filter.id))));
     searchResults.innerHTML = groups.length ? groups.join("") : '<div class="empty-state" style="padding:24px"><strong>No matches</strong>Try a key, title, person, risk, or decision.</div>';
     searchResults.hidden = false;
   }
@@ -1411,7 +2177,9 @@
 
   function resetDemo() {
     if (migrationTimer) window.clearInterval(migrationTimer);
-    DemoState = clone(FIXTURE);
+    window.clearTimeout(draftTimer);
+    try { window.localStorage.removeItem(STORAGE_KEY); } catch (_) { storageHealthy = false; }
+    DemoState = normalizeState(clone(FIXTURE));
     closeModal();
     closeDrawer();
     profileMenu.hidden = true;
@@ -1419,7 +2187,7 @@
     searchResults.hidden = true;
     history.replaceState(null, "", "#home");
     render();
-    toast("Demo reset", "All synthetic session changes were cleared.", "success");
+    toast("Demo reset", "All browser-local changes were cleared and the synthetic storyline was restored.", "success");
   }
 
   function openSidebar() {
@@ -1435,6 +2203,25 @@
   }
 
   document.addEventListener("click", (event) => {
+    const roleTarget = event.target.closest("[data-role-option]");
+    if (roleTarget) {
+      event.preventDefault();
+      const name = roleTarget.dataset.roleOption;
+      if (!PERSONAS[name]) return;
+      DemoState.currentUser = name;
+      DemoState.route = PERSONAS[name].defaultRoute;
+      DemoState.activePage = null;
+      DemoState.activeDecision = null;
+      DemoState.activeRequest = null;
+      closeModal();
+      closeDrawer();
+      profileMenu.hidden = true;
+      history.replaceState(null, "", "#" + DemoState.route);
+      render();
+      toast(`Viewing as ${name}`, `${PERSONAS[name].role} simulation active. This is not authentication or security enforcement.`, "success");
+      return;
+    }
+
     const viewTarget = event.target.closest("[data-view]");
     if (viewTarget) {
       event.preventDefault();
@@ -1473,9 +2260,13 @@
       event.preventDefault();
       const action = actionTarget.dataset.action;
       if (action === "open-create") openCreateModal("work");
+      else if (action === "open-create-project") openProjectCreate();
       else if (action === "create-page") openCreateModal("page");
       else if (action === "create-decision") openCreateModal("decision");
+      else if (action === "open-request-create") openRequestCreate(actionTarget.dataset.requestType);
+      else if (action === "show-help-article") { const page = pageById(actionTarget.dataset.pageId); if (!page) return; openModal(`<div class="modal-header"><h2>${esc(page.title)}</h2><button class="icon-button" type="button" data-action="close-modal" aria-label="Close">×</button></div><div class="modal-body"><div class="eyebrow">Suggested knowledge</div><p class="lead">${esc(page.summary)}</p><div class="published-page-body">${sanitizeRichText(page.bodyHtml || `<p>${esc(page.content)}</p>`)}</div><div class="callout"><strong>Did this solve the request?</strong><p>If not, return to the portal and submit the appropriate request type.</p></div></div><div class="modal-footer"><button class="button primary" type="button" data-action="close-modal">Back to portal</button></div>`, true); }
       else if (action === "change-create-type") openCreateModal(actionTarget.dataset.createType);
+      else if (action === "open-role-menu") { profileMenu.hidden = false; document.getElementById("profileButton").setAttribute("aria-expanded", "true"); }
       else if (action === "close-modal") closeModal();
       else if (action === "close-drawer") closeDrawer();
       else if (action === "confirm-approval") openApprovalModal();
@@ -1485,10 +2276,42 @@
       else if (action === "all-decisions") { DemoState.activeDecision = null; render(); }
       else if (action === "open-projects") { DemoState.projectMode = "overview"; navigate("projects", { preserveProject: true }); }
       else if (action === "move-card") moveCard(actionTarget.dataset.key, actionTarget.dataset.direction);
-      else if (action === "move-to-sprint") { const issue = issueByKey(actionTarget.dataset.key); issue.sprint = "Sprint 12"; issue.status = "Ready"; render(); toast(issue.key + " added to Sprint 12", "Sprint scope updated."); }
+      else if (action === "move-to-sprint") { const issue = issueByKey(actionTarget.dataset.key); const sprint = activeSprint(); if (!requireCapability("manage-sprint", sprint)) return; issue.sprint = sprint.name; issue.status = "Ready"; recordAudit("Added work to " + sprint.name, issue.key); render(); toast(issue.key + " added to " + sprint.name, "Sprint scope and capacity updated."); }
       else if (action === "clear-filters") { DemoState.issueFilter = { text: "", status: "All", assignee: "All" }; render(); }
-      else if (action === "save-view") toast("View saved for this session", "Production would save personal and shared filters.", "success");
-      else if (action === "start-sprint") toast("Sprint settings opened", "Dates, goal, and capacity are already configured in this concept.");
+      else if (action === "save-view") {
+        const clauses = ["project = SMN"];
+        if (DemoState.issueFilter.text.trim()) clauses.push(`text ~ "${DemoState.issueFilter.text.trim().replace(/["\\]/g, "")}"`);
+        if (DemoState.issueFilter.status !== "All") clauses.push(`status = "${DemoState.issueFilter.status}"`);
+        if (DemoState.issueFilter.assignee !== "All") clauses.push(`assignee = "${DemoState.issueFilter.assignee}"`);
+        DemoState.filterQuery = clauses.join(" AND ") + " ORDER BY priority DESC";
+        DemoState.activeSavedFilter = null;
+        navigate("filters");
+      }
+      else if (action === "start-sprint") openSprintSettings();
+      else if (action === "complete-sprint") completeSprint(actionTarget.dataset.sprintId);
+      else if (action === "run-filter") { const query = document.getElementById("advancedQuery"); if (query) DemoState.filterQuery = query.value.trim(); DemoState.activeSavedFilter = null; render(); }
+      else if (action === "reset-query") { DemoState.filterQuery = "project = SMN ORDER BY priority DESC"; DemoState.activeSavedFilter = null; render(); }
+      else if (action === "apply-saved-filter") { const filter = DemoState.savedFilters.find((item) => item.id === actionTarget.dataset.filterId); if (!filter) return; if (filter.kind === "service") { DemoState.serviceQueue = "breached"; navigate("queues"); } else { DemoState.activeSavedFilter = filter.id; DemoState.filterQuery = filter.query; render(); } }
+      else if (action === "delete-filter") { const filter = DemoState.savedFilters.find((item) => item.id === actionTarget.dataset.filterId); if (!filter) return; if (persona().key !== "administrator" && filter.owner !== actor()) { toast("Filter is read-only", "Only its owner or a suite administrator can delete this shared filter."); return; } DemoState.savedFilters = DemoState.savedFilters.filter((item) => item.id !== filter.id); if (DemoState.activeSavedFilter === filter.id) DemoState.activeSavedFilter = null; render(); toast("Saved filter deleted", filter.name); }
+      else if (action === "select-queue") { DemoState.serviceQueue = actionTarget.dataset.queueId; render(); }
+      else if (action === "approve-request") { const request = requestByKey(actionTarget.dataset.requestKey); if (!request || !requireCapability("approve", request)) return; request.approved = true; request.status = "Triage"; recordAudit("Approved service request", request.key); render(); openRequest(request.key); toast(request.key + " approved", "The approval gate is cleared and the resolution clock resumed.", "success"); }
+      else if (["advance-clock", "advance-sla-clock"].includes(action)) {
+        if (!requireCapability("manage-service", null, "Only the service agent and suite administrator can change the deterministic SLA clock.")) return;
+        const requestKey = actionTarget.dataset.requestKey;
+        DemoState.service.elapsedHours += 1;
+        DemoState.service.requests.forEach((request) => {
+          if (!request.firstResponse.met && !["Waiting for customer", "Pending approval", "Resolved", "Closed"].includes(request.status)) request.firstResponse.elapsed += 1;
+          if (!request.resolution.met && !["Waiting for customer", "Pending approval", "Resolved", "Closed"].includes(request.status)) request.resolution.elapsed += 1;
+        });
+        const totalHour = 10 + DemoState.service.elapsedHours;
+        DemoState.service.demoNow = `${24 + Math.floor(totalHour / 24)} Aug 2026 · ${String(totalHour % 24).padStart(2, "0")}:00`;
+        recordAudit("Advanced deterministic service clock by one hour", "Service management");
+        window.setTimeout(() => {
+          render();
+          if (requestKey) openRequest(requestKey);
+          toast("Demo clock advanced", "Queues and SLA states recalculated from the synthetic clock.", "success");
+        }, 0);
+      }
       else if (action === "set-timeline-scale") { DemoState.timelineScale = actionTarget.dataset.scale; render(); toast("Timeline scale updated", DemoState.timelineScale === "months" ? "Monthly planning view selected." : "Weekly planning view selected."); }
       else if (action === "export-timeline") toast("Timeline export prepared", "Production would generate a PDF or spreadsheet from governed schedule data.", "success");
       else if (action === "release-notes") toast("Release notes generated", "The concept would assemble scope, decisions, fixes, evidence, and known risks from governed records.", "success");
@@ -1497,8 +2320,19 @@
       else if (action === "invite-people") toast("Invitation workflow represented", "No message was sent; this concept has no identity service or outbound communication.");
       else if (action === "export-csv") toast("Report export prepared", "Synthetic report data is ready for local export.", "success");
       else if (action === "export-brief") exportBrief();
+      else if (action === "export-state") { if (persona().key !== "administrator") { toast("Administrator action", "Switch to Maya Okafor to export the complete demo workspace."); return; } exportState(); }
+      else if (action === "import-state") { if (persona().key !== "administrator") { toast("Administrator action", "Switch to Maya Okafor to import a complete demo workspace."); return; } document.querySelector("[data-state-import]")?.click(); }
+      else if (action === "apply-import") applyStateImport();
       else if (action === "edit-page") openEditPage(actionTarget.dataset.pageId);
-      else if (action === "page-history") toast("Version history is visible", "See the page information panel for governed versions.");
+      else if (action === "page-history") showVersionHistory(actionTarget.dataset.pageId || DemoState.activePage);
+      else if (action === "compare-version") comparePageVersion(actionTarget.dataset.pageId, actionTarget.dataset.version);
+      else if (action === "compare-versions") compareSelectedVersions(actionTarget.dataset.pageId, [...document.querySelectorAll("[data-compare-version]:checked")].map((input) => input.dataset.compareVersion));
+      else if (action === "restore-version") restorePageVersion(actionTarget.dataset.pageId, actionTarget.dataset.version);
+      else if (action === "save-page-draft") savePageDraft(actionTarget.dataset.pageId);
+      else if (action === "discard-page-draft") { delete DemoState.pageDrafts[actionTarget.dataset.pageId]; closeModal(); render(); toast("Draft discarded", "The governed page was not changed."); }
+      else if (action === "show-archived-pages") showArchivedPages();
+      else if (action === "archive-page") { const page = pageById(actionTarget.dataset.pageId); if (!page || page.id === "program-hub" || !requireCapability("archive-knowledge", page)) return; page.archived = true; page.archivedBy = actor(); page.archivedAt = "Just now"; page.archiveReason = "No longer current; retained for traceability"; recordAudit("Archived knowledge page", page.title); render(); toast("Page archived", "It is hidden from normal navigation but remains restorable.", "success"); }
+      else if (action === "restore-page") { const page = pageById(actionTarget.dataset.pageId); if (!page || !requireCapability("archive-knowledge", page)) return; page.archived = false; recordAudit("Restored archived knowledge page", page.title); closeModal(); DemoState.activePage = page.id; navigate("spaces", { preservePage: true }); toast("Page restored", page.title + " is back in the page tree.", "success"); }
       else if (action === "mark-all-read") { DemoState.notifications.forEach((item) => { item.unread = false; }); render(); }
       else if (action === "toggle-rule") {
         const rule = DemoState.automations.find((item) => item.id === actionTarget.dataset.rule);
@@ -1514,6 +2348,7 @@
         if (navigator.clipboard) navigator.clipboard.writeText(value).catch(() => {});
         toast("Link copied", value, "success");
       }
+      else if (action === "return-role-home") navigate(persona().defaultRoute);
       else if (action === "reset-demo") resetDemo();
       return;
     }
@@ -1522,6 +2357,12 @@
     if (issueTarget) {
       event.preventDefault();
       openIssue(issueTarget.dataset.issue);
+      return;
+    }
+    const requestTarget = event.target.closest("[data-request-key]");
+    if (requestTarget) {
+      event.preventDefault();
+      openRequest(requestTarget.dataset.requestKey);
       return;
     }
     const pageTarget = event.target.closest("[data-page]");
@@ -1588,6 +2429,8 @@
       else if (kind === "page") { DemoState.activePage = id; navigate("spaces", { preservePage: true }); }
       else if (kind === "decision") { DemoState.activeDecision = id; navigate("decisions", { preserveDecision: true }); }
       else if (kind === "risk") showRisk(id);
+      else if (kind === "request") { navigate("queues"); openRequest(id); }
+      else if (kind === "filter") { const filter = DemoState.savedFilters.find((item) => item.id === id); if (filter?.kind === "service") { DemoState.serviceQueue = "breached"; navigate("queues"); } else if (filter) { DemoState.activeSavedFilter = filter.id; DemoState.filterQuery = filter.query; navigate("filters"); } }
       else showPerson(id);
       return;
     }
@@ -1599,37 +2442,108 @@
   });
 
   document.addEventListener("change", (event) => {
+    if (event.target.matches("[data-state-import]")) {
+      if (persona().key !== "administrator") { event.target.value = ""; toast("Administrator action", "This persona cannot replace the complete demo workspace."); return; }
+      previewStateImport(event.target.files?.[0]);
+      return;
+    }
     const filter = event.target.dataset.filter;
     if (filter) {
       DemoState.issueFilter[filter] = event.target.value;
-      render();
+      window.setTimeout(render, 0);
       return;
     }
     if (event.target.dataset.issueStatus) {
-      updateIssueStatus(event.target.dataset.issueStatus, event.target.value);
+      const key = event.target.dataset.issueStatus;
+      const status = event.target.value;
+      window.setTimeout(() => updateIssueStatus(key, status), 0);
       return;
     }
     if (event.target.dataset.issueAssignee) {
       const issue = issueByKey(event.target.dataset.issueAssignee);
+      if (!requireCapability("edit-work", issue, "This persona cannot reassign this work item.")) { window.setTimeout(() => openIssue(issue.key), 0); return; }
       const previous = issue.assignee;
       issue.assignee = event.target.value;
       issue.history.unshift(`Reassigned from ${previous} to ${issue.assignee}`);
-      DemoState.audit.unshift({ time: "Just now", actor: "Maya Okafor", action: "Reassigned work", object: issue.key });
-      render();
-      openIssue(issue.key);
-      toast(issue.key + " reassigned", issue.assignee + " is now accountable.", "success");
+      recordAudit("Reassigned work", issue.key);
+      window.setTimeout(() => {
+        render();
+        openIssue(issue.key);
+        toast(issue.key + " reassigned", issue.assignee + " is now accountable.", "success");
+      }, 0);
       return;
     }
     if (event.target.dataset.checklistKey) {
       const issue = issueByKey(event.target.dataset.checklistKey);
+      if (!requireCapability("edit-work", issue, "This persona cannot change this checklist.")) { window.setTimeout(() => openIssue(issue.key), 0); return; }
       issue.checked[Number(event.target.dataset.checklistIndex)] = event.target.checked;
-      issue.history.unshift("Checklist updated by Maya Okafor");
+      issue.history.unshift(`Checklist updated by ${actor()}`);
       toast("Checklist updated", issue.key + " activity recorded.");
+      persistState();
+      return;
+    }
+    if (event.target.dataset.requestAssignee) {
+      const request = requestByKey(event.target.dataset.requestAssignee);
+      if (!request || !requireCapability("manage-service", request)) { if (request) window.setTimeout(() => openRequest(request.key), 0); return; }
+      const previous = request.assignee;
+      request.assignee = event.target.value;
+      if (request.status === "Submitted" && request.assignee !== "Unassigned") request.status = "Triage";
+      recordAudit(`Reassigned service request from ${previous} to ${request.assignee}`, request.key);
+      window.setTimeout(() => {
+        render();
+        openRequest(request.key);
+        toast(request.key + " assigned", request.assignee + " now owns the request.", "success");
+      }, 0);
+      return;
+    }
+    if (event.target.dataset.requestStatus) {
+      const request = requestByKey(event.target.dataset.requestStatus);
+      if (!request || !requireCapability("manage-service", request)) { if (request) window.setTimeout(() => openRequest(request.key), 0); return; }
+      const next = event.target.value;
+      if (request.status === "Pending approval" && !request.approved && !["Pending approval", "Closed"].includes(next)) {
+        toast("Approval gate is still active", "This access or change request cannot proceed until its assigned approval is recorded.");
+        window.setTimeout(() => openRequest(request.key), 0);
+        return;
+      }
+      const previous = request.status;
+      request.status = next;
+      if (["Resolved", "Closed"].includes(next)) {
+        request.resolutionSummary = request.resolutionSummary || "Service outcome confirmed and request completed in the synthetic workflow.";
+        request.resolution.met = true;
+      }
+      recordAudit(`Changed request status from ${previous} to ${next}`, request.key);
+      window.setTimeout(() => {
+        render();
+        openRequest(request.key);
+        toast(request.key + " moved to " + next, "Queues and SLA states recalculated.", next === "Resolved" ? "success" : "");
+      }, 0);
+      return;
     }
   });
 
   document.addEventListener("input", (event) => {
     if (event.target === globalSearch) performSearch(globalSearch.value);
+    if (event.target.matches("[data-portal-search]")) {
+      const results = document.querySelector("[data-portal-results]");
+      const query = event.target.value.trim().toLowerCase();
+      if (!results || !query) { if (results) { results.hidden = true; results.innerHTML = ""; } }
+      else {
+        const matches = DemoState.pages.filter((page) => !page.archived && `${page.title} ${page.summary} ${page.content}`.toLowerCase().includes(query)).slice(0, 4);
+        results.innerHTML = matches.length ? matches.map((page) => `<button type="button" data-action="show-help-article" data-page-id="${page.id}"><strong>${esc(page.title)}</strong><span>${esc(page.summary)}</span></button>`).join("") : '<div class="empty-state">No suggested knowledge found.</div>';
+        results.hidden = false;
+      }
+    }
+    if (event.target.matches("[data-page-draft-editor], [data-page-draft-title], #versionNote")) {
+      const form = event.target.closest("[data-edit-page]");
+      const state = document.querySelector("[data-page-draft-state]");
+      if (state) { state.textContent = "Saving draft…"; state.classList.add("saving"); }
+      window.clearTimeout(draftTimer);
+      draftTimer = window.setTimeout(() => {
+        if (form) savePageDraft(form.dataset.editPage, true);
+        const currentState = document.querySelector("[data-page-draft-state]");
+        if (currentState) currentState.classList.remove("saving");
+      }, 500);
+    }
     if (event.target.dataset.filter === "text") {
       DemoState.issueFilter.text = event.target.value;
       const active = document.activeElement;
@@ -1647,14 +2561,84 @@
 
   document.addEventListener("submit", (event) => {
     const form = event.target;
+    if (form.matches("[data-save-filter-form]")) {
+      event.preventDefault();
+      const data = Object.fromEntries(new FormData(form).entries());
+      const query = document.getElementById("advancedQuery")?.value.trim() || DemoState.filterQuery;
+      const result = runIssueQuery(query);
+      if (result.error) { toast("Filter not saved", result.error, "danger"); return; }
+      let filter = DemoState.savedFilters.find((item) => item.id === DemoState.activeSavedFilter && item.kind !== "service");
+      if (filter) Object.assign(filter, { name: data.name.trim(), scope: data.scope, query });
+      else {
+        const next = Math.max(100, ...DemoState.savedFilters.map((item) => Number(String(item.id).split("-")[1]) || 0)) + 1;
+        filter = { id: "filter-" + next, name: data.name.trim(), owner: actor(), scope: data.scope, starred: false, query };
+        DemoState.savedFilters.push(filter);
+      }
+      DemoState.activeSavedFilter = filter.id;
+      DemoState.filterQuery = query;
+      recordAudit("Saved advanced work filter", filter.name);
+      render();
+      toast("Filter saved", `${filter.name} is available after refresh.`, "success");
+      return;
+    }
+    if (form.matches("[data-sprint-form]")) {
+      event.preventDefault();
+      const sprint = DemoState.sprints.find((item) => item.id === form.dataset.sprintId);
+      if (!sprint || !requireCapability("manage-sprint", sprint)) return;
+      const data = Object.fromEntries(new FormData(form).entries());
+      const stats = sprintStats(sprint);
+      const capacity = Number(data.capacity);
+      if (capacity < stats.committed) { toast("Capacity is below committed scope", `Enter at least ${stats.committed} points or move work out of the sprint.`, "danger"); return; }
+      const previousName = sprint.name;
+      Object.assign(sprint, { name: data.name.trim(), goal: data.goal.trim(), start: data.start.trim(), end: data.end.trim(), capacity });
+      if (previousName !== sprint.name) DemoState.issues.filter((issue) => issue.sprint === previousName).forEach((issue) => { issue.sprint = sprint.name; });
+      recordAudit("Updated sprint settings", sprint.name);
+      closeModal();
+      render();
+      toast("Sprint settings saved", `${sprint.name} now has ${capacity} points of capacity.`, "success");
+      return;
+    }
+    if (form.matches("[data-request-create]")) {
+      event.preventDefault();
+      if (!requireCapability("request-service", null, "Switch to the requester persona to submit through the portal.")) return;
+      const data = Object.fromEntries(new FormData(form).entries());
+      const next = Math.max(1000, ...DemoState.service.requests.map((request) => Number(request.key.split("-")[1]) || 0)) + 1;
+      const key = "HELP-" + next;
+      const priority = data.urgency === "Critical" ? "Highest" : data.urgency === "High" ? "High" : "Medium";
+      DemoState.service.requests.unshift({ key, summary: data.summary.trim(), type: data.type, status: "Submitted", priority, requester: actor(), organization: "Mission Operations", assignee: "Unassigned", created: "Just now", description: data.description.trim(), firstResponse: { goal: priority === "Highest" ? 1 : 4, elapsed: 0, met: false }, resolution: { goal: priority === "Highest" ? 8 : 24, elapsed: 0, met: false }, participants: [], linkedIssue: "SMN-100", linkedPage: "program-hub", comments: [{ author: actor(), time: "Just now", visibility: "public", text: "Request submitted through the unified service portal." }] });
+      recordAudit("Submitted service request", key);
+      closeModal();
+      DemoState.route = "portal";
+      history.replaceState(null, "", "#portal");
+      render();
+      toast(`${key} submitted`, "The request is now visible in the Unassigned agent queue.", "success");
+      return;
+    }
+    if (form.dataset.requestComment) {
+      event.preventDefault();
+      const data = Object.fromEntries(new FormData(form).entries());
+      const request = requestByKey(form.dataset.requestComment);
+      const text = String(data.comment || "").trim();
+      const visibility = can("manage-service") && data.visibility === "internal" ? "internal" : "public";
+      if (!request || !text) return;
+      request.comments.push({ author: actor(), time: "Just now", visibility, text });
+      if (visibility === "public" && !request.firstResponse.met && actor() !== request.requester) request.firstResponse.met = true;
+      recordAudit(visibility === "internal" ? "Added internal service note" : "Added public service reply", request.key);
+      render();
+      openRequest(request.key);
+      toast(visibility === "internal" ? "Internal note added" : "Public reply added", visibility === "internal" ? "Customers cannot see this note; the first-response clock continues." : "The requester can see this update.", "success");
+      return;
+    }
     if (form.dataset.issueComment) {
       event.preventDefault();
       const text = new FormData(form).get("comment").trim();
       if (!text) return;
       const issue = issueByKey(form.dataset.issueComment);
-      issue.comments.unshift({ author: "Maya Okafor", time: "Just now", text });
-      issue.history.unshift("Comment added by Maya Okafor");
+      issue.comments.unshift({ author: actor(), time: "Just now", text });
+      issue.history.unshift(`Comment added by ${actor()}`);
+      recordAudit("Commented on work item", issue.key);
       openIssue(issue.key);
+      persistState();
       toast("Comment added", issue.key + " activity updated.", "success");
       return;
     }
@@ -1664,7 +2648,8 @@
       if (!text) return;
       const pageId = form.dataset.pageComment;
       DemoState.pageComments[pageId] = DemoState.pageComments[pageId] || [];
-      DemoState.pageComments[pageId].unshift({ author: "Maya Okafor", time: "Just now", text });
+      DemoState.pageComments[pageId].unshift({ author: actor(), time: "Just now", text });
+      recordAudit("Commented on knowledge page", pageById(pageId)?.title || pageId);
       render();
       toast("Comment added", "Page discussion updated.", "success");
       return;
@@ -1672,33 +2657,49 @@
     if (form.dataset.createForm) {
       event.preventDefault();
       const data = Object.fromEntries(new FormData(form).entries());
-      if (form.dataset.createForm === "work") {
+      if (form.dataset.createForm === "project") {
+        if (!requireCapability("create-work")) return;
+        const key = String(data.key || "").trim().toUpperCase();
+        if (!/^[A-Z][A-Z0-9-]{1,9}$/.test(key)) { toast("Project key is invalid", "Use 2–10 letters, numbers, or hyphens, beginning with a letter.", "danger"); return; }
+        if (DemoState.projects.some((project) => project.key === key)) { toast("Project key already exists", `${key} is already in the synthetic portfolio.`, "danger"); return; }
+        DemoState.projects.push({ key, name: String(data.name).trim(), health: data.health, completion: 0, confidence: data.health === "Green" ? 82 : data.health === "Red" ? 42 : 65, release: String(data.release).trim(), objective: String(data.description).trim(), owner: data.owner, description: String(data.description).trim() });
+        recordAudit("Created project", key);
+        closeModal();
+        DemoState.projectMode = "list";
+        render();
+        toast(`${key} created`, "The new browser-local project shell is available in the portfolio.", "success");
+      } else if (form.dataset.createForm === "work") {
+        if (!requireCapability("create-work")) return;
         const next = Math.max(...DemoState.issues.map((issue) => Number(issue.key.split("-")[1]))) + 1;
         const key = "SMN-" + next;
         DemoState.issues.push({
-          key, summary: data.summary, type: data.type, status: data.sprint === "Sprint 12" ? "Ready" : "To Do", priority: data.priority,
-          assignee: data.assignee, reporter: "Maya Okafor", sprint: data.sprint, epic: "—", points: 3, due: "Not set",
+          key, summary: data.summary, type: data.type, status: data.sprint === activeSprint().name ? "Ready" : "To Do", priority: data.priority,
+          assignee: data.assignee, reporter: actor(), sprint: data.sprint, epic: "—", points: 3, due: "Not set",
           description: data.description || "New work item created in the interactive prototype.", dependencies: [], linkedPage: "program-hub", risk: "", milestone: "Not set",
-          checklist: ["Confirm acceptance criteria"], checked: [false], comments: [], history: ["Created by Maya Okafor"]
+          checklist: ["Confirm acceptance criteria"], checked: [false], comments: [], history: [`Created by ${actor()}`]
         });
-        DemoState.audit.unshift({ time: "Just now", actor: "Maya Okafor", action: "Created work item", object: key });
+        recordAudit("Created work item", key);
         closeModal();
         render();
         toast(key + " created", "The new work item is available in the backlog and search.", "success");
         openIssue(key);
       } else if (form.dataset.createForm === "page") {
+        if (!requireCapability("edit-knowledge")) return;
         const id = slug(data.title) + "-" + (DemoState.pages.length + 1);
         DemoState.pages.push({ id, title: data.title, parent: data.parent || null, depth: data.parent ? 1 : 0, owner: data.owner, updated: "Just now", version: 1, summary: data.summary, content: data.summary });
         DemoState.pageComments[id] = [];
-        DemoState.pageVersions[id] = [{ version: 1, author: data.owner, time: "Just now", note: "Initial version" }];
+        DemoState.pageVersions[id] = [{ version: 1, author: actor(), time: "Just now", note: "Initial version", title: data.title, content: data.summary, bodyHtml: `<p>${esc(data.summary)}</p>` }];
+        recordAudit("Created knowledge page", data.title);
         closeModal();
         DemoState.activePage = id;
         navigate("spaces", { preservePage: true });
         toast("Page created", data.title + " is now in the Sentinel Mesh Node space.", "success");
       } else {
+        if (!requireCapability("create-work")) return;
         const number = Math.max(...DemoState.decisions.map((decision) => Number(decision.id.split("-")[1]))) + 1;
         const id = "DEC-" + String(number).padStart(3, "0");
         DemoState.decisions.unshift({ id, title: data.title, status: "Draft", owner: data.owner, approver: data.approver, due: "Not set", recommendation: data.recommendation, page: "program-hub", linkedIssue: "SMN-100", rationale: data.recommendation });
+        recordAudit("Created governed decision", id);
         closeModal();
         DemoState.activeDecision = id;
         navigate("decisions", { preserveDecision: true });
@@ -1709,14 +2710,19 @@
     if (form.dataset.editPage) {
       event.preventDefault();
       const page = pageById(form.dataset.editPage);
+      if (!page || !requireCapability("publish-knowledge", page, "This persona can save a draft but cannot publish governed knowledge.")) return;
       const data = new FormData(form);
-      page.title = data.get("title");
-      page.content = document.getElementById("pageEditor").innerText.trim();
+      const editor = document.getElementById("pageEditor");
+      page.title = String(data.get("title") || page.title).trim();
+      page.content = editor.innerText.trim().slice(0, 5000);
+      page.bodyHtml = sanitizeRichText(editor.innerHTML);
       page.version = nextPageVersion(page.id);
       page.updated = "Just now";
       DemoState.pageVersions[page.id] = DemoState.pageVersions[page.id] || [];
-      DemoState.pageVersions[page.id].unshift({ version: page.version, author: "Maya Okafor", time: "Just now", note: data.get("note") || "Content updated" });
-      DemoState.audit.unshift({ time: "Just now", actor: "Maya Okafor", action: "Published page version " + page.version, object: page.title });
+      DemoState.pageVersions[page.id].unshift({ version: page.version, author: actor(), time: "Just now", note: data.get("note") || "Content updated", title: page.title, content: page.content, bodyHtml: page.bodyHtml });
+      delete DemoState.pageDrafts[page.id];
+      recordAudit("Published page version " + page.version, page.title);
+      window.clearTimeout(draftTimer);
       closeModal();
       render();
       toast("Page published", page.title + " is now version " + page.version + ".", "success");
@@ -1770,7 +2776,7 @@
     render();
   });
 
-  DemoState.route = routeFromHash();
-  if (!window.location.hash) history.replaceState(null, "", "#home");
+  DemoState.route = window.location.hash ? routeFromHash() : persona().defaultRoute;
+  if (!window.location.hash) history.replaceState(null, "", "#" + DemoState.route);
   render();
 })();

@@ -1,45 +1,88 @@
 # Unified Project Management Suite
 
-A broad interactive concept for replacing fragmented Jira, Confluence, and manual reporting with one governed system for work, knowledge, decisions, risk, evidence, and leadership status.
+A browser-local working sandbox for demonstrating how project delivery, knowledge, service management, decisions, risk, evidence, and leadership reporting can operate in one governed product experience.
 
-## Run the prototype
+Everything in the sandbox is synthetic. It is designed to feel operational during a demonstration while remaining a vendor-neutral, static front-end concept.
 
-- [Open the live product prototype](https://azjester.github.io/J-C_Replace/)
+## Run the sandbox
+
+- [Open the live Unified Project Management Suite](https://azjester.github.io/J-C_Replace/)
 - [Open the five-minute leadership tour](https://azjester.github.io/J-C_Replace/leadership-demo.html)
 - [Download the PowerPoint](./downloads/unified-project-management-suite-leadership-brief.pptx)
 - [Download the PDF](./downloads/unified-project-management-suite-leadership-brief.pdf)
 
-## What is represented
+## Working sandbox capabilities
 
-- Portfolio home, personal work, and notification inbox
-- Projects and a populated Sentinel Mesh Node project overview
-- Backlog, sprint board, editable work details, dependencies, comments, checklists, and activity
-- Timeline, milestones, releases, risks, and delivery reporting
-- Knowledge spaces, page tree, living pages, comments, evidence, editing, and version history
-- Governed decision register with an approval cascade that updates six dependent items
-- Leadership readout generated from the same synthetic operating record
-- People, teams, capacity, workflow administration, permissions, templates, integrations, and audit
-- Automation rules and a synthetic Jira/Confluence migration dry run
-- Unified search, global create, keyboard navigation, responsive layouts, reduced motion, and demo reset
+### Browser-local demo data
 
-## Demonstration path
+- Versioned local persistence keeps synthetic changes after a refresh.
+- JSON export creates a portable copy of the current scenario.
+- JSON import checks schema compatibility, required records, references, identifiers, workflow values, and numeric ranges before restoring a compatible scenario entirely in the browser.
+- Reset clears browser-local changes and returns the sandbox to its original fictional data.
+- A visible save indicator shows when the current scenario was last stored locally.
 
-1. Open **Home** and select the certification intervention.
-2. Inspect **SMN-191** and its blocked downstream work.
-3. Follow the linked **Alternate Path Decision Brief**.
-4. Open **DEC-014** and approve Option B.
-5. Confirm that six items move to Ready, the forecast returns to 18 September, risk falls to 6/25, and the leadership brief refreshes.
-6. Reset the demo from the user menu.
+The JSON import reads a file locally; it does not upload that file or its contents anywhere.
 
-## Concept boundary
+### Simulated people and permissions
 
-This is a front-end-only product prototype using fictional people, projects, dates, metrics, and outcomes. State exists only in a JavaScript `DemoState` object and is cleared by reset or refresh. The site uses no APIs, authentication, cookies, telemetry, uploads, browser storage, or real Atlassian or organizational program data.
+The **View as** control supports six fictional personas:
 
-Production replacement would still require enterprise identity and permissions, durable storage, security engineering, scale and performance work, supported integrations, migration tooling, data-quality validation, operational support, and an approved cutover plan.
+- Maya Okafor — suite administrator
+- Lena Ortiz — project lead
+- Theo Bennett — contributor
+- Dana Kessler — executive approver
+- Amina Cole — service requester
+- Jordan Lee — service agent
+
+Navigation, actions, search results, and dashboards adapt to the selected persona. This is a role-and-permission simulation only. It is not authentication, identity verification, access-control enforcement, or a security boundary.
+
+### Project and sprint management
+
+- Projects, backlog, delivery board, releases, milestones, risks, dependencies, comments, checklists, and activity
+- Basic search plus a saved-filter experience with a deliberately limited JQL-like query subset
+- Personal and shared saved filters with query ordering and seeded favorites
+- Completed, active, and future sprints with editable goals, dates, capacity, completion, and automatic carryover
+- A governed decision cascade that updates dependent work, schedule, risk, notifications, audit history, and leadership status
+
+### Service management
+
+- Requester portal with synthetic request types, request submission, public replies, and status tracking
+- Agent request views and derived queues for unassigned, assigned, approaching-SLA, breached, waiting-for-customer, and approval work
+- Request workflow with public replies, private internal notes, approval gates, resolution, and closure
+- First-response and resolution SLAs driven by a deterministic demo clock so time-based behavior is repeatable
+
+### Knowledge management
+
+- Spaces, page trees, linked work, comments, evidence, and governed publishing
+- Browser-local autosaved drafts that can be resumed after navigation or refresh
+- Version history with stored page snapshots, comparison, and restore-to-new-draft behavior
+- Page archive and restore behavior with permissions and audit history
+
+### Reporting and administration
+
+- Portfolio, delivery, sprint, service, and leadership readouts derived from the same synthetic state
+- People, teams, capacity, workflow configuration, permission matrices, templates, automation, integrations, and audit views
+- Synthetic migration dry run, unified search, global create, keyboard navigation, responsive layouts, reduced motion, and repeatable reset
+
+## Suggested demonstration path
+
+1. Select a persona and show how navigation and permitted actions change.
+2. Create or update work, save an advanced filter, and refresh to show local persistence.
+3. Move work through the active sprint and inspect the resulting sprint metrics.
+4. Submit a request through the service portal, then switch to the service agent and work it from a queue.
+5. Advance the deterministic demo clock to show an SLA state change.
+6. Edit a knowledge page, resume its draft, publish a new version, and compare it with an earlier version.
+7. Export the scenario, reset it, and import the JSON to restore the demonstration state.
+
+## Concept boundary and limitations
+
+This repository is a static, front-end-only concept using fictional people, organizations, projects, requests, dates, metrics, and outcomes. It works offline after download and makes no application API calls. It uses no cookies, telemetry, network uploads, or server-side persistence. Browser-local storage is the only persistence mechanism.
+
+It does not provide real authentication, enforceable permissions, multi-user concurrency, email delivery, binary attachment storage, encryption, enterprise integrations, supported migration, backups, disaster recovery, or production security. A production replacement would still require identity and access management, backend services and durable data storage, security engineering, integration and migration tooling, scale and performance validation, operations, and an approved cutover plan.
 
 ## Local use
 
-Clone the repository and open `index.html` in a modern browser, or serve the folder from any static web server. All visual assets are bundled locally; no internet connection is needed after download.
+Clone the repository and open `index.html` in a modern browser, or serve the folder from any static web server. All visual assets are bundled locally; no internet connection is required after download.
 
 Keyboard shortcuts:
 
@@ -49,4 +92,4 @@ Keyboard shortcuts:
 
 ## Visual system
 
-The prototype uses a neutral navy-and-teal product palette, semantic status colors, a system-font stack, and a generic suite mark. It intentionally carries no company-specific identity.
+The sandbox uses a neutral navy-and-teal product palette, semantic status colors, a system-font stack, and a generic suite mark. It intentionally carries no organization-specific identity.

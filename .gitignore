@@ -4,7 +4,9 @@ deck-build/
 deck-renders/
 pdf-renders/
 qa-report.json
+qa-realism-report.json
 qa-product.cjs
 qa-offline.cjs
+qa-realism.cjs
 capture-product.cjs
 downloads/*.inspect.ndjson
