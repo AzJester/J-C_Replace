@@ -2,15 +2,15 @@
   "use strict";
 
   const STORAGE_KEY = "huly-static-evaluation-v1";
-  const APP_VERSION = 2;
+  const APP_VERSION = 3;
 
   const statusDefinitions = {
-    backlog: { label: "Backlog", color: "#89919f", tint: "#f1f2f4" },
-    todo: { label: "Todo", color: "#6c7482", tint: "#f4f5f7" },
-    "in-progress": { label: "In progress", color: "#2c72c7", tint: "#eaf3ff" },
-    "in-review": { label: "Under review", color: "#168077", tint: "#e1f4f0" },
-    done: { label: "Done", color: "#367b4d", tint: "#e5f3e9" },
-    blocked: { label: "Blocked", color: "#a54a40", tint: "#fcebea" }
+    backlog: { label: "Backlog", color: "#8b94a6", tint: "rgba(139, 148, 166, 0.14)" },
+    todo: { label: "Todo", color: "#a4abbb", tint: "rgba(164, 171, 187, 0.12)" },
+    "in-progress": { label: "In progress", color: "#5683da", tint: "rgba(86, 131, 218, 0.16)" },
+    "in-review": { label: "Under review", color: "#4ec9ae", tint: "rgba(64, 196, 170, 0.14)" },
+    done: { label: "Done", color: "#5fc985", tint: "rgba(84, 200, 128, 0.14)" },
+    blocked: { label: "Blocked", color: "#f07a6a", tint: "rgba(240, 106, 90, 0.15)" }
   };
 
   const priorityLabels = {
@@ -21,14 +21,14 @@
   };
 
   const people = [
-    { id: "maya", name: "Maya Chen", initials: "MC", role: "Workspace lead", department: "Program Delivery", color: "#d9e4ff", ink: "#274b87", capacity: 82 },
-    { id: "lena", name: "Lena Ortiz", initials: "LO", role: "Delivery lead", department: "Program Delivery", color: "#f7dfd2", ink: "#7e462c", capacity: 94 },
-    { id: "theo", name: "Theo Bennett", initials: "TB", role: "Systems engineer", department: "Engineering", color: "#dff0e4", ink: "#296242", capacity: 76 },
-    { id: "dana", name: "Dana Kessler", initials: "DK", role: "Executive sponsor", department: "Leadership", color: "#eee1f8", ink: "#684083", capacity: 48 },
-    { id: "amina", name: "Amina Cole", initials: "AC", role: "Service owner", department: "Operations", color: "#f8e9c8", ink: "#75571d", capacity: 64 },
-    { id: "jordan", name: "Jordan Lee", initials: "JL", role: "Service analyst", department: "Operations", color: "#dceff3", ink: "#265b66", capacity: 71 },
-    { id: "priya", name: "Priya Nair", initials: "PN", role: "Security architect", department: "Engineering", color: "#e8e0f6", ink: "#58417c", capacity: 88 },
-    { id: "marcus", name: "Marcus Reed", initials: "MR", role: "Test lead", department: "Quality", color: "#e8ead8", ink: "#59612c", capacity: 69 }
+    { id: "maya", name: "Maya Chen", initials: "MC", role: "Workspace lead", department: "Program Delivery", color: "#2c3b5e", ink: "#b9ccf7", capacity: 82 },
+    { id: "lena", name: "Lena Ortiz", initials: "LO", role: "Delivery lead", department: "Program Delivery", color: "#553326", ink: "#f7c5ae", capacity: 94 },
+    { id: "theo", name: "Theo Bennett", initials: "TB", role: "Systems engineer", department: "Engineering", color: "#24402f", ink: "#a9e3bd", capacity: 76 },
+    { id: "dana", name: "Dana Kessler", initials: "DK", role: "Executive sponsor", department: "Leadership", color: "#3d2d52", ink: "#d9c2f5", capacity: 48 },
+    { id: "amina", name: "Amina Cole", initials: "AC", role: "Service owner", department: "Operations", color: "#4a3a1e", ink: "#edd49a", capacity: 64 },
+    { id: "jordan", name: "Jordan Lee", initials: "JL", role: "Service analyst", department: "Operations", color: "#1f3d45", ink: "#a5dbe8", capacity: 71 },
+    { id: "priya", name: "Priya Nair", initials: "PN", role: "Security architect", department: "Engineering", color: "#352a4e", ink: "#cbb8f0", capacity: 88 },
+    { id: "marcus", name: "Marcus Reed", initials: "MR", role: "Test lead", department: "Quality", color: "#3a3d22", ink: "#ccd39a", capacity: 69 }
   ];
 
   const seedState = {
@@ -57,13 +57,13 @@
       updated: "Today, 8:52 AM"
     },
     projects: [
-      { id: "SMN", name: "Sentinel Mesh Node", short: "Sentinel Mesh", color: "#d8e5fb", health: "amber", progress: 63, owner: "lena", milestone: "Field Release 3", due: "Sep 18" },
-      { id: "HRU", name: "Harbor Relay Upgrade", short: "Harbor Relay", color: "#dceee5", health: "green", progress: 78, owner: "theo", milestone: "Site acceptance", due: "Sep 4" },
-      { id: "ZTA", name: "Zero Trust Access", short: "Zero Trust", color: "#e8ddf4", health: "green", progress: 56, owner: "priya", milestone: "Policy cutover", due: "Oct 2" },
-      { id: "EGL", name: "Edge Logistics", short: "Edge Logistics", color: "#fae5cf", health: "amber", progress: 41, owner: "amina", milestone: "Warehouse pilot", due: "Oct 16" },
-      { id: "BTE", name: "Business Tooling Enablement", short: "Business Tooling", color: "#dbeaf0", health: "green", progress: 84, owner: "jordan", milestone: "Wave 2 adoption", due: "Sep 11" },
-      { id: "DCP", name: "Data Center Power", short: "Data Center Power", color: "#e9ead6", health: "green", progress: 69, owner: "marcus", milestone: "Load validation", due: "Sep 25" },
-      { id: "OPS", name: "Operations Service Desk", short: "Service Desk", color: "#eadff0", health: "green", progress: 72, owner: "amina", milestone: "Portal release", due: "Sep 8" }
+      { id: "SMN", name: "Sentinel Mesh Node", short: "Sentinel Mesh", color: "#4c7ce0", health: "amber", progress: 63, owner: "lena", milestone: "Field Release 3", due: "Sep 18" },
+      { id: "HRU", name: "Harbor Relay Upgrade", short: "Harbor Relay", color: "#3fae7c", health: "green", progress: 78, owner: "theo", milestone: "Site acceptance", due: "Sep 4" },
+      { id: "ZTA", name: "Zero Trust Access", short: "Zero Trust", color: "#8b6ce0", health: "green", progress: 56, owner: "priya", milestone: "Policy cutover", due: "Oct 2" },
+      { id: "EGL", name: "Edge Logistics", short: "Edge Logistics", color: "#e08b4c", health: "amber", progress: 41, owner: "amina", milestone: "Warehouse pilot", due: "Oct 16" },
+      { id: "BTE", name: "Business Tooling Enablement", short: "Business Tooling", color: "#3e9fc0", health: "green", progress: 84, owner: "jordan", milestone: "Wave 2 adoption", due: "Sep 11" },
+      { id: "DCP", name: "Data Center Power", short: "Data Center Power", color: "#a3a84e", health: "green", progress: 69, owner: "marcus", milestone: "Load validation", due: "Sep 25" },
+      { id: "OPS", name: "Operations Service Desk", short: "Service Desk", color: "#b06ab3", health: "green", progress: 72, owner: "amina", milestone: "Portal release", due: "Sep 8" }
     ],
     issues: [
       { id: "SMN-184", project: "SMN", title: "Finalize certification evidence package", status: "in-review", priority: "urgent", assignee: "lena", due: "Aug 28", estimate: "8h", spent: "5h", tags: ["CERT", "MILESTONE"], component: "Certification", milestone: "Field Release 3", description: "Complete the controlled evidence package required to hold the September field release. The remaining gap is the external lab artifact for the primary path.", linkedDoc: "doc-certification-path", checklist: [{ text: "Confirm evidence index", done: true }, { text: "Reconcile lab artifact references", done: true }, { text: "Record approval decision", done: false }, { text: "Publish final package", done: false }] },
@@ -160,21 +160,21 @@
       ]
     },
     plannerEvents: [
-      { id: "e1", issueId: "SMN-184", day: 0, slot: 0, label: "Certification review", time: "9:00–10:00", color: "#d68a20", bg: "#fff4e2" },
-      { id: "e2", issueId: "SMN-236", day: 0, slot: 2, label: "Refresh leadership facts", time: "1:00–2:00", color: "#6d5bd0", bg: "#f1edff" },
-      { id: "e3", issueId: "SMN-191", day: 1, slot: 0, label: "Degraded transport test", time: "9:00–11:00", color: "#2c72c7", bg: "#eaf3ff" },
-      { id: "e4", issueId: "BTE-24", day: 1, slot: 3, label: "Facilitator training", time: "3:00–4:00", color: "#168077", bg: "#e1f4f0" },
-      { id: "e5", issueId: "DCP-18", day: 2, slot: 1, label: "Transfer sequence test", time: "11:00–12:00", color: "#a54a40", bg: "#fcebea" },
-      { id: "e6", issueId: "OPS-108", day: 2, slot: 3, label: "SLA approval scenario", time: "3:00–4:00", color: "#6d5bd0", bg: "#f1edff" },
-      { id: "e7", issueId: "ZTA-54", day: 3, slot: 0, label: "Policy review", time: "9:00–10:00", color: "#2c72c7", bg: "#eaf3ff" },
-      { id: "e8", issueId: "HRU-82", day: 3, slot: 2, label: "Survey readout", time: "1:00–2:00", color: "#168077", bg: "#e1f4f0" },
-      { id: "e9", issueId: "EGL-112", day: 4, slot: 1, label: "Event feed demo", time: "11:00–12:00", color: "#d68a20", bg: "#fff4e2" },
-      { id: "e10", issueId: "SMN-221", day: 4, slot: 3, label: "Release rehearsal", time: "3:00–5:00", color: "#2c72c7", bg: "#eaf3ff" }
+      { id: "e1", issueId: "SMN-184", day: 0, slot: 0, label: "Certification review", time: "9:00–10:00", color: "#f2a744", bg: "rgba(240, 167, 68, 0.14)" },
+      { id: "e2", issueId: "SMN-236", day: 0, slot: 2, label: "Refresh leadership facts", time: "1:00–2:00", color: "#a08ff2", bg: "rgba(139, 118, 236, 0.16)" },
+      { id: "e3", issueId: "SMN-191", day: 1, slot: 0, label: "Degraded transport test", time: "9:00–11:00", color: "#5683da", bg: "rgba(86, 131, 218, 0.16)" },
+      { id: "e4", issueId: "BTE-24", day: 1, slot: 3, label: "Facilitator training", time: "3:00–4:00", color: "#4ec9ae", bg: "rgba(64, 196, 170, 0.14)" },
+      { id: "e5", issueId: "DCP-18", day: 2, slot: 1, label: "Transfer sequence test", time: "11:00–12:00", color: "#f07a6a", bg: "rgba(240, 106, 90, 0.15)" },
+      { id: "e6", issueId: "OPS-108", day: 2, slot: 3, label: "SLA approval scenario", time: "3:00–4:00", color: "#a08ff2", bg: "rgba(139, 118, 236, 0.16)" },
+      { id: "e7", issueId: "ZTA-54", day: 3, slot: 0, label: "Policy review", time: "9:00–10:00", color: "#5683da", bg: "rgba(86, 131, 218, 0.16)" },
+      { id: "e8", issueId: "HRU-82", day: 3, slot: 2, label: "Survey readout", time: "1:00–2:00", color: "#4ec9ae", bg: "rgba(64, 196, 170, 0.14)" },
+      { id: "e9", issueId: "EGL-112", day: 4, slot: 1, label: "Event feed demo", time: "11:00–12:00", color: "#f2a744", bg: "rgba(240, 167, 68, 0.14)" },
+      { id: "e10", issueId: "SMN-221", day: 4, slot: 3, label: "Release rehearsal", time: "3:00–5:00", color: "#5683da", bg: "rgba(86, 131, 218, 0.16)" }
     ],
     drives: [
-      { id: "program-records", name: "Program records", description: "Controlled delivery evidence", color: "#6d5bd0" },
-      { id: "release-artifacts", name: "Release artifacts", description: "Images, notes, and manifests", color: "#2c72c7" },
-      { id: "team-resources", name: "Team resources", description: "Templates and working material", color: "#168077" }
+      { id: "program-records", name: "Program records", description: "Controlled delivery evidence", color: "#a08ff2" },
+      { id: "release-artifacts", name: "Release artifacts", description: "Images, notes, and manifests", color: "#5683da" },
+      { id: "team-resources", name: "Team resources", description: "Templates and working material", color: "#4ec9ae" }
     ],
     files: [
       { id: "f1", drive: "program-records", name: "SMN-evidence-index-v7.xlsx", type: "XLSX", owner: "lena", updated: "Today, 8:46 AM", size: "284 KB" },
@@ -498,7 +498,7 @@
               const activeTeamspace = docs.some((document) => document.id === state.ui.selectedDoc);
               const project = state.projects.find((candidate) => candidate.name === teamspace);
               return `<div>
-                <div class="project-row ${activeTeamspace ? "is-active" : ""}"><span class="project-color" style="--project-color:${project?.color || "#e5e7eb"}"></span><span class="project-name">${escapeHtml(teamspace)}</span></div>
+                <div class="project-row ${activeTeamspace ? "is-active" : ""}"><span class="project-color" style="--project-color:${project?.color || "#3d4350"}"></span><span class="project-name">${escapeHtml(teamspace)}</span></div>
                 ${docs.map((document) => `<button class="tree-row tree-indent-1 ${document.id === state.ui.selectedDoc ? "is-active" : ""}" type="button" data-action="select-document" data-document="${escapeHtml(document.id)}">${icon("file")}<span>${escapeHtml(document.title)}</span>${document.starred ? icon("star") : ""}</button>`).join("")}
               </div>`;
             }).join("")}
@@ -657,7 +657,7 @@
           <div class="card-body project-pulse-list">
             ${state.projects.map((project) => {
               const health = project.id === "SMN" ? smnHealth : currentProjectHealth(project);
-              const healthColor = health === "amber" ? "#c77b18" : health === "red" ? "#ae4145" : "#3d8a58";
+              const healthColor = health === "amber" ? "#e09a3a" : health === "red" ? "#e0655e" : "#4db878";
               return `<button class="pulse-row" type="button" data-action="select-project" data-project="${escapeHtml(project.id)}">
                 <span class="pulse-project"><span class="health-dot" style="--health-color:${healthColor}"></span><span><strong>${escapeHtml(project.name)}</strong><span>${escapeHtml(project.milestone)} · ${escapeHtml(project.due)}</span></span></span>
                 <span>${healthPill(health)}</span>
@@ -964,7 +964,7 @@
       <div class="content-body"><div class="team-grid">${members.map((member) => {
         const assigned = state.issues.filter((issue) => issue.assignee === member.id && issue.status !== "done");
         const completed = state.issues.filter((issue) => issue.assignee === member.id && issue.status === "done").length;
-        return `<button class="member-card" type="button" data-action="open-profile" data-person="${member.id}"><div class="member-card-head">${avatar(member.id)}<span><h4>${escapeHtml(member.name)}</h4><p>${escapeHtml(member.role)} · ${escapeHtml(member.department)}</p></span></div><div class="member-stats"><span class="member-stat"><strong>${assigned.length}</strong><span>Open work</span></span><span class="member-stat"><strong>${member.capacity}%</strong><span>Capacity used</span></span></div><span class="progress-track" style="--progress:${member.capacity}%;--progress-color:${member.capacity > 90 ? "#a54a40" : "#2c72c7"}"><span></span></span><span class="tiny muted">${completed} completed · click for profile</span></button>`;
+        return `<button class="member-card" type="button" data-action="open-profile" data-person="${member.id}"><div class="member-card-head">${avatar(member.id)}<span><h4>${escapeHtml(member.name)}</h4><p>${escapeHtml(member.role)} · ${escapeHtml(member.department)}</p></span></div><div class="member-stats"><span class="member-stat"><strong>${assigned.length}</strong><span>Open work</span></span><span class="member-stat"><strong>${member.capacity}%</strong><span>Capacity used</span></span></div><span class="progress-track" style="--progress:${member.capacity}%;--progress-color:${member.capacity > 90 ? "#f07a6a" : "#5683da"}"><span></span></span><span class="tiny muted">${completed} completed · click for profile</span></button>`;
       }).join("")}</div></div>
     </section>`;
   }
@@ -1225,7 +1225,7 @@
       return;
     }
     if (kind === "milestones") {
-      openModal(`${project.name} milestones`, `<div class="milestone-card"><span class="milestone-flag">${icon("milestone")}</span><span><strong>${escapeHtml(project.milestone)}</strong><small>Target ${escapeHtml(project.due)} · ${project.progress}% complete</small><span class="progress-track" style="--progress:${project.progress}%;--progress-color:${currentProjectHealth(project) === "amber" ? "#c77b18" : "#3d8a58"}"><span></span></span></span>${healthPill(currentProjectHealth(project))}</div><div class="property-grid"><div class="property"><label>Open work</label><strong>${issues.filter((issue) => issue.status !== "done").length}</strong></div><div class="property"><label>Blocked</label><strong>${issues.filter((issue) => issue.blocked).length}</strong></div></div>`);
+      openModal(`${project.name} milestones`, `<div class="milestone-card"><span class="milestone-flag">${icon("milestone")}</span><span><strong>${escapeHtml(project.milestone)}</strong><small>Target ${escapeHtml(project.due)} · ${project.progress}% complete</small><span class="progress-track" style="--progress:${project.progress}%;--progress-color:${currentProjectHealth(project) === "amber" ? "#e09a3a" : "#4db878"}"><span></span></span></span>${healthPill(currentProjectHealth(project))}</div><div class="property-grid"><div class="property"><label>Open work</label><strong>${issues.filter((issue) => issue.status !== "done").length}</strong></div><div class="property"><label>Blocked</label><strong>${issues.filter((issue) => issue.blocked).length}</strong></div></div>`);
       return;
     }
     openModal("Issue templates", `<div class="quick-create-grid"><button class="quick-create-card" type="button" data-action="new-issue"><span>${icon("template")}</span><strong>Delivery task</strong><small>Owner, estimate, due date, and acceptance checklist.</small></button><button class="quick-create-card" type="button" data-action="new-issue"><span>${icon("alert")}</span><strong>Risk action</strong><small>Mitigation work linked to an intervention or decision.</small></button><button class="quick-create-card" type="button" data-action="new-issue"><span>${icon("check")}</span><strong>Approval gate</strong><small>Controlled review with evidence and accountable approver.</small></button></div>`);
@@ -1307,7 +1307,7 @@
       if (state.projects.some((project) => project.id === code)) code = `${code.slice(0, 4)}${state.projects.length + 1}`;
       const milestone = String(data.get("milestone") || "Delivery kickoff").trim();
       const due = String(data.get("due") || "Oct 30").trim();
-      const palette = ["#d8e5fb", "#dceee5", "#e8ddf4", "#fae5cf", "#dbeaf0"];
+      const palette = ["#4c7ce0", "#3fae7c", "#8b6ce0", "#e08b4c", "#3e9fc0"];
       const project = { id: code, name, short: name.length > 21 ? `${name.slice(0, 19)}…` : name, color: palette[state.projects.length % palette.length], health: "green", progress: 8, owner: "maya", milestone, due };
       state.projects.push(project);
       const issue = { id: `${code}-1`, project: code, title: "Confirm project outcomes and working agreement", status: "todo", priority: "high", assignee: "maya", due, estimate: "4h", spent: "0h", tags: ["KICKOFF"], component: "Program", milestone, description: "Align the team on outcomes, working practices, decision rights, and initial delivery milestones.", checklist: [{ text: "Confirm accountable owner", done: true }, { text: "Publish kickoff page", done: false }], comments: [] };
@@ -1517,7 +1517,7 @@
       case "select-department": state.ui.selectedDepartment = button.dataset.department || "All"; saveState(); renderApp(); break;
       case "invite-teammate": openInviteModal(); break;
       case "team-capacity": {
-        const members = [...people].sort((a, b) => b.capacity - a.capacity); openModal("Team capacity", `<div class="capacity-list">${members.map((member) => `<button class="capacity-row" type="button" data-action="open-profile" data-person="${member.id}">${avatar(member.id)}<span><strong>${escapeHtml(member.name)}</strong><small>${escapeHtml(member.department)} · ${state.issues.filter((issue) => issue.assignee === member.id && issue.status !== "done").length} open items</small><span class="progress-track" style="--progress:${member.capacity}%;--progress-color:${member.capacity > 90 ? "#a54a40" : "#2c72c7"}"><span></span></span></span><strong>${member.capacity}%</strong></button>`).join("")}</div>`); break;
+        const members = [...people].sort((a, b) => b.capacity - a.capacity); openModal("Team capacity", `<div class="capacity-list">${members.map((member) => `<button class="capacity-row" type="button" data-action="open-profile" data-person="${member.id}">${avatar(member.id)}<span><strong>${escapeHtml(member.name)}</strong><small>${escapeHtml(member.department)} · ${state.issues.filter((issue) => issue.assignee === member.id && issue.status !== "done").length} open items</small><span class="progress-track" style="--progress:${member.capacity}%;--progress-color:${member.capacity > 90 ? "#f07a6a" : "#5683da"}"><span></span></span></span><strong>${member.capacity}%</strong></button>`).join("")}</div>`); break;
       }
       case "team-org": {
         const departments = [...new Set(people.map((member) => member.department))]; openModal("Workspace organization", `<div class="facet-grid">${departments.map((department) => `<button class="facet-card" type="button" data-action="select-department" data-department="${escapeHtml(department)}"><span class="notification-icon">${icon("users")}</span><span><strong>${escapeHtml(department)}</strong><small>${people.filter((member) => member.department === department).length} teammates</small></span></button>`).join("")}</div>`); break;

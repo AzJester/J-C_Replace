@@ -1,42 +1,43 @@
 :root {
-  --ink-950: #17191e;
-  --ink-900: #20232a;
-  --ink-800: #2e323b;
-  --ink-700: #444a57;
-  --ink-600: #5d6472;
-  --ink-500: #626c7a;
-  --ink-400: #6f7987;
-  --ink-300: #c4c9d1;
-  --ink-200: #dfe2e7;
-  --ink-150: #e9ebef;
-  --ink-100: #f1f2f4;
-  --ink-50: #f7f8fa;
-  --paper: #ffffff;
-  --blue-700: #1555b6;
-  --blue-600: #2068cc;
-  --blue-500: #397ee1;
-  --blue-100: #e9f2ff;
-  --blue-50: #f4f8ff;
-  --violet-600: #6d5bd0;
-  --violet-100: #eeeafe;
-  --teal-700: #176f65;
-  --teal-100: #dff4ef;
-  --amber-700: #9b5b08;
-  --amber-100: #fff0d8;
-  --red-700: #a23537;
-  --red-100: #fde8e8;
-  --green-700: #287544;
-  --green-100: #e1f4e7;
-  --shadow-xs: 0 1px 2px rgb(21 24 31 / 5%);
-  --shadow-sm: 0 4px 14px rgb(21 24 31 / 8%);
-  --shadow-md: 0 18px 50px rgb(21 24 31 / 16%);
+  --ink-950: #f5f6fa;
+  --ink-900: #e8eaf1;
+  --ink-800: #d3d7e0;
+  --ink-700: #bcc2cf;
+  --ink-600: #a4abbb;
+  --ink-500: #949cae;
+  --ink-400: #828a9c;
+  --ink-300: #3d4350;
+  --ink-200: #272b35;
+  --ink-150: #20242d;
+  --ink-100: #1a1d24;
+  --ink-50: #14161c;
+  --paper: #0e1014;
+  --blue-700: #8fb2f5;
+  --blue-600: #4c7ce0;
+  --blue-500: #5683da;
+  --blue-100: rgb(86 131 218 / 20%);
+  --blue-50: rgb(86 131 218 / 10%);
+  --violet-600: #a08ff2;
+  --violet-100: rgb(139 118 236 / 18%);
+  --teal-700: #5cd3bb;
+  --teal-100: rgb(64 196 170 / 14%);
+  --amber-700: #f2b45e;
+  --amber-100: rgb(240 176 84 / 14%);
+  --red-700: #f28b8b;
+  --red-100: rgb(240 96 96 / 15%);
+  --green-700: #74d698;
+  --green-100: rgb(84 200 128 / 14%);
+  --coral-500: #ff6a3d;
+  --shadow-xs: 0 1px 2px rgb(0 0 0 / 35%);
+  --shadow-sm: 0 4px 14px rgb(0 0 0 / 45%);
+  --shadow-md: 0 18px 50px rgb(0 0 0 / 60%);
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 14px;
   --topbar-height: 34px;
   --rail-width: 50px;
   --panel-width: 238px;
-  --font-ui: "Segoe UI Variable", "Segoe UI", Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-ui: "Inter", "Inter Variable", "Segoe UI Variable", "Segoe UI", ui-sans-serif, -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 * {
@@ -115,8 +116,8 @@ svg {
   height: var(--topbar-height);
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid #0d0f13;
-  background: #13151a;
+  border-bottom: 1px solid #1e222b;
+  background: #0a0b10;
   color: #eef0f4;
   font-size: 12px;
 }
@@ -259,7 +260,8 @@ svg {
 
 .brand-mark {
   margin-bottom: 2px;
-  background: var(--ink-900);
+  background: linear-gradient(135deg, #4c7ce0 0, #7a5fe0 62%, #ff6a3d 145%);
+  box-shadow: 0 0 14px rgb(86 131 218 / 35%);
   color: white;
 }
 
@@ -303,7 +305,7 @@ svg {
   place-items: center;
   border: 2px solid var(--ink-50);
   border-radius: 999px;
-  background: var(--red-700);
+  background: #e0524e;
   color: white;
   font-size: 9px;
   font-style: normal;
@@ -317,7 +319,7 @@ svg {
 
 .avatar-button {
   margin-top: 2px;
-  background: linear-gradient(135deg, #253a70, #7050b7);
+  background: linear-gradient(135deg, #4c7ce0 10%, #7a5fe0 55%, #ff6a3d 130%);
   color: white;
   font-size: 11px;
   font-weight: 750;
@@ -351,7 +353,7 @@ svg {
   align-items: center;
   justify-content: space-between;
   border-bottom: 1px solid var(--ink-200);
-  background: rgb(247 248 250 / 96%);
+  background: rgb(20 22 28 / 92%);
   padding: 0 14px;
   backdrop-filter: blur(8px);
 }
@@ -383,7 +385,7 @@ svg {
 }
 
 .primary-action:hover {
-  background: var(--blue-700);
+  background: #5c8ae6;
 }
 
 .primary-action svg {
@@ -461,7 +463,7 @@ svg {
 .tree-row.is-active,
 .channel-row:hover,
 .channel-row.is-active {
-  background: #e9edf5;
+  background: #20242e;
   color: var(--ink-950);
 }
 
@@ -496,9 +498,9 @@ svg {
   width: 16px;
   height: 16px;
   flex: 0 0 auto;
-  border: 1px solid rgb(0 0 0 / 7%);
+  border: 1px solid rgb(255 255 255 / 14%);
   border-radius: 4px;
-  background: var(--project-color, #dde5f5);
+  background: var(--project-color, #2c3648);
 }
 
 .project-name,
@@ -560,7 +562,7 @@ svg {
   justify-content: space-between;
   gap: 16px;
   border-bottom: 1px solid var(--ink-200);
-  background: rgb(255 255 255 / 95%);
+  background: rgb(14 16 20 / 88%);
   padding: 0 18px;
   backdrop-filter: blur(10px);
 }
@@ -618,7 +620,7 @@ svg {
 }
 
 .button:hover {
-  background: var(--blue-700);
+  background: #5c8ae6;
 }
 
 .ghost-button {
@@ -641,8 +643,8 @@ svg {
 }
 
 .danger-button {
-  border: 1px solid #ecc1c2;
-  background: #fff6f6;
+  border: 1px solid rgb(240 96 96 / 35%);
+  background: rgb(240 96 96 / 12%);
   color: var(--red-700);
 }
 
@@ -751,7 +753,7 @@ svg {
 }
 
 .office-page {
-  background: linear-gradient(180deg, #fbfbfc 0, #fff 260px);
+  background: radial-gradient(900px 340px at 16% -10%, rgb(86 131 218 / 20%), transparent 62%), radial-gradient(760px 300px at 86% -14%, rgb(255 106 61 / 12%), transparent 58%), linear-gradient(180deg, #0b0d12 0, var(--paper) 300px);
 }
 
 .office-hero {
@@ -828,8 +830,8 @@ svg {
 .priority-callout {
   position: relative;
   overflow: hidden;
-  border-color: #ecd8b8;
-  background: linear-gradient(135deg, #fffaf1, #fff 70%);
+  border-color: rgb(240 176 84 / 32%);
+  background: linear-gradient(135deg, rgb(240 176 84 / 9%), var(--paper) 70%);
 }
 
 .priority-callout::before {
@@ -838,7 +840,7 @@ svg {
   bottom: 0;
   left: 0;
   width: 4px;
-  background: #d68a20;
+  background: #f2a744;
   content: "";
 }
 
@@ -873,13 +875,13 @@ svg {
 .metric-strip {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  border-top: 1px solid #f0e2cc;
+  border-top: 1px solid rgb(240 176 84 / 22%);
 }
 
 .metric {
   min-width: 0;
   padding: 12px 16px;
-  border-right: 1px solid #f0e2cc;
+  border-right: 1px solid rgb(240 176 84 / 22%);
 }
 
 .metric:last-child {
@@ -964,6 +966,7 @@ svg {
 }
 
 .progress-track {
+  display: block;
   height: 6px;
   overflow: hidden;
   border-radius: 999px;
@@ -1135,7 +1138,7 @@ svg {
 }
 
 .demo-step:hover {
-  border-color: #b7c9e7;
+  border-color: rgb(86 131 218 / 45%);
   background: var(--blue-50);
 }
 
@@ -1147,7 +1150,7 @@ svg {
   margin-bottom: 8px;
   border-radius: 7px;
   background: var(--ink-900);
-  color: white;
+  color: var(--paper);
   font-size: 10px;
 }
 
@@ -1316,8 +1319,8 @@ svg {
   flex: 0 0 auto;
   place-items: center;
   border-radius: 50%;
-  background: var(--avatar-bg, #dbe5f5);
-  color: var(--avatar-ink, #25365c);
+  background: var(--avatar-bg, #2c3b5e);
+  color: var(--avatar-ink, #c7d6f5);
   font-size: 9px;
   font-weight: 760;
 }
@@ -1385,7 +1388,7 @@ svg {
 }
 
 .board-card:hover {
-  border-color: #bcc8da;
+  border-color: #3d4350;
   box-shadow: var(--shadow-sm);
 }
 
@@ -1445,7 +1448,7 @@ svg {
 
 .document-content {
   max-width: 850px;
-  color: #343842;
+  color: #ccd2de;
   font-size: 14px;
   line-height: 1.7;
 }
@@ -1778,7 +1781,7 @@ svg {
 }
 
 .notification-row.is-unread {
-  background: #fbfdff;
+  background: rgb(86 131 218 / 7%);
 }
 
 .unread-dot {
@@ -1984,7 +1987,7 @@ svg {
 }
 
 .drive-card:hover {
-  border-color: #b7c8df;
+  border-color: rgb(86 131 218 / 40%);
   background: var(--blue-50);
 }
 
@@ -2082,7 +2085,7 @@ svg {
 }
 
 .member-card:hover {
-  border-color: #b8c9e0;
+  border-color: rgb(86 131 218 / 40%);
   box-shadow: var(--shadow-sm);
   transform: translateY(-1px);
 }
@@ -2144,15 +2147,15 @@ svg {
   align-items: center;
   gap: 10px;
   margin-bottom: 24px;
-  border: 1px solid #e7bf82;
+  border: 1px solid rgb(240 176 84 / 38%);
   border-radius: 11px;
-  background: #fff8ec;
+  background: rgb(240 176 84 / 10%);
   padding: 12px;
 }
 
 .document-decision.is-approved {
-  border-color: #a8d2b5;
-  background: #f0faf3;
+  border-color: rgb(84 200 128 / 38%);
+  background: rgb(84 200 128 / 10%);
 }
 
 .document-decision strong,
@@ -2214,18 +2217,18 @@ svg {
 }
 
 .drive-card.is-active {
-  border-color: #8eb3e6;
+  border-color: rgb(86 131 218 / 55%);
   background: var(--blue-50);
   box-shadow: inset 0 0 0 1px rgb(32 104 204 / 8%);
 }
 
 .drive-card .drive-icon {
-  background: color-mix(in srgb, var(--drive-color, var(--violet-600)) 14%, white);
+  background: color-mix(in srgb, var(--drive-color, var(--violet-600)) 22%, var(--paper));
   color: var(--drive-color, var(--violet-600));
 }
 
 .tag-red {
-  border-color: #efc2c2;
+  border-color: rgb(240 96 96 / 35%);
   background: var(--red-100);
   color: var(--red-700);
 }
@@ -2272,8 +2275,8 @@ svg {
 }
 
 .relationship-card.is-blocked {
-  border-color: #efc2c2;
-  background: #fff7f7;
+  border-color: rgb(240 96 96 / 35%);
+  background: rgb(240 96 96 / 10%);
 }
 
 .relationship-icon,
@@ -2328,7 +2331,7 @@ svg {
 .capacity-row:hover,
 .facet-card:hover,
 .quick-create-card:hover {
-  border-color: #b8c9e0;
+  border-color: rgb(86 131 218 / 40%);
   background: var(--blue-50);
 }
 
@@ -2372,15 +2375,15 @@ svg {
   align-items: center;
   gap: 12px;
   margin-bottom: 18px;
-  border: 1px solid #e7bf82;
+  border: 1px solid rgb(240 176 84 / 38%);
   border-radius: 11px;
-  background: #fff8ec;
+  background: rgb(240 176 84 / 10%);
   padding: 14px;
 }
 
 .decision-summary.is-approved {
-  border-color: #a8d2b5;
-  background: #f0faf3;
+  border-color: rgb(84 200 128 / 38%);
+  background: rgb(84 200 128 / 10%);
 }
 
 .decision-summary > span:nth-child(2),
@@ -2412,8 +2415,8 @@ svg {
 }
 
 .cascade-hero {
-  border-color: #a8d2b5;
-  background: #f0faf3;
+  border-color: rgb(84 200 128 / 38%);
+  background: rgb(84 200 128 / 10%);
 }
 
 .cascade-hero .cascade-check {
@@ -2534,7 +2537,7 @@ svg {
 
 .help-callout {
   margin-top: 0;
-  border: 1px solid #bdd3ef;
+  border: 1px solid rgb(86 131 218 / 35%);
 }
 
 .help-callout strong,
@@ -2548,8 +2551,8 @@ svg {
 }
 
 .help-callout.warning {
-  border-color: #e7bf82;
-  background: #fff8ec;
+  border-color: rgb(240 176 84 / 38%);
+  background: rgb(240 176 84 / 10%);
 }
 
 .help-steps {
@@ -2650,8 +2653,8 @@ svg {
 }
 
 .version-row.is-current {
-  border-color: #a8d2b5;
-  background: #f0faf3;
+  border-color: rgb(84 200 128 / 38%);
+  background: rgb(84 200 128 / 10%);
 }
 
 .version-number {
@@ -2695,7 +2698,7 @@ svg {
 .overlay-scrim {
   position: absolute;
   border: 0;
-  background: rgb(20 23 29 / 34%);
+  background: rgb(2 3 5 / 58%);
   inset: 0;
 }
 
@@ -2721,7 +2724,7 @@ svg {
   justify-content: space-between;
   gap: 12px;
   border-bottom: 1px solid var(--ink-200);
-  background: rgb(255 255 255 / 96%);
+  background: rgb(14 16 20 / 90%);
   padding: 0 16px;
   backdrop-filter: blur(8px);
 }
@@ -3178,7 +3181,7 @@ svg {
   }
 
   .metric:nth-child(-n + 2) {
-    border-bottom: 1px solid #f0e2cc;
+    border-bottom: 1px solid rgb(240 176 84 / 22%);
   }
 
   .document-workspace {
@@ -3244,7 +3247,7 @@ svg {
 
   .metric {
     border-right: 0;
-    border-bottom: 1px solid #f0e2cc;
+    border-bottom: 1px solid rgb(240 176 84 / 22%);
   }
 
   .metric:last-child {
