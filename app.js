@@ -2,7 +2,7 @@
   "use strict";
 
   const FIXTURE = {
-    schemaVersion: 3,
+    schemaVersion: 4,
     lastSavedAt: null,
     route: "home",
     projectMode: "list",
@@ -20,6 +20,18 @@
     serviceQueue: "unassigned",
     activeRequest: null,
     currentProject: "SMN",
+    searchQuery: "",
+    activeBlogPost: null,
+    boardShowSubtasks: false,
+    pageTreeCollapsed: {},
+    pageInlineComments: {},
+    watches: { pages: { "alternate-path": ["Dana Kessler"], "evidence-index": ["Imani Brooks"] }, spaces: {} },
+    attachments: { issues: {}, pages: {} },
+    blogPosts: [
+      { id: "blog-1", projectKey: "SMN", title: "Sprint 12 kicked off: certification recovery is the goal", author: "Lena Ortiz", time: "Today", reactions: { "👍": ["Theo Bennett", "Priya Nair"] }, comments: [], bodyHtml: "<p>Sprint 12 started this morning with one goal: recover the certification path. The single most important item is {{SMN-191}} — the alternate-path decision. Until it is approved, six items stay blocked.</p><h2>What changed since Sprint 11</h2><ul><li>Partner-laboratory accreditation was verified ({{SMN-196}}).</li><li>The decision brief is complete and waiting on Dana Kessler.</li><li>The timing-variance defect ({{SMN-216}}) has a confirmed root cause.</li></ul><div class=\"callout\"><strong>Ask</strong><p>If you own evidence in the Evidence Index, confirm your review state before Thursday.</p></div>" },
+      { id: "blog-2", projectKey: "SMN", title: "How we run governed decisions in this program", author: "Priya Nair", time: "3 days ago", reactions: { "❤️": ["Lena Ortiz"] }, comments: [], bodyHtml: "<p>Every consequential choice in this program gets a decision record: the problem, the options we actually considered, a recommendation, a named approver, and the downstream work it releases.</p><p>That discipline is why one approval can move six work items, update a risk score, restore a milestone forecast, and refresh the leadership brief — the links already exist before the decision is made.</p>" },
+      { id: "blog-3", projectKey: "EGL", title: "Taxonomy v3 is published", author: "Imani Brooks", time: "2 days ago", reactions: { "🎉": ["Priya Nair", "Lena Ortiz"] }, comments: [], bodyHtml: "<p>Evidence Taxonomy v3 is now the governed baseline. All new evidence artifacts must carry the v3 metadata set: class, owner, retention band, and review cadence.</p><div class=\"callout success\"><strong>Adoption status</strong><p>Legacy items are being reclassified through {{EGL-26}}. Owner attestation begins 16 October.</p></div>" }
+    ],
     projects: [
       {
         key: "SMN",
@@ -193,6 +205,41 @@
         dependencies: ["SMN-232"], linkedPage: "sponsor-briefing", risk: "RISK-14", milestone: "Operational demonstration",
         checklist: ["Narrative drafted", "Metrics verified", "Sponsor review complete"], checked: [false, false, false],
         comments: [], history: ["Added to backlog"]
+      },
+      {
+        key: "SMN-240", summary: "Catalog remaining laboratory artifacts", type: "Sub-task", status: "Done", priority: "High",
+        assignee: "Imani Brooks", reporter: "Imani Brooks", sprint: "Sprint 12", epic: "SMN-100", parent: "SMN-184", points: 2, due: "27 Aug 2026",
+        description: "Catalog the remaining test artifacts so the evidence package can baseline.",
+        dependencies: [], linkedPage: "evidence-index", risk: "", milestone: "Evidence review",
+        checklist: [], checked: [], comments: [], history: ["Completed by Imani Brooks"]
+      },
+      {
+        key: "SMN-241", summary: "Run independent evidence review", type: "Sub-task", status: "In Progress", priority: "High",
+        assignee: "Priya Nair", reporter: "Imani Brooks", sprint: "Sprint 12", epic: "SMN-100", parent: "SMN-184", points: 2, due: "02 Sep 2026",
+        description: "Independent reviewer pass over the assembled evidence package.",
+        dependencies: [], linkedPage: "evidence-index", risk: "", milestone: "Evidence review",
+        checklist: [], checked: [], comments: [], history: ["Moved to In Progress"]
+      },
+      {
+        key: "SMN-242", summary: "Baseline the approved package", type: "Sub-task", status: "To Do", priority: "High",
+        assignee: "Imani Brooks", reporter: "Imani Brooks", sprint: "Sprint 12", epic: "SMN-100", parent: "SMN-184", points: 1, due: "04 Sep 2026",
+        description: "Baseline the evidence package after review comments are resolved.",
+        dependencies: [], linkedPage: "evidence-index", risk: "", milestone: "Evidence review",
+        checklist: [], checked: [], comments: [], history: ["Created from evidence plan"]
+      },
+      {
+        key: "SMN-243", summary: "Reproduce variance in disconnected mode", type: "Sub-task", status: "Done", priority: "High",
+        assignee: "Theo Bennett", reporter: "Marcus Reed", sprint: "Sprint 12", epic: "SMN-120", parent: "SMN-216", points: 2, due: "28 Aug 2026",
+        description: "Reproduce the timing variance under the disconnected-mode configuration.",
+        dependencies: [], linkedPage: "operational-scenario", risk: "", milestone: "Integration Readiness Review",
+        checklist: [], checked: [], comments: [], history: ["Completed by Theo Bennett"]
+      },
+      {
+        key: "SMN-244", summary: "Verify fix against regression suite", type: "Sub-task", status: "In Progress", priority: "High",
+        assignee: "Marcus Reed", reporter: "Marcus Reed", sprint: "Sprint 12", epic: "SMN-120", parent: "SMN-216", points: 2, due: "02 Sep 2026",
+        description: "Run the merged fix through the full regression suite and record results.",
+        dependencies: [], linkedPage: "operational-scenario", risk: "", milestone: "Integration Readiness Review",
+        checklist: [], checked: [], comments: [], history: ["Moved to In Progress"]
       }
     ],
     pages: [
@@ -290,6 +337,38 @@
       { id: "rule-3", name: "Leadership brief refresh", detail: "Refresh the leadership brief when milestone, risk, or decision facts change.", enabled: true, runs: 32, last: "41 min ago" },
       { id: "rule-4", name: "Draft-page review reminder", detail: "Remind page owners when a governed page remains in draft for five days.", enabled: false, runs: 0, last: "Never" }
     ]
+  };
+
+  const PAGE_ENRICHMENT = {
+    "program-hub": { labels: ["program", "governance"], bodyHtml: "<div data-macro=\"toc\"></div><h2>Why this space exists</h2><p>The Sentinel Mesh Node space is the governed home for delivery context, decisions, evidence, and team working agreements. If a fact matters to Release 1, it lives here and it is linked to the work that proves it.</p><h2>Current priorities</h2><ul><li><strong>Certification recovery</strong> — the alternate-path decision {{SMN-191}} gates six items of Sprint 12 scope.</li><li><strong>Integration readiness</strong> — the 18 September review depends on the evidence package {{SMN-184}} and the timing-variance fix {{SMN-216}}.</li><li><strong>Operational demonstration</strong> — 22 October, planned under {{SMN-140}}.</li></ul><h2>Who to ask</h2><table><thead><tr><th>Topic</th><th>Owner</th></tr></thead><tbody><tr><td>Program delivery</td><td>Lena Ortiz</td></tr><tr><td>Certification and evidence</td><td>Imani Brooks</td></tr><tr><td>Integration engineering</td><td>Marcus Reed</td></tr><tr><td>Cybersecurity controls</td><td>Evan Kim</td></tr><tr><td>Knowledge and decisions</td><td>Priya Nair</td></tr></tbody></table><div class=\"callout\"><strong>Working rule</strong><p>Every consequential choice gets a decision record before it gets a status update.</p></div>" },
+    "delivery-plan": { labels: ["release", "planning"], bodyHtml: "<h2>Release 1 shape</h2><p>Release 1 is organized around certification recovery, integration readiness, and the controlled operational demonstration on 22 October. Scope is carried by two epics: {{SMN-100}} (Certification and Assurance) and {{SMN-120}} (Integration Readiness), with the demonstration epic {{SMN-140}} staged behind them.</p><h2>Schedule spine</h2><ul><li><span class=\"lozenge lz-amber\">At risk</span> Alternate path decision — 26 August</li><li><span class=\"lozenge lz-amber\">At risk</span> Evidence review — 4 September</li><li><span class=\"lozenge lz-amber\">At risk</span> Integration Readiness Review — 18 September</li><li><span class=\"lozenge lz-green\">On track</span> Operational demonstration — 22 October</li></ul><h2>Delivery assumptions</h2><ul><li>The partner laboratory remains reserved through September.</li><li>Sprint capacity holds at 44 points with no unplanned absence.</li><li>No new certification scope is accepted before the readiness review.</li></ul><div class=\"callout warning\"><strong>Standing exposure</strong><p>Until {{SMN-191}} is approved, the readiness-review forecast stays at 23 September — five days past target.</p></div>" },
+    "cert-strategy": { labels: ["certification", "evidence"], bodyHtml: "<h2>Approach</h2><p>Certification uses traceable evidence, independent review, and a governed decision record for any alternate execution path. Every required artifact has one named owner and one review gate — no shared ownership, no informal sign-off.</p><h2>Review gates</h2><ul><li><strong>Gate 1 — Evidence complete.</strong> Package assembled and cataloged in the Evidence Index.</li><li><strong>Gate 2 — Independent review.</strong> A reviewer who did not produce the artifact confirms it.</li><li><strong>Gate 3 — Baseline.</strong> The package is frozen and traced to controls in the crosswalk.</li></ul><h2>Current state</h2><p><span class=\"lozenge lz-amber\">Blocked</span> The package {{SMN-184}} and control mapping {{SMN-202}} are waiting on the alternate-path decision. The accreditation of the partner laboratory has already been verified ({{SMN-196}}).</p>" },
+    "alternate-path": { labels: ["decision-record", "certification"] },
+    "evidence-index": { labels: ["evidence", "certification"], bodyHtml: "<h2>What this index is</h2><p>The authoritative catalog of certification evidence. Each artifact is mapped to its owner, review state, baseline, and linked control. If an artifact is not in this index, it does not exist for certification purposes.</p><h2>Artifact status</h2><table><thead><tr><th>Artifact</th><th>Owner</th><th>Review state</th></tr></thead><tbody><tr><td>Laboratory accreditation letter</td><td>Imani Brooks</td><td><span class=\"lozenge lz-green\">Approved</span></td></tr><tr><td>Interface verification results</td><td>Theo Bennett</td><td><span class=\"lozenge lz-amber\">In review</span></td></tr><tr><td>Security-control mapping</td><td>Evan Kim</td><td><span class=\"lozenge lz-red\">Blocked</span></td></tr><tr><td>Telemetry baseline report</td><td>Marcus Reed</td><td><span class=\"lozenge lz-amber\">In review</span></td></tr><tr><td>Disconnected-mode run log</td><td>Theo Bennett</td><td><span class=\"lozenge lz-green\">Approved</span></td></tr></tbody></table><p>Assembly work is tracked in {{SMN-184}}; the blocked control mapping is {{SMN-207}}.</p>" },
+    "control-crosswalk": { labels: ["certification", "security"], bodyHtml: "<h2>Purpose</h2><p>The crosswalk establishes bidirectional traceability between controls and approved evidence artifacts: every control names its evidence, and every evidence artifact names the controls it satisfies.</p><h2>How to update it</h2><ul><li>Map new evidence through {{SMN-202}} — never edit the mapping table directly.</li><li>A control with no approved evidence is an open finding, not a footnote.</li><li>Security-control rows are owned by Evan Kim under {{SMN-207}}.</li></ul><div class=\"callout warning\"><strong>Alternate-path condition</strong><p>DEC-014 requires the crosswalk complete by 1 September for the partner-laboratory route.</p></div>" },
+    "irr-hub": { labels: ["readiness", "review"], bodyHtml: "<div data-macro=\"toc\"></div><h2>What the review confirms</h2><p>The readiness review confirms interfaces, evidence, staffing, and residual risk are acceptable for release execution. It is a decision meeting, not a status meeting: the output is a go, a conditional go with named actions, or a no-go with a recovery date.</p><h2>Readiness criteria</h2><ul><li>All critical interfaces verified with evidence in the matrix.</li><li>Certification evidence package baselined.</li><li>Open defects at severity 2 or above: zero. The current gate item is {{SMN-216}}.</li><li>Residual risk accepted by the program lead and sponsor.</li></ul><h2>Reviewers</h2><ul><li>Dana Kessler — executive sponsor (chair)</li><li>Lena Ortiz — program lead</li><li>Marcus Reed — integration</li><li>Imani Brooks — certification</li><li>Evan Kim — cybersecurity</li></ul><h2>Rehearsal</h2><p>A full rehearsal runs one week prior, scheduled under {{SMN-214}}, using the facilitator checklist.</p>" },
+    "rehearsal-checklist": { labels: ["readiness", "checklist"], bodyHtml: "<h2>How to use this checklist</h2><p>Use this checklist to conduct the readiness-review rehearsal and capture every action in accountable work. The facilitator owns the flow; evidence owners answer only for their own artifacts.</p><details class=\"macro-expand\"><summary>Before the rehearsal</summary><ul><li>Confirm the reviewer list and send the agenda 48 hours ahead.</li><li>Freeze the evidence package version being presented.</li><li>Assign a scribe who is not presenting.</li></ul></details><details class=\"macro-expand\"><summary>During the rehearsal</summary><ul><li>Walk the readiness criteria in order — do not skip to the contentious one.</li><li>Every open question becomes a work item before the meeting ends.</li><li>Time-box each evidence area to ten minutes.</li></ul></details><details class=\"macro-expand\"><summary>After the rehearsal</summary><ul><li>Publish the action list the same day.</li><li>Update the readiness criteria page with anything the rehearsal invalidated.</li></ul></details><p>Publication of this checklist is tracked in {{SMN-219}}.</p>" },
+    "interface-matrix": { labels: ["readiness", "integration"], bodyHtml: "<h2>Coverage</h2><p>Each critical interface is traced to its current verification result, evidence record, and accountable owner.</p><table><thead><tr><th>Interface</th><th>Verification</th><th>Owner</th></tr></thead><tbody><tr><td>Mesh node ↔ relay uplink</td><td><span class=\"lozenge lz-green\">Verified</span></td><td>Marcus Reed</td></tr><tr><td>Telemetry export</td><td><span class=\"lozenge lz-amber\">Re-test queued</span></td><td>Theo Bennett</td></tr><tr><td>Disconnected-mode sync</td><td><span class=\"lozenge lz-amber\">Variance under fix</span></td><td>Marcus Reed</td></tr><tr><td>Control-plane auth</td><td><span class=\"lozenge lz-green\">Verified</span></td><td>Evan Kim</td></tr></tbody></table><p>Completion of the matrix is {{SMN-206}}; the sync variance is being closed under {{SMN-216}}.</p>" },
+    "release-1": { labels: ["release"], bodyHtml: "<h2>Release intent</h2><p>Release 1 delivers the capabilities required for the controlled operational demonstration: certified mesh-node operation in connected and disconnected modes, verified interfaces, and a traceable evidence baseline.</p><h2>Included scope</h2><ul><li>Certification and assurance — {{SMN-100}}</li><li>Integration readiness — {{SMN-120}}</li><li>Operational demonstration — {{SMN-140}}</li></ul><h2>Acceptance</h2><p>Release 1 is accepted when the readiness review records a go decision and the demonstration success criteria in the operational scenario are met.</p>" },
+    "operational-scenario": { labels: ["scenario", "release"], bodyHtml: "<h2>Scenario</h2><p>The scenario evaluates mesh behavior in connected and disconnected modes under controlled conditions: a planned uplink loss, thirty minutes of autonomous operation, and a monitored rejoin.</p><h2>Success criteria</h2><ul><li>No data loss across the disconnect window.</li><li>Rejoin completes inside ninety seconds.</li><li>Telemetry export resumes without manual intervention.</li></ul><h2>Constraints and data collection</h2><ul><li>The run uses the frozen Release 1 configuration — no live patching.</li><li>All telemetry is retained for the evidence package.</li><li>The final run is executed under {{SMN-232}}.</li></ul>" },
+    "sponsor-briefing": { labels: ["briefing", "leadership"], bodyHtml: "<h2>What this briefing is</h2><p>This briefing draws delivery, risk, decisions, evidence, and forecast facts from the same operating record leadership sees in the suite — nothing is retyped, so nothing can drift.</p><h2>Narrative</h2><p>Sentinel Mesh Node is amber and recoverable. The single decision that changes the outcome is the alternate certification path: approving it releases the blocked evidence chain and restores the 18 September review forecast. The demonstration remains on plan for 22 October.</p><p>Final assembly of this briefing is tracked in {{SMN-238}}.</p>" },
+    "working-agreements": { labels: ["team-norms"], bodyHtml: "<h2>Our norms</h2><ul><li>Every decision, work item, and evidence artifact is linked, owned, and reviewed in the suite.</li><li>Work without an owner is not work — it is a wish.</li><li>Blocked means a named blocker and a named unblocking action, or it is not blocked.</li><li>Pages are published with version notes; drafts are private until published.</li></ul><h2>Cadence</h2><ul><li>Board review daily at 09:15.</li><li>Risk and decision review Tuesdays.</li><li>Evidence review Thursdays with the certification lead.</li></ul>" },
+    "hru-hub": { labels: ["program", "cutover"], bodyHtml: "<h2>Where the upgrade stands</h2><p>Relay modernization is green: 78% complete with 91% confidence against the 30 September transition. Site acceptance runs under {{HRU-100}}, with the east relay cutover {{HRU-121}} as the active critical path.</p><h2>Focus this sprint</h2><ul><li>East relay cutover execution and failover telemetry validation.</li><li>The protected maintenance window decision {{HRU-137}} — pending with Dana Kessler.</li></ul>" },
+    "hru-cutover": { labels: ["cutover", "acceptance"], bodyHtml: "<h2>Cutover approach</h2><p>Controlled cutover steps, evidence, maintenance windows, and acceptance ownership. Each site follows the same sequence: burn-in, telemetry validation, protected-window cutover, 72-hour observation, acceptance sign-off.</p><div class=\"callout warning\"><strong>Gate</strong><p>The east cutover cannot schedule until the maintenance window decision {{HRU-137}} is approved.</p></div><h2>Evidence per site</h2><ul><li>Burn-in log with the legacy power-module readings (RISK-21 mitigation).</li><li>Failover telemetry validation — completed under {{HRU-128}}.</li><li>Signed acceptance record from the site owner.</li></ul>" },
+    "bte-hub": { labels: ["environments"], bodyHtml: "<h2>Roadmap</h2><p>Self-service environment roadmap, pilot guidance, ownership, and current readiness. The goal: a governed test environment any team can provision in minutes and reset in one action.</p><h2>Now / next</h2><ul><li><strong>Now</strong> — publish baseline images ({{BTE-54}}) and automate environment reset ({{BTE-61}}).</li><li><strong>Next</strong> — snapshot retention decision {{BTE-67}}, then the pilot cohort in November.</li></ul>" },
+    "bte-retention": { labels: ["decision-record", "environments"], bodyHtml: "<h2>The question</h2><p>How long do environment snapshots live before automatic deletion? Retention drives storage cost directly and recovery expectations indirectly.</p><h2>Options</h2><ul><li><strong>Fourteen days</strong> — lowest cost, breaks the monthly regression pattern.</li><li><strong>Thirty days</strong> — covers every observed recovery request to date. <span class=\"lozenge lz-blue\">Recommended</span></li><li><strong>Ninety days</strong> — triples storage cost for recoveries that have never been requested.</li></ul><p>The approval record is {{BTE-67}}, pending with Lena Ortiz as DEC-024.</p>" },
+    "bte-architecture": { labels: ["architecture", "environments"], bodyHtml: "<h2>Topology</h2><p>Baseline images, reset automation, controls, and environment topology. Each environment is an isolated stack built from versioned baseline images; resets rebuild from image rather than repairing in place.</p><h2>Operating rules</h2><ul><li>Baseline images are versioned and published under {{BTE-54}}.</li><li>Reset automation ({{BTE-61}}) is load-tested against the provisioning concurrency limit (RISK-25).</li><li>No snowflake environments: manual changes are destroyed on reset by design.</li></ul>" },
+    "zta-hub": { labels: ["security", "identity"], bodyHtml: "<h2>Rollout state</h2><p>Identity rollout, applications, service accounts, controls, exceptions, and readiness. Wave 2 targets 4 December; the program is amber at 43% complete.</p><h2>Critical path</h2><ul><li>Privileged-role reconciliation {{ZTA-42}} — <span class=\"lozenge lz-red\">Blocked</span> on the exception-policy decision.</li><li>Conditional access enablement {{ZTA-47}} — in progress.</li><li>Time-bound exception policy {{ZTA-59}} — pending approval as DEC-029.</li></ul><div class=\"callout warning\"><strong>Highest risk</strong><p>Service-account compatibility (RISK-30, 16/25): legacy authentication retires by wave, with pilot exceptions only.</p></div>" },
+    "zta-policy": { labels: ["policy", "security"], bodyHtml: "<h2>Exception rules</h2><p>Time-bound exception rules, owners, approval thresholds, and retirement controls for access that cannot yet meet the zero-trust baseline.</p><ul><li>Maximum exception life: 90 days, no renewals without re-approval.</li><li>Every exception names an owner and a retirement path.</li><li>Privileged-role exceptions require the security lead and the executive approver.</li></ul><p>Adoption of this policy is the pending decision {{ZTA-59}}.</p>" },
+    "egl-hub": { labels: ["governance", "evidence"], bodyHtml: "<h2>Program state</h2><p>Evidence ownership, review cadence, retention, and adoption status. The library is green at 86% complete toward Library 3.0 on 18 September.</p><h2>Adoption</h2><ul><li>Taxonomy v3 published ({{EGL-35}}) — <span class=\"lozenge lz-green\">Done</span></li><li>Retention metadata backfill {{EGL-26}} — in review.</li><li>Automated review reminders {{EGL-31}} — in progress.</li></ul>" },
+    "egl-taxonomy": { labels: ["taxonomy", "evidence"], bodyHtml: "<h2>The v3 metadata set</h2><p>Approved metadata, evidence classes, lifecycle rules, and examples. Every artifact carries: class, owner, retention band, and review cadence.</p><h2>Evidence classes</h2><table><thead><tr><th>Class</th><th>Retention</th><th>Review</th></tr></thead><tbody><tr><td>Certification</td><td>7 years</td><td>Annual</td></tr><tr><td>Operational</td><td>3 years</td><td>Annual</td></tr><tr><td>Working</td><td>1 year</td><td>On change</td></tr></tbody></table><p>Reclassification of legacy items runs under {{EGL-26}}.</p>" },
+    "ops-hub": { labels: ["intake", "transformation"], bodyHtml: "<h2>Operating model</h2><p>Operating model, pilot scope, service promise, roles, and adoption plan for unified intake. The program is red at 36% — request-ownership gaps (RISK-36, 20/25) are the dominant exposure.</p><h2>Pilot plan</h2><ul><li>Routing rules prototype {{OPS-21}} — in review.</li><li>Approval-path validation {{OPS-27}} — <span class=\"lozenge lz-red\">Blocked</span> on ownership resolution.</li><li>Phased cutover pending as DEC-036: two-team pilot before enterprise rollout, with agent training under {{OPS-38}}.</li></ul><div class=\"callout warning\"><strong>Bottom line</strong><p>No pilot launches until every request type has one accountable owner.</p></div>" },
+    "ops-routing": { labels: ["routing", "intake"], bodyHtml: "<h2>Design</h2><p>Request routing, ownership, approval paths, exceptions, and retention mapping. Requests route on type and organization; approvals attach at the type level, never per request.</p><h2>Open design questions</h2><ul><li>Ownership for cross-organization requests — blocking {{OPS-27}}.</li><li>Escalation path when an approver is unavailable beyond one business day.</li></ul><p>Retention mapping is handled under {{OPS-34}}.</p>" },
+    "dcp-hub": { labels: ["partners", "data"], bodyHtml: "<h2>Platform state</h2><p>Partner onboarding, schemas, operational controls, releases, and support ownership. Partner Beta targets 6 November; the program is amber at 69%.</p><h2>Active work</h2><ul><li>Ingestion error recovery {{DCP-79}} — in progress against partner format drift (RISK-42).</li><li>Replay service configuration {{DCP-84}} — ready.</li><li>Quality thresholds approved as DEC-041 ({{DCP-88}} <span class=\"lozenge lz-green\">Done</span>).</li></ul>" },
+    "dcp-quality": { labels: ["data-quality", "partners"], bodyHtml: "<h2>Thresholds</h2><p>Warning and rejection tolerances, replay behavior, metrics, and governance — approved under DEC-041 as tiered warn and reject bands.</p><table><thead><tr><th>Signal</th><th>Warn</th><th>Reject</th></tr></thead><tbody><tr><td>Schema mismatch</td><td>0.5%</td><td>2%</td></tr><tr><td>Late arrival</td><td>15 min</td><td>4 hours</td></tr><tr><td>Duplicate records</td><td>0.1%</td><td>1%</td></tr></tbody></table><h2>Replay behavior</h2><p>Rejected batches quarantine automatically and replay after correction — configuration runs under {{DCP-84}}.</p>" },
+    "help-access": { labels: ["help-center"] },
+    "help-incident": { labels: ["help-center"] },
+    "help-software": { labels: ["help-center"] }
   };
 
   function seedPortfolioFixture() {
@@ -396,16 +475,26 @@
       Object.assign(page("SMN", "help-software", "Software Request Checklist", "program-hub", "Jordan Lee", 2, "Customer-safe guidance for requesting an approved application or license."), { helpCenter: true, bodyHtml: "<h2>Required information</h2><p>Provide the software name, business need, number of users, cost center, required date, and device type.</p><h2>Approval</h2><p>Requests requiring a license or exception are routed to the accountable approver.</p>" })
     );
 
+    Object.entries(PAGE_ENRICHMENT).forEach(([id, extra]) => {
+      const record = FIXTURE.pages.find((item) => item.id === id);
+      if (record) Object.assign(record, extra);
+    });
+
+    FIXTURE.pages.push(
+      { projectKey: "personal:Maya Okafor", id: "personal-maya-rollout", title: "Suite rollout notes", parent: null, depth: 0, owner: "Maya Okafor", updated: "Yesterday", version: 2, labels: ["personal"], summary: "Personal working notes on suite administration and rollout sequencing.", content: "Personal notes on rollout order, permission model checks, and template curation.", bodyHtml: "<h2>Rollout order</h2><ul><li>Projects and boards first — teams feel the value immediately.</li><li>Knowledge spaces second, seeded from templates.</li><li>Service management last, once request types are agreed.</li></ul><h2>To check</h2><ul><li>Permission matrix review with each project lead.</li><li>Which page templates the teams actually use after two weeks.</li></ul>" },
+      { projectKey: "personal:Priya Nair", id: "personal-priya-drafts", title: "Drafting corner", parent: null, depth: 0, owner: "Priya Nair", updated: "2 days ago", version: 1, labels: ["personal"], summary: "Scratch space for knowledge structures before they move to a governed space.", content: "Draft outlines and page structures that are not yet ready for a project space.", bodyHtml: "<h2>In progress</h2><ul><li>A one-page decision-record template with tighter option framing.</li><li>Evidence-index layout that scales past fifty artifacts.</li></ul><p>Nothing here is governed — pages move to a project space when they are ready for review.</p>" }
+    );
+
     FIXTURE.pages.forEach((record) => {
       if (!FIXTURE.pageComments[record.id]) FIXTURE.pageComments[record.id] = [];
-      if (!FIXTURE.pageVersions[record.id]) FIXTURE.pageVersions[record.id] = [{ version: record.version, author: record.owner, time: record.updated, note: "Current governed version", title: record.title, content: record.content, bodyHtml: `<h2>Purpose</h2><p>${record.content}</p>` }];
+      if (!FIXTURE.pageVersions[record.id]) FIXTURE.pageVersions[record.id] = [{ version: record.version, author: record.owner, time: record.updated, note: "Current governed version", title: record.title, content: record.content, bodyHtml: record.bodyHtml || `<h2>Purpose</h2><p>${record.content}</p>` }];
     });
   }
 
   seedPortfolioFixture();
 
-  const SCHEMA_VERSION = 3;
-  const STORAGE_KEY = "upms-demo-v3";
+  const SCHEMA_VERSION = 4;
+  const STORAGE_KEY = "upms-demo-v4";
   const PERSONAS = {
     "Maya Okafor": { role: "Suite administrator", key: "administrator", defaultRoute: "home", capabilities: ["all"] },
     "Lena Ortiz": { role: "Project lead", key: "project-lead", defaultRoute: "home", capabilities: ["edit-work", "create-work", "manage-sprint", "edit-knowledge", "publish-knowledge", "archive-knowledge", "comment"] },
@@ -416,11 +505,11 @@
   };
   const ROUTE_ACCESS = {
     customer: ["portal"],
-    agent: ["home", "inbox", "portal", "queues", "slas", "spaces"],
-    executive: ["home", "inbox", "projects", "timeline", "releases", "spaces", "decisions", "reports", "leadership", "queues", "slas"],
-    contributor: ["home", "my-work", "inbox", "projects", "backlog", "board", "timeline", "releases", "spaces", "decisions", "filters", "reports", "people"],
-    "project-lead": ["home", "my-work", "inbox", "projects", "backlog", "board", "timeline", "releases", "spaces", "decisions", "filters", "reports", "leadership", "people", "automation", "portal", "queues", "slas"],
-    administrator: ["home", "my-work", "inbox", "projects", "backlog", "board", "timeline", "releases", "spaces", "decisions", "filters", "reports", "leadership", "people", "automation", "admin", "migration", "portal", "queues", "slas"]
+    agent: ["home", "inbox", "portal", "queues", "slas", "spaces", "search"],
+    executive: ["home", "inbox", "projects", "timeline", "releases", "spaces", "decisions", "reports", "leadership", "queues", "slas", "search"],
+    contributor: ["home", "my-work", "inbox", "projects", "backlog", "board", "timeline", "releases", "spaces", "decisions", "filters", "reports", "people", "search"],
+    "project-lead": ["home", "my-work", "inbox", "projects", "backlog", "board", "timeline", "releases", "spaces", "decisions", "filters", "reports", "leadership", "people", "automation", "portal", "queues", "slas", "search"],
+    administrator: ["home", "my-work", "inbox", "projects", "backlog", "board", "timeline", "releases", "spaces", "decisions", "filters", "reports", "leadership", "people", "automation", "admin", "migration", "portal", "queues", "slas", "search"]
   };
   const SAFE_RECORD_ID = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,79}$/;
   const ISSUE_STATUSES = new Set(["To Do", "Ready", "In Progress", "In Review", "Blocked", "Done"]);
@@ -435,6 +524,14 @@
   let storageHealthy = true;
   let pendingImportState = null;
   let draftTimer = null;
+
+  function migrateLegacySnapshot(candidate) {
+    if (!candidate || typeof candidate !== "object" || Number(candidate.schemaVersion) !== 3) return candidate;
+    const upgraded = { ...candidate, schemaVersion: 4 };
+    if (Array.isArray(upgraded.issues)) upgraded.issues = upgraded.issues.map((issue) => ({ parent: null, ...issue }));
+    if (Array.isArray(upgraded.pages)) upgraded.pages = upgraded.pages.map((page) => ({ labels: [], ...page }));
+    return upgraded;
+  }
 
   function validateStateCandidate(candidate) {
     if (!candidate || typeof candidate !== "object" || Array.isArray(candidate)) return "The snapshot root must be an object.";
@@ -540,9 +637,27 @@
       }
       if (!["Backlog", "Portfolio backlog"].includes(issue.sprint) && !candidate.sprints.some((sprint) => sprint.name === issue.sprint && sprint.projectKey === issue.projectKey)) return `Work item ${issue.key} has an invalid or cross-project sprint.`;
       if (![issue.checklist, issue.checked, issue.comments, issue.history].every(Array.isArray)) return `Work item ${issue.key} has incomplete activity data.`;
+      if (issue.parent !== undefined && issue.parent !== null) {
+        if (typeof issue.parent !== "string" || issue.parent === issue.key) return `Work item ${issue.key} has an invalid parent reference.`;
+        const parent = candidate.issues.find((candidateIssue) => candidateIssue.key === issue.parent);
+        if (!parent || parent.projectKey !== issue.projectKey) return `Work item ${issue.key} has an unknown or cross-project parent.`;
+        if (parent.type === "Sub-task") return `Work item ${issue.key} cannot be nested under another subtask.`;
+      }
+      if (issue.type === "Sub-task" && !issue.parent) return `Subtask ${issue.key} requires a parent work item.`;
     }
+    const personNames = new Set(candidate.people.map((person) => person.name));
+    const validPageProject = (key) => projectKeys.has(key) || (typeof key === "string" && key.startsWith("personal:") && personNames.has(key.slice("personal:".length)));
     for (const page of candidate.pages) {
-      if (!hasTextFields(page, ["projectKey", "id", "title", "owner", "updated", "summary", "content"]) || !projectKeys.has(page.projectKey) || !finiteInRange(page.depth, 0, 10) || !finiteInRange(page.version, 1, 100000)) return `Page ${page.id} has invalid project, fields, hierarchy, or version data.`;
+      if (!hasTextFields(page, ["projectKey", "id", "title", "owner", "updated", "summary", "content"]) || !validPageProject(page.projectKey) || !finiteInRange(page.depth, 0, 10) || !finiteInRange(page.version, 1, 100000)) return `Page ${page.id} has invalid project, fields, hierarchy, or version data.`;
+      if (page.labels !== undefined && (!Array.isArray(page.labels) || page.labels.length > 20 || page.labels.some((label) => typeof label !== "string" || !label.trim() || label.length > 40))) return `Page ${page.id} has invalid labels.`;
+      if (page.restricted !== undefined && page.restricted !== null && (typeof page.restricted !== "object" || ["view", "edit"].some((mode) => page.restricted[mode] !== undefined && (!Array.isArray(page.restricted[mode]) || page.restricted[mode].some((name) => typeof name !== "string"))))) return `Page ${page.id} has invalid restrictions.`;
+      let cursor = page;
+      const walked = new Set();
+      while (cursor && cursor.parent) {
+        if (walked.has(cursor.id)) return `Page ${page.id} is part of a circular page hierarchy.`;
+        walked.add(cursor.id);
+        cursor = candidate.pages.find((candidatePage) => candidatePage.id === cursor.parent);
+      }
       if (page.parent && !pageIds.has(page.parent)) return `Page ${page.id} has an unknown parent.`;
       if (page.parent && candidate.pages.find((candidatePage) => candidatePage.id === page.parent)?.projectKey !== page.projectKey) return `Page ${page.id} has a cross-project parent.`;
       const versions = candidate.pageVersions[page.id];
@@ -590,6 +705,7 @@
       if (notificationIds.has(notificationId)) return `Notifications contain duplicate identifier “${notificationId}”.`;
       notificationIds.add(notificationId);
       if (!hasTextFields(notification, ["kind", "title", "detail", "time", "target"]) || typeof notification.unread !== "boolean") return "A notification has invalid fields.";
+      if (notification.for !== undefined && (typeof notification.for !== "string" || notification.for.length > 100)) return "A notification has an invalid recipient.";
       const validTarget = notification.kind === "issue" ? issueKeys.has(notification.target) : notification.kind === "page" ? pageIds.has(notification.target) : notification.kind === "decision" ? decisionIds.has(notification.target) : notification.kind === "request" ? requestKeys.has(notification.target) : false;
       if (!validTarget) return `Notification ${notification.id} has an unknown kind or target.`;
     }
@@ -600,11 +716,32 @@
       if (!hasTextFields(item, ["projectKey", "name", "target", "forecast", "status", "issue"]) || !projectKeys.has(item.projectKey) || (item.issue && !issueKeys.has(item.issue))) return "A milestone is invalid.";
       if (item.issue && candidate.issues.find((issue) => issue.key === item.issue)?.projectKey !== item.projectKey) return `Milestone ${item.name} links to work in another project.`;
     }
+    if (candidate.blogPosts !== undefined) {
+      if (!Array.isArray(candidate.blogPosts) || candidate.blogPosts.length > 500) return "Blog posts are invalid.";
+      for (const post of candidate.blogPosts) {
+        if (!post || typeof post !== "object" || !SAFE_RECORD_ID.test(String(post.id)) || !hasTextFields(post, ["title", "author", "time"])) return "A blog post is invalid.";
+      }
+    }
+    if (candidate.pageInlineComments !== undefined && (typeof candidate.pageInlineComments !== "object" || Array.isArray(candidate.pageInlineComments))) return "Inline comments are invalid.";
+    if (candidate.watches !== undefined && (typeof candidate.watches !== "object" || Array.isArray(candidate.watches))) return "Watch subscriptions are invalid.";
+    if (candidate.attachments !== undefined) {
+      if (typeof candidate.attachments !== "object" || Array.isArray(candidate.attachments)) return "Attachments are invalid.";
+      for (const group of Object.values(candidate.attachments)) {
+        if (typeof group !== "object" || Array.isArray(group)) return "Attachments are invalid.";
+        for (const files of Object.values(group)) {
+          if (!Array.isArray(files) || files.length > 40) return "An attachment list is invalid.";
+          for (const file of files) {
+            if (!file || typeof file !== "object" || typeof file.name !== "string" || file.name.length > 200 || (file.dataUrl !== undefined && (typeof file.dataUrl !== "string" || file.dataUrl.length > 800000 || !file.dataUrl.startsWith("data:")))) return "An attachment record is invalid.";
+          }
+        }
+      }
+    }
     return "";
   }
 
   function normalizeState(candidate) {
     const base = clone(FIXTURE);
+    candidate = migrateLegacySnapshot(candidate);
     if (validateStateCandidate(candidate)) return base;
     const state = { ...base, ...candidate };
     state.issueFilter = { ...base.issueFilter, ...(candidate.issueFilter || {}) };
@@ -617,11 +754,26 @@
     state.issues = state.issues.map((issue, index) => ({ key: `IMP-${index + 1}`, summary: "Imported work item", type: "Task", status: "To Do", priority: "Medium", assignee: "Maya Okafor", reporter: "Maya Okafor", sprint: "Backlog", epic: "—", points: 0, due: "Not set", description: "", dependencies: [], linkedPage: "program-hub", risk: "", milestone: "Not set", checklist: [], checked: [], comments: [], history: [], ...issue, dependencies: Array.isArray(issue.dependencies) ? issue.dependencies : [], checklist: Array.isArray(issue.checklist) ? issue.checklist : [], checked: Array.isArray(issue.checked) ? issue.checked : [], comments: Array.isArray(issue.comments) ? issue.comments : [], history: Array.isArray(issue.history) ? issue.history : [] }));
     state.service.requests = state.service.requests.map((request, index) => ({ key: `HELP-${2000 + index}`, summary: "Imported service request", type: "question", status: "Submitted", priority: "Medium", requester: "Amina Cole", organization: "Mission Operations", assignee: "Unassigned", created: "Imported", description: "", firstResponse: { goal: 4, elapsed: 0, met: false }, resolution: { goal: 24, elapsed: 0, met: false }, participants: [], linkedIssue: "SMN-100", linkedPage: "program-hub", comments: [], ...request, firstResponse: { goal: 4, elapsed: 0, met: false, ...(request.firstResponse || {}) }, resolution: { goal: 24, elapsed: 0, met: false, ...(request.resolution || {}) }, comments: Array.isArray(request.comments) ? request.comments : [] }));
     state.pageComments = state.pageComments && typeof state.pageComments === "object" ? state.pageComments : base.pageComments;
+    state.pageInlineComments = state.pageInlineComments && typeof state.pageInlineComments === "object" && !Array.isArray(state.pageInlineComments) ? state.pageInlineComments : {};
+    state.watches = state.watches && typeof state.watches === "object" && !Array.isArray(state.watches) ? { pages: state.watches.pages && typeof state.watches.pages === "object" ? state.watches.pages : {}, spaces: state.watches.spaces && typeof state.watches.spaces === "object" ? state.watches.spaces : {} } : clone(base.watches);
+    state.attachments = state.attachments && typeof state.attachments === "object" && !Array.isArray(state.attachments) ? { issues: state.attachments.issues || {}, pages: state.attachments.pages || {} } : { issues: {}, pages: {} };
+    state.blogPosts = Array.isArray(state.blogPosts) ? state.blogPosts.map((post) => ({ reactions: {}, comments: [], bodyHtml: "", projectKey: "SMN", ...post })) : clone(base.blogPosts);
+    state.pageTreeCollapsed = state.pageTreeCollapsed && typeof state.pageTreeCollapsed === "object" ? state.pageTreeCollapsed : {};
+    state.boardShowSubtasks = Boolean(state.boardShowSubtasks);
+    state.searchQuery = typeof state.searchQuery === "string" ? state.searchQuery : "";
+    state.issues.forEach((issue) => {
+      if (issue.parent === undefined) issue.parent = null;
+      if (issue.parent && !state.issues.some((candidateIssue) => candidateIssue.key === issue.parent)) issue.parent = null;
+    });
     state.pageVersions = state.pageVersions && typeof state.pageVersions === "object" ? state.pageVersions : base.pageVersions;
     state.pageDrafts = state.pageDrafts && typeof state.pageDrafts === "object" ? state.pageDrafts : {};
     if (!PERSONAS[state.currentUser]) state.currentUser = "Maya Okafor";
     state.pages.forEach((page) => {
       page.archived = Boolean(page.archived);
+      if (!Array.isArray(page.labels)) page.labels = [];
+      if (page.restricted && typeof page.restricted === "object") page.restricted = { view: Array.isArray(page.restricted.view) ? page.restricted.view : [], edit: Array.isArray(page.restricted.edit) ? page.restricted.edit : [] };
+      else page.restricted = null;
+      if (!page.reactions || typeof page.reactions !== "object") page.reactions = {};
       const records = Array.isArray(state.pageVersions[page.id]) ? state.pageVersions[page.id] : [];
       state.pageVersions[page.id] = records.length ? records : [{ version: page.version, author: page.owner, time: page.updated, note: "Current version" }];
       state.pageVersions[page.id].forEach((version) => {
@@ -632,8 +784,12 @@
     });
     state.route = "home";
     state.activePage = null;
+    state.activeBlogPost = null;
     state.activeDecision = null;
     state.activeRequest = null;
+    Object.keys(state.pageComments).forEach((pageId) => {
+      state.pageComments[pageId] = (state.pageComments[pageId] || []).map((comment, index) => ({ id: comment.id || `pc-${pageId}-${index}`, replies: Array.isArray(comment.replies) ? comment.replies : [], resolved: Boolean(comment.resolved), ...comment }));
+    });
     state.migrationProgress = state.migrationComplete ? 100 : 0;
     return state;
   }
@@ -656,6 +812,7 @@
       const snapshot = clone(DemoState);
       snapshot.route = "home";
       snapshot.activePage = null;
+      snapshot.activeBlogPost = null;
       snapshot.activeDecision = null;
       snapshot.activeRequest = null;
       snapshot.migrationProgress = snapshot.migrationComplete ? 100 : 0;
@@ -710,25 +867,271 @@
     });
   }
 
+  const RICH_TEXT_TAGS = new Set(["P", "H2", "H3", "STRONG", "EM", "U", "S", "UL", "OL", "LI", "BLOCKQUOTE", "A", "BR", "CODE", "PRE", "TABLE", "THEAD", "TBODY", "TR", "TH", "TD", "DETAILS", "SUMMARY", "DIV", "SPAN"]);
+  const RICH_TEXT_CLASSES = new Set(["callout", "callout warning", "callout success", "lozenge lz-green", "lozenge lz-amber", "lozenge lz-red", "lozenge lz-blue", "lozenge lz-grey", "macro-expand"]);
   function sanitizeRichText(input) {
     const source = document.createElement("template");
     source.innerHTML = String(input || "");
-    const allowed = new Set(["P", "H2", "H3", "STRONG", "EM", "UL", "OL", "LI", "BLOCKQUOTE", "A", "BR"]);
     const clean = (node) => {
       [...node.childNodes].forEach((child) => {
         if (child.nodeType !== Node.ELEMENT_NODE) return;
-        if (!allowed.has(child.tagName)) {
+        if (!RICH_TEXT_TAGS.has(child.tagName)) {
           child.replaceWith(document.createTextNode(child.textContent || ""));
           return;
         }
         const href = child.tagName === "A" ? child.getAttribute("href") || "" : "";
+        const className = child.getAttribute("class") || "";
+        const macro = child.getAttribute("data-macro") || "";
         [...child.attributes].forEach((attribute) => child.removeAttribute(attribute.name));
         if (child.tagName === "A" && /^(https?:|mailto:|#)/i.test(href)) child.setAttribute("href", href);
+        if ((child.tagName === "DIV" || child.tagName === "SPAN") && RICH_TEXT_CLASSES.has(className)) child.setAttribute("class", className);
+        if (child.tagName === "DETAILS") child.setAttribute("class", "macro-expand");
+        if (child.tagName === "DIV" && macro === "toc") child.setAttribute("data-macro", "toc");
         clean(child);
       });
     };
     clean(source.content);
     return source.innerHTML;
+  }
+
+  const MONTH_INDEX = { jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5, jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11 };
+  const DEMO_TODAY_MS = Date.UTC(2026, 7, 24);
+  function parseDemoDate(value) {
+    const text = String(value || "").trim();
+    if (!text || /^(not set|next release|—)$/i.test(text)) return null;
+    if (/^today$/i.test(text)) return DEMO_TODAY_MS;
+    const match = text.match(/^(\d{1,2})\s+([A-Za-z]{3})[a-z]*(?:\s+(\d{4}))?$/);
+    if (!match) return null;
+    const month = MONTH_INDEX[match[2].toLowerCase()];
+    if (month === undefined) return null;
+    return Date.UTC(match[3] ? Number(match[3]) : 2026, month, Number(match[1]));
+  }
+  function isOverdue(issue) {
+    const due = parseDemoDate(issue.due);
+    return due !== null && due < DEMO_TODAY_MS && issue.status !== "Done";
+  }
+  function dueCell(issue) {
+    return isOverdue(issue) ? `<span class="due-overdue" title="Past due against the 24 August demo date">${esc(issue.due)} · Overdue</span>` : esc(issue.due);
+  }
+  function pageRecency(page) {
+    const text = String(page.updated || "").trim().toLowerCase();
+    if (!text) return 999999;
+    if (text === "just now") return 0;
+    let match = text.match(/^(\d+)\s*min/);
+    if (match) return Number(match[1]);
+    match = text.match(/^(\d+)\s*hour/);
+    if (match) return Number(match[1]) * 60;
+    if (text.startsWith("today")) return 300;
+    if (text === "yesterday") return 1440;
+    match = text.match(/^(\d+)\s*day/);
+    if (match) return Number(match[1]) * 1440;
+    match = text.match(/^(\d+)\s*week/);
+    if (match) return Number(match[1]) * 10080;
+    const parsed = parseDemoDate(page.updated);
+    if (parsed !== null) return Math.max(0, Math.round((DEMO_TODAY_MS - parsed) / 60000));
+    return 999999;
+  }
+  function stripHtml(html) {
+    const source = document.createElement("template");
+    source.innerHTML = String(html || "");
+    return (source.content.textContent || "").replace(/\s+/g, " ").trim();
+  }
+  function pageSearchText(page) {
+    return `${page.title} ${page.summary} ${page.owner} ${(page.labels || []).join(" ")} ${page.content || ""} ${stripHtml(page.bodyHtml || "")}`;
+  }
+  function searchSnippet(text, query, radius = 90) {
+    const plain = String(text || "");
+    const index = plain.toLowerCase().indexOf(String(query).toLowerCase());
+    if (index < 0) return esc(plain.slice(0, radius * 2)) + (plain.length > radius * 2 ? "…" : "");
+    const start = Math.max(0, index - radius);
+    const end = Math.min(plain.length, index + query.length + radius);
+    const before = esc(plain.slice(start, index));
+    const hit = esc(plain.slice(index, index + query.length));
+    const after = esc(plain.slice(index + query.length, end));
+    return `${start > 0 ? "…" : ""}${before}<mark>${hit}</mark>${after}${end < plain.length ? "…" : ""}`;
+  }
+  function diffWords(oldText, newText) {
+    const a = String(oldText || "").split(/\s+/).filter(Boolean);
+    const b = String(newText || "").split(/\s+/).filter(Boolean);
+    if (a.length > 1600 || b.length > 1600) return null;
+    const rows = a.length + 1;
+    const cols = b.length + 1;
+    const table = new Uint16Array(rows * cols);
+    for (let i = a.length - 1; i >= 0; i -= 1) {
+      for (let j = b.length - 1; j >= 0; j -= 1) {
+        table[i * cols + j] = a[i] === b[j] ? table[(i + 1) * cols + j + 1] + 1 : Math.max(table[(i + 1) * cols + j], table[i * cols + j + 1]);
+      }
+    }
+    const parts = [];
+    let i = 0;
+    let j = 0;
+    const push = (kind, word) => {
+      const last = parts[parts.length - 1];
+      if (last && last.kind === kind) last.words.push(word);
+      else parts.push({ kind, words: [word] });
+    };
+    while (i < a.length && j < b.length) {
+      if (a[i] === b[j]) { push("same", a[i]); i += 1; j += 1; }
+      else if (table[(i + 1) * cols + j] >= table[i * cols + j + 1]) { push("removed", a[i]); i += 1; }
+      else { push("added", b[j]); j += 1; }
+    }
+    while (i < a.length) { push("removed", a[i]); i += 1; }
+    while (j < b.length) { push("added", b[j]); j += 1; }
+    return parts;
+  }
+  function renderWordDiff(oldText, newText) {
+    const parts = diffWords(oldText, newText);
+    if (!parts) return null;
+    if (!parts.some((part) => part.kind !== "same")) return '<p class="diff-empty">No text differences between these versions.</p>';
+    return `<p class="diff-inline">${parts.map((part) => {
+      const words = esc(part.words.join(" "));
+      if (part.kind === "removed") return `<del>${words}</del>`;
+      if (part.kind === "added") return `<ins>${words}</ins>`;
+      return words;
+    }).join(" ")}</p>`;
+  }
+  function renderCommentText(text) {
+    let html = esc(text);
+    DemoState.people.forEach((person) => {
+      const token = "@" + person.name;
+      html = html.split(esc(token)).join(`<span class="mention-chip">@${esc(person.name)}</span>`);
+    });
+    return html;
+  }
+  function mentionedPeople(text) {
+    return DemoState.people.filter((person) => String(text).includes("@" + person.name)).map((person) => person.name);
+  }
+  function renderPageBodyHtml(page, bodyHtml) {
+    let html = sanitizeRichText(bodyHtml !== undefined ? bodyHtml : page.bodyHtml || "");
+    if (html.includes("data-macro=\"toc\"")) {
+      const scratch = document.createElement("template");
+      scratch.innerHTML = html;
+      const headings = [...scratch.content.querySelectorAll("h2, h3")].map((heading) => heading.textContent.trim()).filter(Boolean);
+      const toc = headings.length ? `<div class="macro-toc"><strong>On this page</strong><ul>${headings.map((title) => `<li>${esc(title)}</li>`).join("")}</ul></div>` : "";
+      html = html.replace(/<div data-macro="toc"><\/div>/g, toc);
+    }
+    html = html.replace(/\{\{([A-Z][A-Z0-9]*-\d+)\}\}/g, (matchText, key) => {
+      const issue = issueByKey(key);
+      if (!issue) return esc(matchText);
+      return `<button class="work-chip" type="button" data-issue="${esc(key)}" title="${esc(issue.summary)}"><span class="work-chip-key">${esc(key)}</span><span class="work-chip-status st-${slug(issue.status)}">${esc(issue.status)}</span></button>`;
+    });
+    return html;
+  }
+
+  const SUBTASK_TYPE = "Sub-task";
+  function isSubtask(issue) {
+    return issue && issue.type === SUBTASK_TYPE;
+  }
+  function subtasksOf(key) {
+    return DemoState.issues.filter((issue) => issue.parent === key);
+  }
+  function subtaskProgress(key) {
+    const children = subtasksOf(key);
+    return { total: children.length, done: children.filter((issue) => issue.status === "Done").length };
+  }
+  function subtaskChip(issue) {
+    const progress = subtaskProgress(issue.key);
+    if (!progress.total) return "";
+    return `<span class="subtask-chip ${progress.done === progress.total ? "complete" : ""}" title="${progress.done} of ${progress.total} subtasks done">${icon("list-checks")} ${progress.done}/${progress.total}</span>`;
+  }
+  function epicsForProject(projectKey = DemoState.currentProject) {
+    return issuesForProject(projectKey).filter((issue) => issue.type === "Epic");
+  }
+
+  function pageVisibleTo(page, name = actor()) {
+    if (persona().key === "administrator") return true;
+    const restricted = page.restricted || {};
+    if (Array.isArray(restricted.view) && restricted.view.length) return restricted.view.includes(name) || page.owner === name;
+    return true;
+  }
+  function pageEditableBy(page, name = actor()) {
+    if (persona().key === "administrator") return true;
+    const restricted = page.restricted || {};
+    if (Array.isArray(restricted.edit) && restricted.edit.length) return restricted.edit.includes(name) || page.owner === name;
+    return pageVisibleTo(page, name);
+  }
+  function visiblePages(pages) {
+    return pages.filter((page) => pageVisibleTo(page));
+  }
+  function pageChildrenOf(parentId, projectKey) {
+    return pagesForProject(projectKey).filter((page) => (page.parent || null) === (parentId || null));
+  }
+  function pageDepthOf(page) {
+    let depth = 0;
+    let cursor = page;
+    const seen = new Set();
+    while (cursor && cursor.parent && !seen.has(cursor.id) && depth < 10) {
+      seen.add(cursor.id);
+      cursor = pageById(cursor.parent);
+      depth += 1;
+    }
+    return depth;
+  }
+  function pageDescendantIds(pageId) {
+    const ids = [];
+    const walk = (id) => {
+      DemoState.pages.filter((page) => page.parent === id).forEach((child) => {
+        ids.push(child.id);
+        walk(child.id);
+      });
+    };
+    walk(pageId);
+    return ids;
+  }
+  function orderedProjectPages(projectKey, includeArchivedId = null) {
+    const result = [];
+    const walk = (parentId, depth) => {
+      pageChildrenOf(parentId, projectKey)
+        .filter((page) => (!page.archived || page.id === includeArchivedId))
+        .forEach((page) => {
+          result.push({ page, depth });
+          walk(page.id, depth + 1);
+        });
+    };
+    walk(null, 0);
+    return result;
+  }
+  function allLabels() {
+    const counts = new Map();
+    DemoState.pages.filter((page) => !page.archived).forEach((page) => {
+      (page.labels || []).forEach((label) => counts.set(label, (counts.get(label) || 0) + 1));
+    });
+    return [...counts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+  }
+  function labelChips(page, editable = false) {
+    const labels = page.labels || [];
+    return `<div class="label-row" data-label-row>${labels.map((label) => `<span class="label-chip"><button class="label-chip-link" type="button" data-label-search="${esc(label)}">${esc(label)}</button>${editable ? `<button class="label-remove" type="button" data-action="remove-label" data-page-id="${esc(page.id)}" data-label="${esc(label)}" aria-label="Remove label ${esc(label)}">×</button>` : ""}</span>`).join("")}${editable ? `<form class="label-add-form" data-add-label="${esc(page.id)}"><input name="label" placeholder="Add label" aria-label="Add a label" maxlength="30"><button class="button small" type="submit">Add</button></form>` : ""}</div>`;
+  }
+
+  function personalSpaceKey(name) {
+    return "personal:" + name;
+  }
+  function isPersonalSpaceKey(key) {
+    return String(key || "").startsWith("personal:");
+  }
+  function spaceForKey(key) {
+    if (isPersonalSpaceKey(key)) {
+      const name = String(key).slice("personal:".length);
+      return { key, name: `${name.split(" ")[0]}’s personal space`, owner: name, personal: true, description: `Personal notes and drafts for ${name}.` };
+    }
+    return projectByKey(key);
+  }
+  function watchersOfPage(pageId) {
+    return DemoState.watches.pages[pageId] || [];
+  }
+  function watchersOfSpace(spaceKey) {
+    return DemoState.watches.spaces[spaceKey] || [];
+  }
+  function isWatchingPage(pageId, name = actor()) {
+    return watchersOfPage(pageId).includes(name) || watchersOfSpace(pageById(pageId)?.projectKey)?.includes(name);
+  }
+  function notifyPeople(names, notification) {
+    [...new Set(names)].filter((name) => name && name !== actor()).forEach((name, index) => {
+      DemoState.notifications.unshift({ id: `ntf-${Date.now()}-${index}-${Math.floor(Math.random() * 100000)}`, unread: true, for: name, time: "Just now", ...notification });
+    });
+  }
+  function notifyPageWatchers(page, title, detail) {
+    notifyPeople([...watchersOfPage(page.id), ...watchersOfSpace(page.projectKey)], { kind: "page", target: page.id, title, detail });
   }
 
   function slug(value) {
@@ -897,6 +1300,7 @@
   }
 
   function canOpenNotification(notification) {
+    if (notification.for && notification.for !== actor()) return false;
     if (notification.kind === "issue") {
       const issue = issueByKey(notification.target);
       return Boolean(issue) && (canViewRoute("board") || can("read-work", issue));
@@ -948,11 +1352,13 @@
   }
 
   function sprintStats(sprint) {
-    if (!sprint) return { issues: [], committed: 0, completed: 0, blocked: 0 };
-    const issues = issuesForSprint(sprint);
+    if (!sprint) return { issues: [], subtasks: [], committed: 0, completed: 0, blocked: 0 };
+    const all = issuesForSprint(sprint);
+    const issues = all.filter((issue) => !isSubtask(issue));
+    const subtasks = all.filter(isSubtask);
     const committed = issues.reduce((sum, issue) => sum + Number(issue.points || 0), 0);
     const completed = issues.filter((issue) => issue.status === "Done").reduce((sum, issue) => sum + Number(issue.points || 0), 0);
-    return { issues, committed, completed, blocked: issues.filter((issue) => issue.status === "Blocked").length };
+    return { issues, subtasks, committed, completed, blocked: issues.filter((issue) => issue.status === "Blocked").length };
   }
 
   function requestByKey(key) {
@@ -1046,12 +1452,12 @@
     return issues.map((issue) => `
       <tr data-issue="${esc(issue.key)}" tabindex="0">
         <td class="key-cell">${esc(issue.key)}</td>
-        <td class="summary-cell">${esc(issue.summary)}</td>
+        <td class="summary-cell">${esc(issue.summary)}${isSubtask(issue) && issue.parent ? ` <span class="parent-tag" title="Subtask of ${esc(issue.parent)}">↳ ${esc(issue.parent)}</span>` : ""}${subtaskChip(issue)}</td>
         <td><span class="type-badge tag">${esc(issue.type)}</span></td>
         <td>${statusBadge(issue.status)}</td>
         <td>${priorityBadge(issue.priority)}</td>
         <td>${personCell(issue.assignee)}</td>
-        <td>${esc(issue.due)}</td>
+        <td>${dueCell(issue)}</td>
       </tr>
     `).join("");
   }
@@ -1238,7 +1644,7 @@
           <section class="panel">
             <div class="panel-header"><h2>Delivery progress</h2><span class="tag">${esc(projectSprint?.name || "Continuous flow")}</span></div>
             <div class="panel-body">
-              ${epics.length ? epics.map((epic) => { const children = projectIssues.filter((item) => item.epic === epic.key); const done = children.filter((item) => item.status === "Done").reduce((sum, item) => sum + item.points, 0); const total = children.reduce((sum, item) => sum + item.points, 0) || epic.points; const percent = total ? Math.round(done / total * 100) : 0; return progress(epic.summary, percent, `${done} of ${total} points`, children.some((item) => item.status === "Blocked") ? "warning" : ""); }).join("") : progress(project.releaseName || "Delivery scope", project.completion, `${project.completion}% complete`)}
+              ${epics.length ? epics.map((epic) => { const children = projectIssues.filter((item) => item.epic === epic.key && !isSubtask(item)); const done = children.filter((item) => item.status === "Done").reduce((sum, item) => sum + item.points, 0); const total = children.reduce((sum, item) => sum + item.points, 0) || epic.points; const percent = total ? Math.round(done / total * 100) : 0; return progress(epic.summary, percent, `${done} of ${total} points`, children.some((item) => item.status === "Blocked") ? "warning" : ""); }).join("") : progress(project.releaseName || "Delivery scope", project.completion, `${project.completion}% complete`)}
             </div>
           </section>
         </div>
@@ -1291,7 +1697,7 @@
   }
 
   function runIssueQuery(query) {
-    const fields = ["project", "key", "type", "status", "priority", "assignee", "reporter", "sprint", "epic", "text"];
+    const fields = ["project", "key", "type", "status", "priority", "assignee", "reporter", "sprint", "epic", "parent", "points", "due", "text"];
     const text = String(query || "").trim();
     if (!text) return { items: DemoState.issues.slice(), error: "" };
     const orderMatch = text.match(/\s+ORDER\s+BY\s+([a-z-]+)(?:\s+(ASC|DESC))?\s*$/i);
@@ -1370,8 +1776,8 @@
     const stats = sprintStats(active);
     const sprint = stats.issues;
     const projectIssues = issuesForProject();
-    const backlog = projectIssues.filter((issue) => issue.sprint === "Backlog");
-    const portfolio = projectIssues.filter((issue) => issue.sprint === "Portfolio backlog");
+    const backlog = projectIssues.filter((issue) => issue.sprint === "Backlog" && !isSubtask(issue) && issue.type !== "Epic");
+    const portfolio = projectIssues.filter((issue) => issue.type === "Epic");
     const future = sprintsForProject().find((item) => item.status === "future");
     const futureStats = future ? sprintStats(future) : null;
     return `<div class="page page-enter">
@@ -1389,7 +1795,15 @@
       </section>
       <section class="panel sprint-panel">
         <div class="sprint-header"><span class="sprint-title"><h2>Epics</h2><span>Outcome-oriented delivery containers</span></span><span class="tag">${portfolio.length} epic${portfolio.length === 1 ? "" : "s"}</span></div>
-        <div>${backlogRows(portfolio, false)}</div>
+        <div>${portfolio.map((epic) => {
+          const children = projectIssues.filter((item) => item.epic === epic.key && !isSubtask(item));
+          const doneChildren = children.filter((item) => item.status === "Done").reduce((sum, item) => sum + item.points, 0);
+          const totalChildren = children.reduce((sum, item) => sum + item.points, 0) || epic.points;
+          const percent = totalChildren ? Math.round(doneChildren / totalChildren * 100) : 0;
+          return `<div class="backlog-row epic-row" data-issue="${epic.key}" tabindex="0">
+            <span class="backlog-row-icon" aria-hidden="true">${icon("diamond")}</span><span class="backlog-key">${esc(epic.key)}</span><span class="backlog-summary">${esc(epic.summary)}<span class="epic-progress-wrap" aria-hidden="true"><span class="epic-progress" style="width:${percent}%"></span></span></span><span class="epic-progress-label">${percent}% · ${children.length} item${children.length === 1 ? "" : "s"}</span><span>${statusBadge(epic.status)}</span><span>${avatar(epic.assignee, "table-avatar")}</span><span class="story-points" title="Story points">${epic.points}</span>
+          </div>`;
+        }).join("") || '<div class="empty-state">No epics yet.</div>'}</div>
       </section>
     </div>`;
   }
@@ -1397,7 +1811,7 @@
   function backlogRows(issues, allowMove) {
     return issues.map((issue) => `
       <div class="backlog-row" data-issue="${issue.key}" tabindex="0">
-        <span class="backlog-row-icon" aria-hidden="true">${icon("list-checks")}</span><span class="backlog-key">${esc(issue.key)}</span><span class="backlog-summary">${esc(issue.summary)}</span><span>${statusBadge(issue.status)}</span><span>${avatar(issue.assignee, "table-avatar")}</span><span class="story-points" title="Story points">${issue.points}</span>
+        <span class="backlog-row-icon" aria-hidden="true">${icon("list-checks")}</span><span class="backlog-key">${esc(issue.key)}</span><span class="backlog-summary">${esc(issue.summary)}${subtaskChip(issue)}${isOverdue(issue) ? '<span class="due-overdue" title="Past due">Overdue</span>' : ""}</span><span>${statusBadge(issue.status)}</span><span>${avatar(issue.assignee, "table-avatar")}</span><span class="story-points" title="Story points">${issue.points}</span>
         ${allowMove && can("manage-sprint") ? `<button class="sr-only" type="button" data-action="move-to-sprint" data-key="${issue.key}">Move to ${esc(activeSprint().name)}</button>` : ""}
       </div>
     `).join("");
@@ -1408,11 +1822,12 @@
     const project = activeProject();
     const sprint = activeSprint();
     const stats = sprintStats(sprint);
-    const sprintIssues = stats.issues;
+    const sprintIssues = DemoState.boardShowSubtasks ? [...stats.issues, ...stats.subtasks] : stats.issues;
     return `<div class="page page-enter">
       ${pageHeader(`${project.key} · ${sprint?.name || "Delivery"}`, "Delivery board", "Move work through the configured workflow. Drag cards or use the arrow controls.", `<button class="button" type="button" data-view="backlog">Backlog</button>${can("create-work") ? '<button class="button primary" type="button" data-action="open-create">Create work item</button>' : ""}`)}
       <div class="data-toolbar">
         <span class="tag">${esc(sprint?.name || "No active sprint")} · ${esc(sprint?.start || "Not scheduled")}–${esc(sprint?.end || "Not scheduled")}</span><span class="tag">Goal · ${esc(sprint?.goal || "Configure the sprint in Backlog")}</span><span class="tag">${stats.completed} / ${stats.committed} points</span><span class="tag">${stats.blocked} blocked</span>
+        <label class="toolbar-toggle"><input type="checkbox" data-action-toggle="board-subtasks" ${DemoState.boardShowSubtasks ? "checked" : ""}> Show subtasks (${stats.subtasks.length})</label>
       </div>
       <div class="board-scroll"><div class="board">
         ${order.map((status, columnIndex) => {
@@ -1421,8 +1836,9 @@
             <div class="board-column-header"><span>${esc(status)}</span><span class="board-count">${items.length}</span></div>
             ${items.map((issue) => { const editable = can("edit-work", issue); return `
               <article class="board-card priority-${slug(issue.priority)}" draggable="${editable}" ${editable ? `data-drag-issue="${issue.key}"` : ""} data-issue="${issue.key}" tabindex="0">
-                <div class="board-card-key"><span>${esc(issue.key)} · ${esc(issue.type)}</span><span>${issue.points} pt</span></div>
+                <div class="board-card-key"><span>${esc(issue.key)} · ${esc(issue.type)}</span><span>${isSubtask(issue) ? `↳ ${esc(issue.parent)}` : `${issue.points} pt`}</span></div>
                 <h3>${esc(issue.summary)}</h3>
+                ${subtaskChip(issue) || (isOverdue(issue) ? '<span class="due-overdue">Overdue · ' + esc(issue.due) + "</span>" : "")}
                 <div class="board-card-meta">${avatar(issue.assignee, "table-avatar")}${editable ? `<span class="board-card-controls">
                   <button class="board-move" type="button" data-action="move-card" data-key="${issue.key}" data-direction="-1" aria-label="Move ${issue.key} left" ${columnIndex === 0 ? "disabled" : ""}>${icon("arrow-left")}</button>
                   <button class="board-move" type="button" data-action="move-card" data-key="${issue.key}" data-direction="1" aria-label="Move ${issue.key} right" ${columnIndex === order.length - 1 ? "disabled" : ""}>${icon("arrow-right")}</button>
@@ -1442,7 +1858,7 @@
       ? ["Aug", "", "Sep", "", "Oct", "", "Nov", ""]
       : ["24 Aug", "31 Aug", "07 Sep", "14 Sep", "21 Sep", "28 Sep", "05 Oct", "12 Oct"];
     const monthMap = { Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5, Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11 };
-    const rows = issuesForProject().slice(0, 8).map((issue, index) => {
+    const rows = issuesForProject().filter((issue) => !isSubtask(issue)).slice(0, 8).map((issue, index) => {
       const match = String(issue.due).match(/^(\d{1,2})\s+([A-Za-z]{3})\s+(\d{4})$/);
       const span = scale === "months" ? (issue.type === "Epic" || issue.points >= 8 ? 2 : 1) : issue.type === "Epic" ? 3 : issue.points >= 8 ? 2 : 1;
       let dueSlot = index;
@@ -1565,63 +1981,213 @@
     </div>`;
   }
 
-  function renderSpaces() {
-    if (DemoState.activePage) return renderPage();
-    const spaces = DemoState.projects.map((project) => ({ ...project, pages: pagesForProject(project.key).filter((page) => !page.archived).length, updated: pagesForProject(project.key)[0]?.updated || "Not yet updated" }));
+  const PAGE_TEMPLATES = [
+    { id: "blank", name: "Blank page", bodyHtml: "" },
+    { id: "decision-brief", name: "Decision brief", bodyHtml: "<div data-macro=\"toc\"></div><h2>Problem</h2><p>State the problem, the deadline, and what happens if no decision is made.</p><h2>Options considered</h2><ul><li><strong>Option A</strong> — description, cost, risk.</li><li><strong>Option B</strong> — description, cost, risk.</li></ul><h2>Recommendation</h2><p>Name the recommended option and the reason it wins.</p><div class=\"callout warning\"><strong>Approval</strong><p>Name the approver and the date the decision is needed.</p></div>" },
+    { id: "meeting-notes", name: "Meeting notes", bodyHtml: "<h2>Attendees</h2><p>Who was present and who owns the outcomes.</p><h2>Decisions</h2><ul><li>Record each decision with its owner.</li></ul><h2>Actions</h2><ul><li>Action — owner — due date. Convert each to a work item.</li></ul>" },
+    { id: "sprint-retrospective", name: "Sprint retrospective", bodyHtml: "<h2>What went well</h2><ul><li>…</li></ul><h2>What did not</h2><ul><li>…</li></ul><h2>What we change next sprint</h2><ul><li>One committed change with an owner — tracked as a work item.</li></ul>" },
+    { id: "integration-review", name: "Integration review", bodyHtml: "<h2>Scope</h2><p>Interfaces and configurations under review.</p><h2>Evidence</h2><table><thead><tr><th>Interface</th><th>Result</th><th>Owner</th></tr></thead><tbody><tr><td>…</td><td><span class=\"lozenge lz-grey\">Pending</span></td><td>…</td></tr></tbody></table><h2>Findings and actions</h2><ul><li>Finding — action — owner.</li></ul>" },
+    { id: "risk-assessment", name: "Risk assessment", bodyHtml: "<h2>Risk statement</h2><p>Condition — consequence. What could happen and what it would cost.</p><h2>Assessment</h2><ul><li>Likelihood: …</li><li>Impact: …</li><li>Score: …/25</li></ul><h2>Response</h2><div class=\"callout\"><strong>Selected response</strong><p>Avoid, mitigate, transfer, or accept — with the named owner and review date.</p></div>" },
+    { id: "leadership-readout", name: "Leadership readout", bodyHtml: "<h2>Bottom line</h2><p>One sentence: the state of delivery and the single action leadership can take.</p><h2>Facts</h2><ul><li>Health, confidence, blocked items, at-risk milestones.</li></ul><h2>Decisions needed</h2><ul><li>Decision — approver — date.</li></ul>" }
+  ];
+
+  function searchTokens(raw) {
+    const tokens = { text: [], label: null, type: null, space: null };
+    String(raw || "").trim().split(/\s+/).filter(Boolean).forEach((word) => {
+      const match = word.match(/^(label|type|space):(.+)$/i);
+      if (match) tokens[match[1].toLowerCase()] = match[2].toLowerCase();
+      else tokens.text.push(word);
+    });
+    tokens.query = tokens.text.join(" ");
+    return tokens;
+  }
+
+  function renderSearch() {
+    const tokens = searchTokens(DemoState.searchQuery);
+    const q = tokens.query.toLowerCase();
+    const wants = (kind) => !tokens.type || tokens.type === kind;
+    const spaceOk = (key) => !tokens.space || String(key).toLowerCase() === tokens.space;
+    const textMatch = (haystack) => !q || haystack.toLowerCase().includes(q);
+    const issues = (canViewRoute("board") || can("read-work")) && wants("work") ? DemoState.issues.filter((issue) => spaceOk(recordProjectKey(issue)) && !tokens.label && textMatch(`${issue.key} ${issue.summary} ${issue.description} ${issue.assignee} ${issue.type}`)) : [];
+    const pages = canViewRoute("spaces") && wants("page") ? visiblePages(DemoState.pages.filter((page) => !page.archived)).filter((page) => spaceOk(page.projectKey) && (!tokens.label || (page.labels || []).some((label) => label.toLowerCase() === tokens.label)) && textMatch(pageSearchText(page))) : [];
+    const posts = canViewRoute("spaces") && wants("blog") && !tokens.label ? DemoState.blogPosts.filter((post) => spaceOk(post.projectKey) && textMatch(`${post.title} ${post.author} ${stripHtml(post.bodyHtml)}`)) : [];
+    const decisions = canViewRoute("decisions") && wants("decision") && !tokens.label ? DemoState.decisions.filter((decision) => spaceOk(decision.projectKey) && textMatch(`${decision.id} ${decision.title} ${decision.rationale} ${decision.recommendation}`)) : [];
+    const total = issues.length + pages.length + posts.length + decisions.length;
+    const section = (title, hits) => hits.length ? `<section style="margin-bottom:18px"><div class="section-heading"><div><h2>${esc(title)}</h2></div><span class="tag">${hits.length}</span></div>${hits.slice(0, 25).join("")}</section>` : "";
     return `<div class="page page-enter">
-      ${pageHeader("Knowledge", "Spaces", "Create, govern, discover, and connect organizational knowledge directly to accountable work.", `<button class="button" type="button" data-action="show-archived-pages">Archived pages</button>${can("edit-knowledge") ? '<button class="button primary" type="button" data-action="create-page">Create page</button>' : ""}`)}
+      ${pageHeader("Knowledge & work", "Search", "Full-text search across work items, page content, blog posts, and decisions.", "")}
+      <form class="search-page-form" data-search-page-form><input type="search" name="q" value="${esc(DemoState.searchQuery)}" placeholder="Search everything — try a phrase from inside a page, or label:evidence, type:page, space:SMN" aria-label="Search query"><button class="button primary" type="submit">Search</button></form>
+      <div class="search-filter-row"><span>${DemoState.searchQuery.trim() ? `${total} result${total === 1 ? "" : "s"}` : "Type a query, or filter with label:, type: (work · page · blog · decision), space:"}</span>${tokens.label ? `<span class="tag">label: ${esc(tokens.label)}</span>` : ""}${tokens.type ? `<span class="tag">type: ${esc(tokens.type)}</span>` : ""}${tokens.space ? `<span class="tag">space: ${esc(tokens.space.toUpperCase())}</span>` : ""}</div>
+      ${DemoState.searchQuery.trim() && !total ? '<div class="empty-state"><strong>No matches</strong>Try fewer words, or drop a filter token.</div>' : ""}
+      ${section("Pages", pages.map((page) => `<button class="search-hit" type="button" data-page="${page.id}"><span class="hit-title">${icon("file-text")} ${esc(page.title)}</span><span class="hit-snippet">${q ? searchSnippet(pageSearchText(page), tokens.query) : esc(page.summary)}</span><span class="hit-meta">${esc(spaceForKey(page.projectKey)?.name || page.projectKey)} · v${page.version} · ${esc(page.owner)}${(page.labels || []).length ? " · " + page.labels.map(esc).join(", ") : ""}</span></button>`))}
+      ${section("Work items", issues.map((issue) => `<button class="search-hit" type="button" data-issue="${esc(issue.key)}"><span class="hit-title">${icon("check-square")} ${esc(issue.key)} · ${esc(issue.summary)}</span><span class="hit-snippet">${q ? searchSnippet(`${issue.summary} — ${issue.description}`, tokens.query) : esc(issue.description)}</span><span class="hit-meta">${esc(issue.type)} · ${esc(issue.status)} · ${esc(issue.assignee)} · ${esc(recordProjectKey(issue))}</span></button>`))}
+      ${section("Blog posts", posts.map((post) => `<button class="search-hit" type="button" data-blog-post="${esc(post.id)}"><span class="hit-title">${icon("book-open")} ${esc(post.title)}</span><span class="hit-snippet">${q ? searchSnippet(stripHtml(post.bodyHtml), tokens.query) : esc(stripHtml(post.bodyHtml).slice(0, 140))}</span><span class="hit-meta">${esc(post.author)} · ${esc(post.time)}</span></button>`))}
+      ${section("Decisions", decisions.map((decision) => `<button class="search-hit" type="button" data-decision="${esc(decision.id)}"><span class="hit-title">${icon("diamond")} ${esc(decision.id)} · ${esc(decision.title)}</span><span class="hit-snippet">${q ? searchSnippet(`${decision.rationale} ${decision.recommendation}`, tokens.query) : esc(decision.rationale)}</span><span class="hit-meta">${esc(decision.status)} · ${esc(decision.owner)}</span></button>`))}
+    </div>`;
+  }
+
+  function renderBlogPost() {
+    const post = DemoState.blogPosts.find((item) => item.id === DemoState.activeBlogPost);
+    if (!post) { DemoState.activeBlogPost = null; return renderSpaces(); }
+    const reactions = ["👍", "🎉", "❤️", "👀"];
+    const canEditPost = can("edit-knowledge") && (persona().key === "administrator" || post.author === actor());
+    return `<div class="page page-enter">
+      ${pageHeader(`${spaceForKey(post.projectKey)?.name || post.projectKey} · Blog`, post.title, `Posted by ${post.author} · ${post.time}`, `${canEditPost ? `<button class="button" type="button" data-action="edit-blog-post" data-post-id="${esc(post.id)}">Edit post</button>` : ""}`, `<button type="button" data-action="all-spaces">Spaces</button><span>›</span><span>Blog</span>`)}
+      <div class="knowledge-layout" style="grid-template-columns:minmax(0,1fr)">
+        <article class="knowledge-document">
+          <div class="published-page-body">${renderPageBodyHtml(post, post.bodyHtml)}</div>
+          <div class="reaction-bar" aria-label="Reactions">${reactions.map((emoji) => { const names = (post.reactions || {})[emoji] || []; const mine = names.includes(actor()); return `<button class="reaction-pill ${mine ? "mine" : ""}" type="button" data-action="react-blog" data-post-id="${esc(post.id)}" data-emoji="${emoji}" title="${esc(names.join(", ") || "React")}">${emoji}${names.length ? ` ${names.length}` : ""}</button>`; }).join("")}</div>
+          <section style="margin-top:26px;padding-top:20px;border-top:1px solid var(--line)">
+            <h2 style="margin-top:0">Comments</h2>
+            <ul class="comment-list">${(post.comments || []).length ? post.comments.map((comment) => `<li class="comment-item"><div class="comment-head"><strong>${esc(comment.author)}</strong><time>${esc(comment.time)}</time></div><p>${renderCommentText(comment.text)}</p></li>`).join("") : '<li class="empty-state" style="padding:18px">No comments yet.</li>'}</ul>
+            ${can("comment") ? `<form class="comment-form mention-host" data-blog-comment="${esc(post.id)}"><textarea name="comment" aria-label="Add a comment" placeholder="Add a comment or @mention a teammate" data-mention-input></textarea><button class="button primary" type="submit">Comment</button></form>` : ""}
+          </section>
+        </article>
+      </div>
+    </div>`;
+  }
+
+  function openBlogEditor(postId = null) {
+    if (!requireCapability("edit-knowledge", null, "This persona cannot write blog posts.")) return;
+    const post = postId ? DemoState.blogPosts.find((item) => item.id === postId) : null;
+    openModal(`
+      <div class="modal-header"><h2>${post ? "Edit blog post" : "Write blog post"}</h2><button class="icon-button" type="button" data-action="close-modal" aria-label="Close">×</button></div>
+      <form data-blog-form="${post ? esc(post.id) : ""}">
+        <div class="modal-body">
+          <div class="field"><label for="blogTitle">Title</label><input id="blogTitle" name="title" required value="${esc(post?.title || "")}" placeholder="Announce something worth reading"></div>
+          <div class="field" style="margin-top:14px"><span class="field-label">Content</span><div class="editor-toolbar" aria-label="Formatting toolbar"><button type="button" data-command="bold" aria-label="Bold">B</button><button type="button" data-command="italic" aria-label="Italic"><em>I</em></button><button type="button" data-command="insertUnorderedList" aria-label="Bulleted list">• List</button><button type="button" data-command="formatBlock" data-value="h2" aria-label="Heading level 2">H2</button></div><div id="pageEditor" class="page-editor" contenteditable="true" role="textbox" aria-multiline="true">${post ? renderPageBodyHtml(post, post.bodyHtml) : "<p></p>"}</div></div>
+        </div>
+        <div class="modal-footer"><button class="button" type="button" data-action="close-modal">Cancel</button><button class="button primary" type="submit">${post ? "Save post" : "Publish post"}</button></div>
+      </form>
+    `, true);
+  }
+
+  function renderSpaces() {
+    if (DemoState.activeBlogPost) return renderBlogPost();
+    if (DemoState.activePage) return renderPage();
+    const spaces = DemoState.projects.map((project) => ({ ...project, pages: visiblePages(pagesForProject(project.key)).filter((page) => !page.archived).length, updatedMin: Math.min(...pagesForProject(project.key).map(pageRecency), 999999) }));
+    const personal = visiblePages(DemoState.pages.filter((page) => isPersonalSpaceKey(page.projectKey) && !page.archived));
+    const personalSpaces = [...new Set(personal.map((page) => page.projectKey))].map((key) => ({ ...spaceForKey(key), pages: personal.filter((page) => page.projectKey === key).length }));
+    const myPersonalKey = personalSpaceKey(actor());
+    if (!personalSpaces.some((space) => space.key === myPersonalKey) && can("edit-knowledge")) personalSpaces.unshift({ ...spaceForKey(myPersonalKey), pages: 0 });
+    const recent = visiblePages(DemoState.pages.filter((page) => !page.archived)).slice().sort((a, b) => pageRecency(a) - pageRecency(b)).slice(0, 10);
+    const labels = allLabels();
+    const posts = DemoState.blogPosts.slice().sort((a, b) => pageRecency({ updated: a.time }) - pageRecency({ updated: b.time }));
+    return `<div class="page page-enter">
+      ${pageHeader("Knowledge", "Spaces", "Create, govern, discover, and connect organizational knowledge directly to accountable work.", `<button class="button" type="button" data-action="show-archived-pages">Archived pages</button>${can("edit-knowledge") ? '<button class="button" type="button" data-action="create-blog-post">Write blog post</button><button class="button primary" type="button" data-action="create-page">Create page</button>' : ""}`)}
       <div class="space-grid">${spaces.map((space) => `
         <article class="card space-card" tabindex="0" data-space="${space.key}">
           <span class="space-card-icon">${esc(space.key)}</span><h2>${esc(space.name)}</h2><p>${esc(space.description)}</p>
-          <div class="space-card-meta"><span>${space.pages} pages</span><span>Owner · ${esc(space.owner)}</span><span>Updated ${esc(space.updated)}</span></div>
+          <div class="space-card-meta"><span>${space.pages} pages</span><span>Owner · ${esc(space.owner)}</span><span>${watchersOfSpace(space.key).includes(actor()) ? "Watching" : "Updated " + esc(space.updatedMin === 999999 ? "—" : space.updatedMin === 0 ? "just now" : space.updatedMin < 60 ? space.updatedMin + " min ago" : space.updatedMin < 1440 ? Math.round(space.updatedMin / 60) + " h ago" : Math.round(space.updatedMin / 1440) + " d ago")}</span></div>
           <span class="tag" style="position:absolute;top:18px;right:18px">Project space</span>
+          <button class="button small ${watchersOfSpace(space.key).includes(actor()) ? "watch-active" : ""}" style="position:absolute;bottom:16px;right:16px" type="button" data-action="toggle-watch-space" data-space-key="${space.key}">${watchersOfSpace(space.key).includes(actor()) ? "Watching ✓" : "Watch"}</button>
+        </article>
+      `).join("")}${personalSpaces.map((space) => `
+        <article class="card space-card" tabindex="0" data-personal-space="${esc(space.key)}">
+          <span class="space-card-icon">${esc(initials(space.owner))}</span><h2>${esc(space.name)}</h2><p>${esc(space.description)}</p>
+          <div class="space-card-meta"><span>${space.pages} page${space.pages === 1 ? "" : "s"}</span><span>Owner · ${esc(space.owner)}</span></div>
+          <span class="tag" style="position:absolute;top:18px;right:18px">Personal space</span>
         </article>
       `).join("")}</div>
-      <div class="section-heading"><div><h2>Recently updated</h2><p>Knowledge changes with linked work and decisions.</p></div></div>
-      <div class="data-table-wrap"><table class="data-table"><thead><tr><th>Page</th><th>Space</th><th>Owner</th><th>Version</th><th>Updated</th></tr></thead><tbody>
-        ${DemoState.pages.filter((page) => !page.archived).slice().sort((a, b) => a.updated.localeCompare(b.updated)).slice(0, 10).map((page) => `<tr data-page="${page.id}" tabindex="0"><td class="summary-cell">${esc(page.title)}</td><td>${esc(projectByKey(page.projectKey || "SMN")?.name || page.projectKey)}</td><td>${personCell(page.owner)}</td><td>v${page.version}</td><td>${esc(page.updated)}</td></tr>`).join("")}
-      </tbody></table></div>
+      <div class="project-overview-grid" style="margin-top:18px">
+        <section class="panel">
+          <div class="panel-header"><h2>Recently updated</h2><p style="margin:0;font-size:9px;color:var(--muted)">Newest first, across every space</p></div>
+          <div class="data-table-wrap"><table class="data-table"><thead><tr><th>Page</th><th>Space</th><th>Owner</th><th>Version</th><th>Updated</th></tr></thead><tbody>
+            ${recent.map((page) => `<tr data-page="${page.id}" tabindex="0"><td class="summary-cell">${esc(page.title)}</td><td>${esc(spaceForKey(page.projectKey || "SMN")?.name || page.projectKey)}</td><td>${personCell(page.owner)}</td><td>v${page.version}</td><td>${esc(page.updated)}</td></tr>`).join("")}
+          </tbody></table></div>
+        </section>
+        <div class="stack">
+          <section class="panel">
+            <div class="panel-header"><h2>Blog</h2><span class="tag">${posts.length} post${posts.length === 1 ? "" : "s"}</span></div>
+            <div class="panel-body">${posts.slice(0, 4).map((post) => `<article class="blog-card" data-blog-post="${esc(post.id)}" tabindex="0"><h3>${esc(post.title)}</h3><div class="blog-meta"><span>${esc(post.author)}</span><span>${esc(post.time)}</span><span>${esc(spaceForKey(post.projectKey)?.name || post.projectKey)}</span>${Object.entries(post.reactions || {}).filter(([, names]) => names.length).map(([emoji, names]) => `<span>${emoji} ${names.length}</span>`).join("")}</div></article>`).join("") || '<div class="empty-state">No blog posts yet.</div>'}</div>
+          </section>
+          <section class="panel">
+            <div class="panel-header"><h2>Labels</h2><span class="tag">${labels.length}</span></div>
+            <div class="panel-body"><div class="label-cloud">${labels.map(([label, count]) => `<span class="label-chip"><button class="label-chip-link" type="button" data-label-search="${esc(label)}">${esc(label)}</button><span class="label-count">${count}</span></span>`).join("") || '<span class="empty-inline">No labels yet.</span>'}</div></div>
+          </section>
+        </div>
+      </div>
     </div>`;
   }
 
   function renderPage() {
     const page = pageById(DemoState.activePage) || pageById(projectHubId());
-    const project = projectByKey(page.projectKey || "SMN") || activeProject();
-    const projectPages = pagesForProject(project.key);
+    const space = spaceForKey(page.projectKey || "SMN") || activeProject();
+    const isPersonal = isPersonalSpaceKey(page.projectKey);
+    if (!pageVisibleTo(page)) {
+      return `<div class="page page-enter">${pageHeader("Knowledge", "This page is restricted", `${esc(page.owner)} limited who can view this page. Ask the owner for access, or return to the space.`, '<button class="button primary" type="button" data-action="all-spaces">Back to spaces</button>')}</div>`;
+    }
     const comments = DemoState.pageComments[page.id] || [];
+    const inlineThreads = DemoState.pageInlineComments[page.id] || [];
+    const openThreads = inlineThreads.filter((thread) => !thread.resolved);
     const versions = DemoState.pageVersions[page.id] || [{ version: page.version, author: page.owner, time: page.updated, note: "Current version" }];
     const isDecisionPage = page.id === "alternate-path";
     const draft = DemoState.pageDrafts[page.id];
-    const pageActions = `<button class="button" type="button" data-action="page-history" data-page-id="${page.id}">Version history</button>${page.id !== projectHubId(project.key) && can("archive-knowledge") ? `<button class="button" type="button" data-action="${page.archived ? "restore-page" : "archive-page"}" data-page-id="${page.id}">${page.archived ? "Restore" : "Archive"}</button>` : ""}${can("edit-knowledge") ? `<button class="button primary" type="button" data-action="edit-page" data-page-id="${page.id}">${draft ? "Resume draft" : "Edit page"}</button>` : ""}`;
+    const watching = isWatchingPage(page.id);
+    const canEditThis = can("edit-knowledge") && pageEditableBy(page);
+    const treeEntries = orderedProjectPages(space.key, page.archived ? page.id : null).filter((entry) => pageVisibleTo(entry.page));
+    const pageActions = `<button class="button ${watching ? "watch-active" : ""}" type="button" data-action="toggle-watch-page" data-page-id="${page.id}">${watching ? "Watching ✓" : "Watch"}</button><button class="button" type="button" data-action="export-page" data-page-id="${page.id}">Export</button><button class="button" type="button" data-action="page-history" data-page-id="${page.id}">Version history</button>${page.id !== projectHubId(space.key) && can("archive-knowledge") ? `<button class="button" type="button" data-action="${page.archived ? "restore-page" : "archive-page"}" data-page-id="${page.id}">${page.archived ? "Restore" : "Archive"}</button>` : ""}${canEditThis ? `<button class="button primary" type="button" data-action="edit-page" data-page-id="${page.id}">${draft ? "Resume draft" : "Edit page"}</button>` : ""}`;
+    const collapsed = DemoState.pageTreeCollapsed;
+    const hasChildren = (id) => treeEntries.some((entry) => entry.page.parent === id);
+    const visibleInTree = (entry) => {
+      let parentId = entry.page.parent;
+      while (parentId) {
+        if (collapsed[parentId]) return false;
+        parentId = pageById(parentId)?.parent || null;
+      }
+      return true;
+    };
+    const reactions = ["👍", "🎉", "❤️", "👀"];
     return `<div class="page page-enter">
-      ${pageHeader(`${project.name} · Space`, page.title, page.summary, pageActions, `<button type="button" data-action="all-spaces">Spaces</button><span>›</span><span>${esc(project.name)}</span>`)}
+      ${pageHeader(`${space.name} · Space`, page.title, page.summary, pageActions, `<button type="button" data-action="all-spaces">Spaces</button><span>›</span><span>${esc(space.name)}</span>`)}
       <div class="knowledge-layout">
         <nav class="page-tree" aria-label="Page tree"><div class="page-tree-header"><span>Pages</span>${can("edit-knowledge") ? `<button class="section-link" type="button" data-action="create-page" aria-label="Create a page">${icon("plus")}</button>` : ""}</div>
-          ${projectPages.filter((item) => !item.archived || item.id === page.id).map((item) => `<button class="tree-item depth-${item.depth} ${item.id === page.id ? "active" : ""}" type="button" data-page="${item.id}"><span class="page-ico" aria-hidden="true">${icon(item.depth ? "file-text" : "book-open")}</span><span>${esc(item.title)}</span></button>`).join("")}
+          ${treeEntries.filter(visibleInTree).map(({ page: item, depth }) => `<div class="tree-node">${"".padStart(0)}${hasChildren(item.id) ? `<button class="tree-twisty" type="button" data-action="toggle-tree" data-page-id="${item.id}" aria-label="${collapsed[item.id] ? "Expand" : "Collapse"} ${esc(item.title)}" style="margin-left:${depth * 12}px">${collapsed[item.id] ? "▸" : "▾"}</button>` : `<span class="tree-twisty-spacer" style="margin-left:${depth * 12}px"></span>`}<button class="tree-item ${item.id === page.id ? "active" : ""}" type="button" data-page="${item.id}"><span class="page-ico" aria-hidden="true">${icon(depth ? "file-text" : "book-open")}</span><span>${esc(item.title)}</span>${item.restricted && (item.restricted.view?.length || item.restricted.edit?.length) ? `<span class="restricted-ico" title="Restricted page">${icon("key")}</span>` : ""}</button></div>`).join("") || '<div class="empty-inline" style="padding:10px">No pages yet.</div>'}
         </nav>
         <article class="knowledge-document">
           ${page.archived ? '<div class="callout warning" data-page-status="archived"><strong>Archived page</strong><p>This version remains available for traceability but is hidden from the normal page tree and search.</p></div>' : ""}
           ${draft ? `<div class="callout"><strong>Unpublished local draft</strong><p>${esc(draft.updatedBy)} saved changes ${esc(draft.updated)}. The governed page remains at v${page.version}.</p></div>` : ""}
-          <div class="document-toolbar"><span class="document-meta">Owned by ${esc(page.owner)} · Updated ${esc(page.updated)} · v${page.version}</span><span class="tag">Governed page</span></div>
+          <div class="document-toolbar"><span class="document-meta">Owned by ${esc(page.owner)} · Updated ${esc(page.updated)} · v${page.version}</span><span style="display:flex;gap:6px">${page.restricted && (page.restricted.view?.length || page.restricted.edit?.length) ? '<span class="tag">Restricted</span>' : ""}<span class="tag">${isPersonal ? "Personal page" : "Governed page"}</span></span></div>
           <h1>${esc(page.title)}</h1>
-          ${page.bodyHtml ? `<div class="published-page-body">${sanitizeRichText(page.bodyHtml)}</div>` : `<p class="lead">${esc(page.content)}</p>${isDecisionPage ? renderDecisionPageBody() : renderGenericPageBody(page)}`}
-          <section style="margin-top:32px;padding-top:20px;border-top:1px solid var(--line)">
+          ${labelChips(page, canEditThis)}
+          <div class="published-page-body" data-page-body="${page.id}">${page.bodyHtml ? renderPageBodyHtml(page) : `<p class="lead">${esc(page.content)}</p>${isDecisionPage ? renderDecisionPageBody() : renderGenericPageBody(page)}`}</div>
+          <div class="reaction-bar" aria-label="Reactions">${reactions.map((emoji) => { const names = (page.reactions || {})[emoji] || []; const mine = names.includes(actor()); return `<button class="reaction-pill ${mine ? "mine" : ""}" type="button" data-action="react-page" data-page-id="${page.id}" data-emoji="${emoji}" title="${esc(names.join(", ") || "React")}">${emoji}${names.length ? ` ${names.length}` : ""}</button>`; }).join("")}</div>
+          <section style="margin-top:26px;padding-top:20px;border-top:1px solid var(--line)">
             <h2 style="margin-top:0">Comments</h2>
-            <ul class="comment-list">${comments.length ? comments.map((comment) => `<li class="comment-item"><div class="comment-head"><strong>${esc(comment.author)}</strong><time>${esc(comment.time)}</time></div><p>${esc(comment.text)}</p></li>`).join("") : '<li class="empty-state" style="padding:18px">No comments yet.</li>'}</ul>
-            <form class="comment-form" data-page-comment="${page.id}"><textarea name="comment" aria-label="Add a page comment" placeholder="Add a comment or @mention a teammate"></textarea><button class="button primary" type="submit">Comment</button></form>
+            <ul class="comment-list">${comments.length ? comments.map((comment) => `<li class="comment-item ${comment.resolved ? "resolved" : ""}" data-thread-id="${esc(String(comment.id))}">
+              <div class="comment-head"><strong>${esc(comment.author)}</strong><time>${esc(comment.time)}</time>${comment.resolved ? '<span class="comment-resolved-tag">Resolved</span>' : ""}</div>
+              <p>${renderCommentText(comment.text)}</p>
+              ${(comment.replies || []).map((reply) => `<div class="thread-reply"><div class="comment-head"><strong>${esc(reply.author)}</strong><time>${esc(reply.time)}</time></div><p>${renderCommentText(reply.text)}</p></div>`).join("")}
+              ${can("comment") ? `<div class="thread-actions"><button class="section-link" type="button" data-action="reply-page-comment" data-page-id="${page.id}" data-thread="${esc(String(comment.id))}">Reply</button>${!comment.resolved ? `<button class="section-link" type="button" data-action="resolve-page-comment" data-page-id="${page.id}" data-thread="${esc(String(comment.id))}">Resolve</button>` : ""}</div><form class="comment-form mention-host" data-page-comment-reply="${page.id}" data-thread="${esc(String(comment.id))}" hidden><textarea name="comment" aria-label="Reply" placeholder="Reply — @mention a teammate" data-mention-input></textarea><button class="button primary" type="submit">Reply</button></form>` : ""}
+            </li>`).join("") : '<li class="empty-state" style="padding:18px">No comments yet.</li>'}</ul>
+            ${can("comment") ? `<form class="comment-form mention-host" data-page-comment="${page.id}"><textarea name="comment" aria-label="Add a page comment" placeholder="Add a comment or @mention a teammate" data-mention-input></textarea><button class="button primary" type="submit">Comment</button></form>` : ""}
           </section>
         </article>
         <aside class="document-sidebar" aria-label="Page information">
-          <section class="document-sidebar-section"><h3>Linked work & decisions</h3>
+          ${canEditThis || can("archive-knowledge") ? `<section class="document-sidebar-section"><h3>Organize</h3><div style="display:flex;flex-wrap:wrap;gap:6px">
+            <button class="button small" type="button" data-action="move-page" data-page-id="${page.id}">Move</button>
+            <button class="button small" type="button" data-action="copy-page" data-page-id="${page.id}">Copy</button>
+            <button class="button small" type="button" data-action="page-restrictions" data-page-id="${page.id}">Restrictions</button>
+            <button class="button small" type="button" data-action="export-space" data-space-key="${esc(space.key)}">Export space</button>
+          </div></section>` : ""}
+          <section class="document-sidebar-section"><h3>Inline comments${openThreads.length ? ` · ${openThreads.length} open` : ""}</h3>
+            <p class="empty-inline" style="margin-top:0">Select text in the page to start an inline comment.</p>
+            ${inlineThreads.length ? inlineThreads.map((thread) => `<div class="inline-thread ${thread.resolved ? "" : "active"}" data-inline-thread="${esc(thread.id)}">
+              <blockquote>“${esc(thread.quote.length > 90 ? thread.quote.slice(0, 90) + "…" : thread.quote)}”</blockquote>
+              <div class="comment-head"><strong>${esc(thread.author)}</strong><time>${esc(thread.time)}</time>${thread.resolved ? '<span class="comment-resolved-tag">Resolved</span>' : ""}</div>
+              <p style="font-size:10px;margin:4px 0 0">${renderCommentText(thread.text)}</p>
+              ${(thread.replies || []).map((reply) => `<div class="thread-reply"><div class="comment-head"><strong>${esc(reply.author)}</strong><time>${esc(reply.time)}</time></div><p style="font-size:10px">${renderCommentText(reply.text)}</p></div>`).join("")}
+              ${can("comment") && !thread.resolved ? `<div class="thread-actions"><button class="section-link" type="button" data-action="reply-inline-comment" data-page-id="${page.id}" data-thread="${esc(thread.id)}">Reply</button><button class="section-link" type="button" data-action="resolve-inline-comment" data-page-id="${page.id}" data-thread="${esc(thread.id)}">Resolve</button></div><form class="comment-form mention-host" data-inline-reply="${page.id}" data-thread="${esc(thread.id)}" hidden><textarea name="comment" aria-label="Reply" data-mention-input></textarea><button class="button primary" type="submit">Reply</button></form>` : ""}
+            </div>`).join("") : ""}
+          </section>
+          ${!isPersonal ? `<section class="document-sidebar-section"><h3>Linked work & decisions</h3>
             ${isDecisionPage ? `
               <button class="linked-object" type="button" data-decision="DEC-014"><span class="linked-icon">${icon("diamond")}</span><span class="linked-copy"><strong>DEC-014</strong><span>${DemoState.decisionApproved ? "Approved" : "Pending approval"}</span></span></button>
               <button class="linked-object" type="button" data-issue="SMN-191"><span class="linked-icon">${icon("check-square")}</span><span class="linked-copy"><strong>SMN-191</strong><span>${esc(issueByKey("SMN-191").status)} · Lena Ortiz</span></span></button>
               <button class="linked-object" type="button" data-risk="RISK-07"><span class="linked-icon">${icon("shield-alert")}</span><span class="linked-copy"><strong>RISK-07</strong><span>${currentRiskScore()}/25 · ${DemoState.decisionApproved ? "Moderate" : "High"}</span></span></button>
-            ` : (() => { const linked = issuesForProject(project.key).find((issue) => issue.linkedPage === page.id) || issuesForProject(project.key)[0]; return linked ? `<button class="linked-object" type="button" data-issue="${linked.key}"><span class="linked-icon">${icon("check-square")}</span><span class="linked-copy"><strong>${esc(linked.key)} · Linked work</strong><span>Open details and activity</span></span></button>` : '<div class="empty-state">No linked work yet.</div>'; })()}
-          </section>
-          <section class="document-sidebar-section"><h3>Evidence</h3>
-            ${[`${project.key} Evidence Summary.pdf`, `${project.key} Control Register.xlsx`, `${project.key} Review Record.pdf`].map((file, index) => `<div class="attachment-row"><span class="attachment-icon">${icon(index === 1 ? "file-spreadsheet" : "file-text")}</span><span>${esc(file)}</span></div>`).join("")}
-          </section>
+            ` : (() => { const linked = issuesForProject(space.key).find((issue) => issue.linkedPage === page.id) || issuesForProject(space.key)[0]; return linked ? `<button class="linked-object" type="button" data-issue="${linked.key}"><span class="linked-icon">${icon("check-square")}</span><span class="linked-copy"><strong>${esc(linked.key)} · Linked work</strong><span>Open details and activity</span></span></button>` : '<div class="empty-state">No linked work yet.</div>'; })()}
+          </section>` : ""}
+          <section class="document-sidebar-section"><h3>Attachments</h3>${attachmentSection("pages", page.id, canEditThis)}</section>
           <section class="document-sidebar-section"><h3>Version history</h3><ul class="version-list">${versions.slice(0, 5).map((version) => `<li class="version-item" data-version-row="${version.version}"><div class="version-head"><strong>v${version.version} · ${esc(version.author)}</strong><time>${esc(version.time)}</time></div><p>${esc(version.note)}</p><button class="section-link" type="button" data-action="compare-version" data-page-id="${page.id}" data-version="${version.version}">Compare</button></li>`).join("")}</ul></section>
         </aside>
       </div>
@@ -1881,9 +2447,9 @@
   function renderAdminTab() {
     const tab = DemoState.adminTab;
     if (tab === "workflows") return `<h2>Workflows</h2><p>Configure accountable states and transitions for project work.</p><div class="workflow"><span class="workflow-node">To Do</span><span class="workflow-arrow">→</span><span class="workflow-node">Ready</span><span class="workflow-arrow">→</span><span class="workflow-node">In Progress</span><span class="workflow-arrow">→</span><span class="workflow-node">In Review</span><span class="workflow-arrow">→</span><span class="workflow-node done">Done</span><span class="workflow-node blocked">Blocked</span></div><div class="config-grid"><div class="config-card"><h3>Delivery workflow</h3><p>7 statuses · 13 transitions · used by ${DemoState.projects.length} projects</p></div><div class="config-card"><h3>Decision workflow</h3><p>Draft → In review → Pending → Approved or Rejected</p></div><div class="config-card"><h3>Knowledge workflow</h3><p>Draft → Review → Governed · version required on publish</p></div><div class="config-card"><h3>Risk workflow</h3><p>Identified → Assessed → Treating → Accepted or Closed</p></div></div>`;
-    if (tab === "issue-types") return `<h2>Work item types</h2><p>Define the hierarchy and fields used across delivery projects.</p><div class="config-grid">${["Epic", "Story", "Task", "Bug", "Decision Task", "Risk Action"].map((type, index) => `<div class="config-card"><h3>${esc(type)}</h3><p>${index < 3 ? "Standard delivery type" : "Governed specialized type"} · ${index + 7} configured fields</p></div>`).join("")}</div>`;
+    if (tab === "issue-types") return `<h2>Work item types</h2><p>The delivery hierarchy is Epic → Story / Task / Bug → Sub-task. Subtasks always belong to a parent work item, inherit its sprint, and are excluded from sprint point totals.</p><div class="config-grid">${["Epic", "Story", "Task", "Bug", "Sub-task", "Decision Task", "Risk Action"].map((type, index) => `<div class="config-card"><h3>${esc(type)}</h3><p>${type === "Epic" ? "Container type · groups delivery work toward an outcome" : type === "Sub-task" ? "Child type · breakdown of a single parent work item" : index < 4 ? "Standard delivery type" : "Governed specialized type"} · ${index + 7} configured fields</p></div>`).join("")}</div>`;
     if (tab === "permissions") return `<h2>Permissions</h2><p>Role-based access model for work, spaces, approvals, service management, administration, and reporting.</p><div class="data-table-wrap"><table class="data-table"><thead><tr><th>Role</th><th>Work</th><th>Knowledge</th><th>Service</th><th>Approve</th><th>Administer</th></tr></thead><tbody><tr><td class="summary-cell">Suite administrator</td><td>Manage</td><td>Manage</td><td>Manage</td><td>Yes</td><td>Yes</td></tr><tr><td class="summary-cell">Project lead</td><td>Manage</td><td>Publish</td><td>Read</td><td>Configured</td><td>No</td></tr><tr><td class="summary-cell">Contributor</td><td>Edit assigned</td><td>Draft</td><td>None</td><td>No</td><td>No</td></tr><tr><td class="summary-cell">Executive approver</td><td>Read</td><td>Read</td><td>Assigned</td><td>Assigned</td><td>No</td></tr><tr><td class="summary-cell">Service agent</td><td>Linked read</td><td>Read</td><td>Manage</td><td>No</td><td>No</td></tr><tr><td class="summary-cell">Requester</td><td>None</td><td>Suggested</td><td>Own requests</td><td>No</td><td>No</td></tr></tbody></table></div>`;
-    if (tab === "templates") return `<h2>Templates</h2><p>Standardize common project, work, page, and decision structures.</p><div class="config-grid">${["Delivery project", "Sprint planning", "Decision brief", "Integration review", "Risk assessment", "Leadership readout"].map((name) => `<div class="config-card"><h3>${esc(name)}</h3><p>Governed template · Available to Demonstration Portfolio</p></div>`).join("")}</div>`;
+    if (tab === "templates") return `<h2>Templates</h2><p>Page templates are live in the Create page flow — pick one here to start a page from it.</p><div class="config-grid">${PAGE_TEMPLATES.filter((template) => template.id !== "blank").map((template) => `<div class="config-card"><h3>${esc(template.name)}</h3><p>Governed page template · seeds structure, panels, and macros</p>${can("edit-knowledge") ? `<button class="button small" type="button" data-action="create-page" data-template="${template.id}" style="margin-top:8px">Use template</button>` : ""}</div>`).join("")}</div>`;
     if (tab === "integrations") return `<h2>Integrations</h2><p>Connect identity, source control, communication, and enterprise reporting in production.</p><div class="config-grid">${[["Microsoft Entra ID", "Identity and group synchronization"], ["GitHub", "Commits, pull requests, and deployments"], ["Microsoft Teams", "Notifications and collaborative actions"], ["Power BI", "Governed reporting data"], ["Email", "Inbound requests and notifications"], ["REST API", "Enterprise interoperability"]].map(([name, detail]) => `<div class="config-card"><h3>${esc(name)}</h3><p>${esc(detail)} · Not connected in concept</p></div>`).join("")}</div>`;
     return `<h2>Audit log</h2><p>Browser-local synthetic events demonstrate the shape of an audit trail. Production immutability would require server-side controls.</p><div class="data-table-wrap"><table class="data-table"><thead><tr><th>Time</th><th>Actor</th><th>Action</th><th>Object</th></tr></thead><tbody>${DemoState.audit.map((event) => `<tr><td>${esc(event.time)}</td><td>${esc(event.actor)}</td><td>${esc(event.action)}</td><td class="summary-cell">${esc(event.object)}</td></tr>`).join("")}</tbody></table></div>`;
   }
@@ -1920,6 +2486,7 @@
     queues: renderQueues,
     slas: renderSlas,
     spaces: renderSpaces,
+    search: renderSearch,
     decisions: renderDecisions,
     reports: renderReports,
     leadership: renderLeadership,
@@ -1960,7 +2527,7 @@
     DemoState.route = view;
     if (options.resetSubView !== false) {
       if (view === "projects" && options.preserveProject !== true) DemoState.projectMode = "list";
-      if (view === "spaces" && options.preservePage !== true) DemoState.activePage = null;
+      if (view === "spaces" && options.preservePage !== true) { DemoState.activePage = null; DemoState.activeBlogPost = null; }
       if (view === "decisions" && options.preserveDecision !== true) DemoState.activeDecision = null;
     }
     const targetHash = "#" + view;
@@ -2047,6 +2614,58 @@
 
   function initializeViewInteractions() {
     if (DemoState.route === "board") initializeBoardDrag();
+    if (DemoState.route === "spaces" && DemoState.activePage) initializeInlineComments(DemoState.activePage);
+  }
+
+  function initializeInlineComments(pageId) {
+    const body = document.querySelector(`[data-page-body="${CSS.escape(pageId)}"]`);
+    if (!body) return;
+    const threads = DemoState.pageInlineComments[pageId] || [];
+    threads.forEach((thread) => {
+      if (!thread.quote) return;
+      const walker = document.createTreeWalker(body, NodeFilter.SHOW_TEXT);
+      let node;
+      while ((node = walker.nextNode())) {
+        const index = node.textContent.indexOf(thread.quote);
+        if (index < 0) continue;
+        if (node.parentElement.closest(".inline-anchor")) continue;
+        const range = document.createRange();
+        range.setStart(node, index);
+        range.setEnd(node, index + thread.quote.length);
+        const mark = document.createElement("mark");
+        mark.className = "inline-anchor" + (thread.resolved ? " resolved" : "");
+        mark.dataset.inlineRef = thread.id;
+        mark.title = `${thread.author}: ${thread.text.slice(0, 80)}`;
+        try { range.surroundContents(mark); } catch (_) { /* selection spans elements; skip highlight */ }
+        break;
+      }
+    });
+    if (!can("comment")) return;
+    body.addEventListener("mouseup", () => {
+      document.querySelector(".selection-comment-bubble")?.remove();
+      const selection = window.getSelection();
+      if (!selection || selection.isCollapsed) return;
+      const text = selection.toString().replace(/\s+/g, " ").trim();
+      if (text.length < 3 || text.length > 300) return;
+      if (!body.contains(selection.anchorNode) || !body.contains(selection.focusNode)) return;
+      const rect = selection.getRangeAt(0).getBoundingClientRect();
+      const bubble = document.createElement("div");
+      bubble.className = "selection-comment-bubble";
+      bubble.innerHTML = `<button class="button small primary" type="button">${icon("plus")} Comment</button>`;
+      document.body.appendChild(bubble);
+      bubble.style.left = Math.max(8, rect.left + rect.width / 2 - 40) + "px";
+      bubble.style.top = Math.max(8, rect.top - 38 + window.scrollY) + "px";
+      bubble.style.position = "fixed";
+      bubble.querySelector("button").addEventListener("click", () => {
+        bubble.remove();
+        openInlineCommentModal(pageId, text);
+      });
+      window.setTimeout(() => {
+        document.addEventListener("mousedown", function cleanup(event) {
+          if (!bubble.contains(event.target)) { bubble.remove(); document.removeEventListener("mousedown", cleanup); }
+        });
+      }, 0);
+    });
   }
 
   function initializeBoardDrag() {
@@ -2076,6 +2695,14 @@
     });
   }
 
+  function attachmentSection(kind, id, canManage) {
+    const files = (DemoState.attachments[kind] || {})[id] || [];
+    return `<div class="attachment-block" data-attachment-block>
+      ${files.map((file) => `<div class="attachment-row"><span class="attachment-icon">${icon("paperclip")}</span><span class="attachment-copy"><strong>${esc(file.name)}</strong><span>${esc(file.addedBy)} · ${esc(file.time)} · ${Math.max(1, Math.round((file.size || 0) / 1024))} KB</span></span>${file.dataUrl ? `<a class="button small" href="${esc(file.dataUrl)}" download="${esc(file.name)}">Download</a>` : ""}${canManage ? `<button class="label-remove" type="button" data-action="remove-attachment" data-kind="${esc(kind)}" data-record="${esc(id)}" data-file="${esc(file.id)}" aria-label="Remove attachment ${esc(file.name)}">×</button>` : ""}</div>`).join("") || '<p class="empty-inline">No attachments yet.</p>'}
+      ${canManage ? `<label class="attachment-add button small">Attach file<input type="file" data-attach-kind="${esc(kind)}" data-attach-record="${esc(id)}" hidden></label><span class="field-hint">Stored in this browser only · 512 KB per file</span>` : ""}
+    </div>`;
+  }
+
   function openIssue(key) {
     window.clearTimeout(drawerCloseTimer);
     if (!modalLayer.hidden) closeModal();
@@ -2094,26 +2721,38 @@
         <div class="drawer-grid">
           <div class="field"><label for="drawerStatus">Status</label><select id="drawerStatus" data-issue-status="${issue.key}" ${can("edit-work", issue) ? "" : "disabled"}>${["To Do", "Ready", "In Progress", "In Review", "Blocked", "Done"].map((status) => `<option ${status === issue.status ? "selected" : ""}>${status}</option>`).join("")}</select></div>
           <div class="field"><label for="drawerAssignee">Assignee</label><select id="drawerAssignee" data-issue-assignee="${issue.key}" ${can("edit-work", issue) ? "" : "disabled"}>${DemoState.people.filter((person) => !["Amina Cole", "Jordan Lee"].includes(person.name)).map((person) => `<option ${person.name === issue.assignee ? "selected" : ""}>${esc(person.name)}</option>`).join("")}</select></div>
-          <div class="field"><span class="field-label">Sprint</span><div>${esc(issue.sprint)}</div></div>
-          <div class="field"><span class="field-label">Due date</span><div>${esc(issue.due)}</div></div>
-          <div class="field"><span class="field-label">Epic</span><div>${esc(issue.epic)}</div></div>
-          <div class="field"><span class="field-label">Estimate</span><div>${issue.points} story points</div></div>
+          <div class="field"><span class="field-label">Sprint</span><div>${esc(issue.sprint)}${isSubtask(issue) ? ' <span class="field-hint">(inherited from parent)</span>' : ""}</div></div>
+          <div class="field"><span class="field-label">Due date</span><div>${dueCell(issue)}</div></div>
+          <div class="field"><span class="field-label">Epic</span><div>${issue.epic && issue.epic !== "—" && issueByKey(issue.epic) ? `<button class="linked-key" type="button" data-issue="${esc(issue.epic)}">${esc(issue.epic)} · ${esc(issueByKey(issue.epic).summary)}</button>` : "No epic"}</div></div>
+          <div class="field"><span class="field-label">Estimate</span><div>${issue.points} story points${isSubtask(issue) ? ' <span class="field-hint">(not counted in sprint totals)</span>' : ""}</div></div>
           <div class="field"><span class="field-label">Reporter</span><div>${personCell(issue.reporter)}</div></div>
           <div class="field"><span class="field-label">Milestone</span><div>${esc(issue.milestone)}</div></div>
         </div>
+        ${isSubtask(issue) && issue.parent ? `<section class="drawer-section subtask-parent-strip"><button class="linked-object" type="button" data-issue="${esc(issue.parent)}"><span class="linked-icon">${icon("arrow-left")}</span><span class="linked-copy"><strong>Subtask of ${esc(issue.parent)}</strong><span>${esc(issueByKey(issue.parent)?.summary || "Parent work item")} · ${esc(issueByKey(issue.parent)?.status || "")}</span></span></button></section>` : ""}
         <section class="drawer-section"><h3>Description</h3><p>${esc(issue.description)}</p></section>
+        ${!isSubtask(issue) ? (() => {
+          const children = subtasksOf(issue.key);
+          const done = children.filter((child) => child.status === "Done").length;
+          const canAdd = can("edit-work", issue) || can("create-work");
+          return `<section class="drawer-section"><h3>Subtasks${children.length ? ` · ${done}/${children.length} done` : ""}</h3>
+            ${children.length ? `<div class="subtask-progress-track" aria-hidden="true"><span style="width:${Math.round(done / children.length * 100)}%"></span></div>
+            <ul class="subtask-list">${children.map((child) => `<li><button class="dependency-item" type="button" data-issue="${esc(child.key)}"><span class="dependency-key">${esc(child.key)}</span><span>${esc(child.summary)}</span><span class="subtask-owner">${avatar(child.assignee, "table-avatar")}</span>${statusBadge(child.status)}</button></li>`).join("")}</ul>` : '<p class="empty-inline">No subtasks yet. Break this work down without losing the parent view.</p>'}
+            ${canAdd ? `<form class="subtask-add-form" data-subtask-form="${esc(issue.key)}"><input name="summary" placeholder="Add a subtask" aria-label="New subtask summary" required maxlength="140"><select name="assignee" aria-label="Subtask assignee">${DemoState.people.filter((person) => !["Amina Cole", "Jordan Lee"].includes(person.name)).map((person) => `<option ${person.name === issue.assignee ? "selected" : ""}>${esc(person.name)}</option>`).join("")}</select><button class="button small primary" type="submit">Add</button></form>` : ""}
+          </section>`;
+        })() : ""}
         <section class="drawer-section"><h3>Dependencies & schedule exposure</h3>
           ${issue.dependencies.length ? `<ul class="dependency-list">${issue.dependencies.map((dep) => { const linked = issueByKey(dep); return `<li><button class="dependency-item" type="button" data-issue="${dep}"><span class="dependency-key">${dep}</span><span>${esc(linked.summary)}</span>${statusBadge(linked.status)}</button></li>`; }).join("")}</ul>` : '<p>No unresolved incoming dependencies.</p>'}
           ${dependent.length ? `<p style="margin-top:12px"><strong>Blocks ${dependent.length} item${dependent.length === 1 ? "" : "s"}:</strong></p><ul class="dependency-list">${dependent.map((item) => `<li><button class="dependency-item" type="button" data-issue="${item.key}"><span class="dependency-key">${item.key}</span><span>${esc(item.summary)}</span>${statusBadge(item.status)}</button></li>`).join("")}</ul>` : ""}
           ${issue.risk ? `<div class="callout warning" style="margin-bottom:0"><strong>${esc(issue.risk)} · ${esc(riskById(issue.risk)?.title || "Linked risk")}</strong><p>Current exposure: ${riskById(issue.risk)?.score || 0}/25. ${esc(riskById(issue.risk)?.response || "")}</p></div>` : ""}
         </section>
-        <section class="drawer-section"><h3>Checklist</h3><ul class="checklist">${issue.checklist.map((item, index) => `<li><input type="checkbox" data-checklist-key="${issue.key}" data-checklist-index="${index}" ${issue.checked[index] ? "checked" : ""} ${can("edit-work", issue) ? "" : "disabled"}><span>${esc(item)}</span></li>`).join("")}</ul></section>
+        <section class="drawer-section"><h3>Checklist</h3><ul class="checklist">${issue.checklist.map((item, index) => `<li><input type="checkbox" data-checklist-key="${issue.key}" data-checklist-index="${index}" ${issue.checked[index] ? "checked" : ""} ${can("edit-work", issue) ? "" : "disabled"}><span>${esc(item)}</span>${can("edit-work", issue) ? `<button class="label-remove" type="button" data-action="remove-checklist-item" data-key="${issue.key}" data-index="${index}" aria-label="Remove checklist item">×</button>` : ""}</li>`).join("") || '<li class="empty-inline">No checklist items.</li>'}</ul>
+        ${can("edit-work", issue) ? `<form class="subtask-add-form" data-checklist-form="${esc(issue.key)}"><input name="item" placeholder="Add a checklist item" aria-label="New checklist item" required maxlength="140"><button class="button small" type="submit">Add</button></form>` : ""}</section>
         <section class="drawer-section"><h3>Linked knowledge & evidence</h3>
           <button class="linked-object" type="button" data-page="${issue.linkedPage}"><span class="linked-icon">${icon("file-text")}</span><span class="linked-copy"><strong>${esc(linkedPage?.title || "Project Hub")}</strong><span>v${linkedPage?.version || 1} · ${esc(linkedPage?.updated || "Today")}</span></span></button>
-          <div class="attachment-row"><span class="attachment-icon">${icon("paperclip")}</span><span>Supporting Evidence Summary.pdf</span></div>
+          ${attachmentSection("issues", issue.key, can("edit-work", issue))}
         </section>
-        <section class="drawer-section"><h3>Comments</h3><ul class="comment-list">${issue.comments.length ? issue.comments.map((comment) => `<li class="comment-item"><div class="comment-head"><strong>${esc(comment.author)}</strong><time>${esc(comment.time)}</time></div><p>${esc(comment.text)}</p></li>`).join("") : '<li class="empty-state" style="padding:16px">No comments yet.</li>'}</ul>
-          <form class="comment-form" data-issue-comment="${issue.key}"><textarea name="comment" aria-label="Add an issue comment" placeholder="Add a comment or @mention a teammate"></textarea><button class="button primary" type="submit">Comment</button></form>
+        <section class="drawer-section"><h3>Comments</h3><ul class="comment-list">${issue.comments.length ? issue.comments.map((comment) => `<li class="comment-item"><div class="comment-head"><strong>${esc(comment.author)}</strong><time>${esc(comment.time)}</time></div><p>${renderCommentText(comment.text)}</p></li>`).join("") : '<li class="empty-state" style="padding:16px">No comments yet.</li>'}</ul>
+          <form class="comment-form mention-host" data-issue-comment="${issue.key}"><textarea name="comment" aria-label="Add an issue comment" placeholder="Add a comment or @mention a teammate" data-mention-input></textarea><button class="button primary" type="submit">Comment</button></form>
         </section>
         <section class="drawer-section"><h3>Activity</h3><ul class="activity-list">${issue.history.map((item, index) => `<li class="activity-item"><span class="activity-icon">${icon("history")}</span><span class="activity-copy">${esc(item)}<time>${index === 0 ? "Today" : "Earlier"}</time></span></li>`).join("")}</ul></section>
       </div>
@@ -2254,7 +2893,7 @@
     `, true);
   }
 
-  function openCreateModal(type = "work") {
+  function openCreateModal(type = "work", options = {}) {
     if (type === "work" && !requireCapability("create-work", null, "Only project leads and administrators can create new delivery work in this preview.")) return;
     if (type === "page" && !requireCapability("edit-knowledge", null, "This persona cannot create knowledge pages.")) return;
     if (type === "decision" && !requireCapability("create-work", null, "Only project leads and administrators can open new governed decisions.")) return;
@@ -2266,15 +2905,143 @@
           <button class="create-type ${type === "page" ? "active" : ""}" type="button" data-action="change-create-type" data-create-type="page"><strong>Knowledge page</strong><span>Connected page with ownership and version history.</span></button>
           <button class="create-type ${type === "decision" ? "active" : ""}" type="button" data-action="change-create-type" data-create-type="decision"><strong>Decision</strong><span>Options, recommendation, approver, and downstream impact.</span></button>
         </div>
-        ${createForm(type)}
+        ${createForm(type, options)}
       </div>
     `, false);
   }
 
-  function createForm(type) {
-    if (type === "page") return `<form id="createEntityForm" data-create-form="page"><div class="form-grid"><div class="field full"><label for="newPageTitle">Page title</label><input id="newPageTitle" name="title" required autofocus placeholder="e.g., Release readiness checklist"></div><div class="field"><label for="newPageParent">Parent page</label><select id="newPageParent" name="parent"><option value="">No parent</option>${pagesForProject().map((page) => `<option value="${page.id}">${esc(page.title)}</option>`).join("")}</select></div><div class="field"><label for="newPageOwner">Owner</label><select id="newPageOwner" name="owner">${DemoState.people.map((person) => `<option>${esc(person.name)}</option>`).join("")}</select></div><div class="field full"><label for="newPageSummary">Purpose</label><textarea id="newPageSummary" name="summary" required placeholder="What should this page help the team understand or do?"></textarea></div></div><div class="modal-footer" style="margin:20px -20px -20px"><button class="button" type="button" data-action="close-modal">Cancel</button><button class="button primary" type="submit">Create page</button></div></form>`;
+  function createForm(type, options = {}) {
+    if (type === "page") return `<form id="createEntityForm" data-create-form="page"><div class="form-grid"><div class="field full"><label for="newPageTitle">Page title</label><input id="newPageTitle" name="title" required autofocus placeholder="e.g., Release readiness checklist"></div><div class="field"><label for="newPageSpace">Space</label><select id="newPageSpace" name="space" data-page-space-select><option value="${esc(activeProject().key)}">${esc(activeProject().name)}</option><option value="${esc(personalSpaceKey(actor()))}">My personal space</option></select></div><div class="field"><label for="newPageTemplate">Template</label><select id="newPageTemplate" name="template">${PAGE_TEMPLATES.map((template) => `<option value="${template.id}" ${options.template === template.id ? "selected" : ""}>${esc(template.name)}</option>`).join("")}</select></div><div class="field"><label for="newPageParent">Parent page</label><select id="newPageParent" name="parent"><option value="">No parent (top level)</option>${orderedProjectPages(activeProject().key).filter((entry) => pageVisibleTo(entry.page)).map(({ page, depth }) => `<option value="${page.id}">${"— ".repeat(depth)}${esc(page.title)}</option>`).join("")}</select></div><div class="field"><label for="newPageOwner">Owner</label><select id="newPageOwner" name="owner">${DemoState.people.map((person) => `<option ${person.name === actor() ? "selected" : ""}>${esc(person.name)}</option>`).join("")}</select></div><div class="field full"><label for="newPageLabels">Labels</label><input id="newPageLabels" name="labels" placeholder="Comma-separated, e.g. evidence, readiness"></div><div class="field full"><label for="newPageSummary">Purpose</label><textarea id="newPageSummary" name="summary" required placeholder="What should this page help the team understand or do?"></textarea></div></div><div class="modal-footer" style="margin:20px -20px -20px"><button class="button" type="button" data-action="close-modal">Cancel</button><button class="button primary" type="submit">Create page</button></div></form>`;
     if (type === "decision") return `<form id="createEntityForm" data-create-form="decision"><div class="form-grid"><div class="field full"><label for="newDecisionTitle">Decision title</label><input id="newDecisionTitle" name="title" required autofocus placeholder="What needs to be decided?"></div><div class="field"><label for="newDecisionOwner">Owner</label><select id="newDecisionOwner" name="owner">${DemoState.people.map((person) => `<option>${esc(person.name)}</option>`).join("")}</select></div><div class="field"><label for="newDecisionApprover">Approver</label><select id="newDecisionApprover" name="approver">${DemoState.people.map((person) => `<option>${esc(person.name)}</option>`).join("")}</select></div><div class="field full"><label for="newDecisionRecommendation">Recommendation</label><textarea id="newDecisionRecommendation" name="recommendation" required placeholder="State the recommended option and why."></textarea></div></div><div class="modal-footer" style="margin:20px -20px -20px"><button class="button" type="button" data-action="close-modal">Cancel</button><button class="button primary" type="submit">Create decision</button></div></form>`;
-    return `<form id="createEntityForm" data-create-form="work"><div class="form-grid"><div class="field"><label for="newIssueType">Type</label><select id="newIssueType" name="type">${["Story", "Task", "Bug", "Decision Task", "Risk Action", "Epic"].map((value) => `<option>${value}</option>`).join("")}</select></div><div class="field"><label for="newIssuePriority">Priority</label><select id="newIssuePriority" name="priority">${["Medium", "High", "Highest", "Low"].map((value) => `<option>${value}</option>`).join("")}</select></div><div class="field full"><label for="newIssueSummary">Summary</label><input id="newIssueSummary" name="summary" required autofocus placeholder="What needs to be done?"></div><div class="field"><label for="newIssueAssignee">Assignee</label><select id="newIssueAssignee" name="assignee">${DemoState.people.filter((person) => !["Amina Cole", "Jordan Lee"].includes(person.name)).map((person) => `<option>${esc(person.name)}</option>`).join("")}</select></div><div class="field"><label for="newIssueSprint">Sprint</label><select id="newIssueSprint" name="sprint">${sprintsForProject().filter((sprint) => sprint.status !== "completed").map((sprint) => `<option>${esc(sprint.name)}</option>`).join("")}<option>Backlog</option></select></div><div class="field full"><label for="newIssueDescription">Description</label><textarea id="newIssueDescription" name="description" placeholder="Add context, outcome, constraints, and acceptance information."></textarea></div></div><div class="modal-footer" style="margin:20px -20px -20px"><button class="button" type="button" data-action="close-modal">Cancel</button><button class="button primary" type="submit">Create work item</button></div></form>`;
+    const parentCandidates = issuesForProject().filter((item) => !isSubtask(item) && item.type !== "Epic");
+    const epicOptions = epicsForProject();
+    return `<form id="createEntityForm" data-create-form="work"><div class="form-grid"><div class="field"><label for="newIssueType">Type</label><select id="newIssueType" name="type" data-create-type-select>${["Story", "Task", "Bug", "Sub-task", "Decision Task", "Risk Action", "Epic"].map((value) => `<option>${value}</option>`).join("")}</select></div><div class="field"><label for="newIssuePriority">Priority</label><select id="newIssuePriority" name="priority">${["Medium", "High", "Highest", "Low"].map((value) => `<option>${value}</option>`).join("")}</select></div><div class="field full"><label for="newIssueSummary">Summary</label><input id="newIssueSummary" name="summary" required autofocus placeholder="What needs to be done?"></div><div class="field"><label for="newIssueAssignee">Assignee</label><select id="newIssueAssignee" name="assignee">${DemoState.people.filter((person) => !["Amina Cole", "Jordan Lee"].includes(person.name)).map((person) => `<option>${esc(person.name)}</option>`).join("")}</select></div><div class="field" data-create-sprint-field><label for="newIssueSprint">Sprint</label><select id="newIssueSprint" name="sprint">${sprintsForProject().filter((sprint) => sprint.status !== "completed").map((sprint) => `<option>${esc(sprint.name)}</option>`).join("")}<option>Backlog</option></select></div><div class="field" data-create-parent-field hidden><label for="newIssueParent">Parent work item</label><select id="newIssueParent" name="parent">${parentCandidates.map((item) => `<option value="${esc(item.key)}">${esc(item.key)} · ${esc(item.summary)}</option>`).join("")}</select></div><div class="field" data-create-epic-field><label for="newIssueEpic">Epic</label><select id="newIssueEpic" name="epic"><option value="">No epic</option>${epicOptions.map((epic) => `<option value="${esc(epic.key)}">${esc(epic.key)} · ${esc(epic.summary)}</option>`).join("")}</select></div><div class="field full"><label for="newIssueDescription">Description</label><textarea id="newIssueDescription" name="description" placeholder="Add context, outcome, constraints, and acceptance information."></textarea></div></div><div class="modal-footer" style="margin:20px -20px -20px"><button class="button" type="button" data-action="close-modal">Cancel</button><button class="button primary" type="submit">Create work item</button></div></form>`;
+  }
+
+  function htmlToMarkdown(html) {
+    const source = document.createElement("template");
+    source.innerHTML = sanitizeRichText(html || "");
+    const lines = [];
+    const inline = (node) => [...node.childNodes].map((child) => {
+      if (child.nodeType === Node.TEXT_NODE) return child.textContent;
+      const inner = inline(child);
+      if (child.tagName === "STRONG") return `**${inner}**`;
+      if (child.tagName === "EM") return `*${inner}*`;
+      if (child.tagName === "CODE") return "`" + inner + "`";
+      if (child.tagName === "A") return `[${inner}](${child.getAttribute("href") || ""})`;
+      if (child.tagName === "BR") return "\n";
+      return inner;
+    }).join("").replace(/\s+/g, " ");
+    const walk = (node) => {
+      [...node.children].forEach((child) => {
+        const tag = child.tagName;
+        if (tag === "H2") lines.push("", "## " + inline(child).trim(), "");
+        else if (tag === "H3") lines.push("", "### " + inline(child).trim(), "");
+        else if (tag === "P") lines.push(inline(child).trim(), "");
+        else if (tag === "UL" || tag === "OL") { [...child.children].forEach((item, index) => lines.push((tag === "OL" ? `${index + 1}. ` : "- ") + inline(item).trim())); lines.push(""); }
+        else if (tag === "BLOCKQUOTE") lines.push("> " + inline(child).trim(), "");
+        else if (tag === "TABLE") {
+          const rows = [...child.querySelectorAll("tr")].map((row) => [...row.children].map((cell) => inline(cell).trim()));
+          if (rows.length) {
+            lines.push("| " + rows[0].join(" | ") + " |");
+            lines.push("| " + rows[0].map(() => "---").join(" | ") + " |");
+            rows.slice(1).forEach((row) => lines.push("| " + row.join(" | ") + " |"));
+            lines.push("");
+          }
+        }
+        else if (tag === "DETAILS") { const summary = child.querySelector("summary"); if (summary) lines.push("", "### " + inline(summary).trim(), ""); walk(child); }
+        else if (tag === "DIV" || tag === "SECTION") { const text = inline(child).trim(); if (child.children.length && [...child.children].some((inner) => ["P", "UL", "OL", "H2", "H3", "STRONG"].includes(inner.tagName))) { walk(child); } else if (text) lines.push("> " + text, ""); }
+        else { const text = inline(child).trim(); if (text) lines.push(text, ""); }
+      });
+    };
+    walk(source.content);
+    return lines.join("\n").replace(/\n{3,}/g, "\n\n").trim();
+  }
+
+  function pageMarkdown(page) {
+    const body = page.bodyHtml ? htmlToMarkdown(renderPageBodyHtml(page)) : page.content;
+    return [`# ${page.title}`, "", `> ${page.summary}`, "", `Owner: ${page.owner} · Version ${page.version} · Updated ${page.updated}${(page.labels || []).length ? ` · Labels: ${page.labels.join(", ")}` : ""}`, "", body].join("\n");
+  }
+
+  function exportPageMarkdown(pageId) {
+    const page = pageById(pageId);
+    if (!page || !pageVisibleTo(page)) return;
+    downloadText(`${slug(page.title)}.md`, pageMarkdown(page), "text/markdown;charset=utf-8");
+    toast("Page exported", `${page.title} was written to Markdown from the governed record.`, "success");
+  }
+
+  function exportSpaceMarkdown(spaceKey) {
+    const space = spaceForKey(spaceKey);
+    if (!space) return;
+    const entries = orderedProjectPages(spaceKey).filter((entry) => pageVisibleTo(entry.page));
+    const body = [`# ${space.name} — space export`, "", `${entries.length} pages · exported from the browser-local demonstration record.`, "", ...entries.map(({ page }) => pageMarkdown(page) + "\n\n---\n")];
+    downloadText(`${slug(space.name)}-space.md`, body.join("\n"), "text/markdown;charset=utf-8");
+    toast("Space exported", `${entries.length} pages were written to a single Markdown file.`, "success");
+  }
+
+  function openMovePageModal(pageId) {
+    const page = pageById(pageId);
+    if (!page || !requireCapability("edit-knowledge", page, "This persona cannot move pages.")) return;
+    const blocked = new Set([page.id, ...pageDescendantIds(page.id)]);
+    const targets = orderedProjectPages(page.projectKey).filter((entry) => !blocked.has(entry.page.id) && pageVisibleTo(entry.page));
+    openModal(`
+      <div class="modal-header"><h2>Move page · ${esc(page.title)}</h2><button class="icon-button" type="button" data-action="close-modal" aria-label="Close">×</button></div>
+      <form data-move-page="${page.id}">
+        <div class="modal-body">
+          <div class="field"><label for="movePageParent">New parent</label><select id="movePageParent" name="parent"><option value="">No parent (top level)</option>${targets.map(({ page: item, depth }) => `<option value="${item.id}" ${item.id === page.parent ? "selected" : ""}>${"— ".repeat(depth)}${esc(item.title)}</option>`).join("")}</select></div>
+          <p class="field-hint" style="margin-top:10px">The page keeps its children — the whole branch moves together. Moving under a descendant is prevented.</p>
+        </div>
+        <div class="modal-footer"><button class="button" type="button" data-action="close-modal">Cancel</button><button class="button primary" type="submit">Move page</button></div>
+      </form>
+    `);
+  }
+
+  function copyPage(pageId) {
+    const page = pageById(pageId);
+    if (!page || !requireCapability("edit-knowledge", page, "This persona cannot copy pages.")) return;
+    const id = slug(page.title) + "-copy-" + (DemoState.pages.length + 1);
+    const copy = { ...clone(page), id, title: "Copy of " + page.title, version: 1, updated: "Just now", owner: actor(), restricted: null, reactions: {} };
+    DemoState.pages.push(copy);
+    DemoState.pageComments[id] = [];
+    DemoState.pageVersions[id] = [{ version: 1, author: actor(), time: "Just now", note: `Copied from ${page.title} v${page.version}`, title: copy.title, content: copy.content, bodyHtml: copy.bodyHtml || `<p>${esc(copy.content)}</p>` }];
+    recordAudit("Copied knowledge page", `${page.title} → ${copy.title}`);
+    DemoState.activePage = id;
+    navigate("spaces", { preservePage: true });
+    toast("Page copied", `${copy.title} was created as version 1.`, "success");
+  }
+
+  function openRestrictionsModal(pageId) {
+    const page = pageById(pageId);
+    if (!page || !requireCapability("edit-knowledge", page, "This persona cannot change page restrictions.")) return;
+    const restricted = page.restricted || { view: [], edit: [] };
+    const people = DemoState.people.filter((person) => !["Amina Cole"].includes(person.name));
+    const listFor = (mode) => `<div class="restriction-list">${people.map((person) => `<label><input type="checkbox" name="${mode}" value="${esc(person.name)}" ${restricted[mode]?.includes(person.name) ? "checked" : ""}> ${esc(person.name)}</label>`).join("")}</div>`;
+    openModal(`
+      <div class="modal-header"><h2>Restrictions · ${esc(page.title)}</h2><button class="icon-button" type="button" data-action="close-modal" aria-label="Close">×</button></div>
+      <form data-restrictions-form="${page.id}">
+        <div class="modal-body">
+          <div class="callout" style="margin-top:0"><strong>Simulation only</strong><p>Restrictions are enforced by the persona simulation, not by real access control. Leave a list empty to keep that action open to the space.</p></div>
+          <h3 style="margin:14px 0 4px">Who can view</h3>${listFor("view")}
+          <h3 style="margin:14px 0 4px">Who can edit</h3>${listFor("edit")}
+        </div>
+        <div class="modal-footer"><button class="button" type="button" data-action="close-modal">Cancel</button><button class="button primary" type="submit">Save restrictions</button></div>
+      </form>
+    `, true);
+  }
+
+  function openInlineCommentModal(pageId, quote) {
+    if (!can("comment")) return;
+    openModal(`
+      <div class="modal-header"><h2>Inline comment</h2><button class="icon-button" type="button" data-action="close-modal" aria-label="Close">×</button></div>
+      <form data-inline-create="${esc(pageId)}">
+        <div class="modal-body">
+          <blockquote style="border-left:3px solid var(--warning,#eda242);padding:6px 12px;color:var(--muted);font-size:10px;font-style:italic">“${esc(quote.length > 160 ? quote.slice(0, 160) + "…" : quote)}”</blockquote>
+          <input type="hidden" name="quote" value="${esc(quote.slice(0, 300))}">
+          <div class="field mention-host" style="margin-top:12px"><label for="inlineCommentText">Comment</label><textarea id="inlineCommentText" name="comment" required autofocus placeholder="Comment on the selected text — @mention a teammate" data-mention-input></textarea></div>
+        </div>
+        <div class="modal-footer"><button class="button" type="button" data-action="close-modal">Cancel</button><button class="button primary" type="submit">Comment</button></div>
+      </form>
+    `);
   }
 
   function openEditPage(pageId) {
@@ -2289,7 +3056,7 @@
         <div class="modal-body">
           ${draft ? `<div class="callout" style="margin-top:0"><strong>Draft resumed</strong><p>These browser-local changes have not altered governed version ${page.version}.</p></div>` : ""}
           <div class="field"><label for="editPageTitle">Title</label><input id="editPageTitle" name="title" value="${esc(draft?.title || page.title)}" required data-page-draft-title></div>
-          <div class="field" style="margin-top:14px"><span class="field-label">Content</span><div class="editor-toolbar" aria-label="Formatting toolbar"><button type="button" data-command="bold" aria-label="Bold">B</button><button type="button" data-command="italic" aria-label="Italic"><em>I</em></button><button type="button" data-command="insertUnorderedList" aria-label="Bulleted list">• List</button><button type="button" data-command="formatBlock" data-value="h2" aria-label="Heading level 2">H2</button><button type="button" data-command="createLink" aria-label="Add link">Link</button></div><div id="pageEditor" class="page-editor" contenteditable="true" role="textbox" aria-multiline="true" data-page-draft-editor="${page.id}">${initialHtml}</div><span class="local-save-status" data-page-draft-state>${draft ? "Draft restored" : "Autosave ready"}</span></div>
+          <div class="field" style="margin-top:14px"><span class="field-label">Content</span><div class="editor-toolbar" aria-label="Formatting toolbar"><button type="button" data-command="bold" aria-label="Bold">B</button><button type="button" data-command="italic" aria-label="Italic"><em>I</em></button><button type="button" data-command="insertUnorderedList" aria-label="Bulleted list">• List</button><button type="button" data-command="formatBlock" data-value="h2" aria-label="Heading level 2">H2</button><button type="button" data-command="formatBlock" data-value="h3" aria-label="Heading level 3">H3</button><button type="button" data-command="createLink" aria-label="Add link">Link</button><span class="toolbar-divider" aria-hidden="true"></span><button type="button" data-macro-insert="toc" aria-label="Insert table of contents">TOC</button><button type="button" data-macro-insert="panel-info" aria-label="Insert info panel">Panel</button><button type="button" data-macro-insert="panel-warning" aria-label="Insert warning panel">Warn</button><button type="button" data-macro-insert="expand" aria-label="Insert expandable section">Expand</button><button type="button" data-macro-insert="status" aria-label="Insert status lozenge">Status</button><button type="button" data-macro-insert="table" aria-label="Insert table">Table</button><button type="button" data-macro-insert="work-chip" aria-label="Insert live work-item chip">Work</button></div><div id="pageEditor" class="page-editor" contenteditable="true" role="textbox" aria-multiline="true" data-page-draft-editor="${page.id}">${initialHtml}</div><span class="field-hint">Tip: type {{SMN-184}} anywhere to embed a live work-item chip.</span><span class="local-save-status" data-page-draft-state>${draft ? "Draft restored" : "Autosave ready"}</span></div>
           <div class="field" style="margin-top:14px"><label for="versionNote">Version note</label><input id="versionNote" name="note" placeholder="Describe what changed" value="${esc(draft?.note || "Content updated")}" ${can("publish-knowledge") ? "required" : ""}></div>
         </div>
         <div class="modal-footer"><button class="button" type="button" data-action="discard-page-draft" data-page-id="${page.id}" ${draft ? "" : "disabled"}>Discard draft</button><button class="button" type="button" data-action="save-page-draft" data-page-id="${page.id}">Save draft</button>${can("publish-knowledge") ? '<button class="button primary" type="submit">Publish new version</button>' : '<button class="button primary" type="button" disabled title="Contributors can draft but cannot publish">Publish requires page owner</button>'}</div>
@@ -2322,7 +3089,8 @@
     if (!page || !version) return;
     const currentHtml = sanitizeRichText(page.bodyHtml || `<p>${esc(page.content)}</p>`);
     const oldHtml = sanitizeRichText(version.bodyHtml || `<p>${esc(version.content || page.content)}</p>`);
-    openModal(`<div class="modal-header"><h2>Compare page versions</h2><button class="icon-button" type="button" data-action="close-modal" aria-label="Close">×</button></div><div class="modal-body"><div class="version-compare" data-version-compare><div class="version-compare-toolbar"><span class="tag">v${version.version} · ${esc(version.note)}</span><span>compared with</span><span class="tag">v${page.version} · Current</span></div><div class="version-compare-grid"><section class="version-column"><div class="version-column-head"><strong>v${version.version}</strong><span>${esc(version.author)}</span></div><div class="version-diff"><div class="diff-line" data-diff="removed"><span class="diff-gutter">−</span><div>${oldHtml}</div></div></div></section><section class="version-column"><div class="version-column-head"><strong>v${page.version}</strong><span>Current governed version</span></div><div class="version-diff"><div class="diff-line" data-diff="added"><span class="diff-gutter">+</span><div>${currentHtml}</div></div></div></section></div></div></div><div class="modal-footer">${can("edit-knowledge") ? `<button class="button" type="button" data-action="restore-version" data-page-id="${page.id}" data-version="${version.version}">Restore v${version.version} as draft</button>` : ""}<button class="button primary" type="button" data-action="page-history" data-page-id="${page.id}">Back to history</button></div>`, true);
+    const inlineDiff = renderWordDiff(stripHtml(oldHtml), stripHtml(currentHtml));
+    openModal(`<div class="modal-header"><h2>Compare page versions</h2><button class="icon-button" type="button" data-action="close-modal" aria-label="Close">×</button></div><div class="modal-body"><div class="version-compare" data-version-compare><div class="version-compare-toolbar"><span class="tag">v${version.version} · ${esc(version.note)}</span><span>compared with</span><span class="tag">v${page.version} · Current</span></div>${inlineDiff ? `<div class="diff-panel"><h3 style="margin:12px 0 6px;font-size:11px">Changes, word by word</h3>${inlineDiff}</div>` : ""}<details class="diff-full-versions"${inlineDiff ? "" : " open"}><summary>Full versions side by side</summary><div class="version-compare-grid"><section class="version-column"><div class="version-column-head"><strong>v${version.version}</strong><span>${esc(version.author)}</span></div><div class="version-diff"><div class="diff-line" data-diff="removed"><span class="diff-gutter">−</span><div>${oldHtml}</div></div></div></section><section class="version-column"><div class="version-column-head"><strong>v${page.version}</strong><span>Current governed version</span></div><div class="version-diff"><div class="diff-line" data-diff="added"><span class="diff-gutter">+</span><div>${currentHtml}</div></div></div></section></div></details></div></div><div class="modal-footer">${can("edit-knowledge") ? `<button class="button" type="button" data-action="restore-version" data-page-id="${page.id}" data-version="${version.version}">Restore v${version.version} as draft</button>` : ""}<button class="button primary" type="button" data-action="page-history" data-page-id="${page.id}">Back to history</button></div>`, true);
   }
 
   function compareSelectedVersions(pageId, versionNumbers) {
@@ -2332,7 +3100,8 @@
     const [older, newer] = selected;
     const olderHtml = sanitizeRichText(older.bodyHtml || `<p>${esc(older.content || "")}</p>`);
     const newerHtml = sanitizeRichText(newer.bodyHtml || `<p>${esc(newer.content || "")}</p>`);
-    openModal(`<div class="modal-header"><h2>Compare v${older.version} with v${newer.version}</h2><button class="icon-button" type="button" data-action="close-modal" aria-label="Close">×</button></div><div class="modal-body"><div class="version-compare" data-version-compare><div class="version-compare-toolbar"><span class="tag">v${older.version} · ${esc(older.note)}</span><span>compared with</span><span class="tag">v${newer.version} · ${esc(newer.note)}</span></div><div class="version-compare-grid"><section class="version-column"><div class="version-column-head"><strong>v${older.version}</strong><span>${esc(older.author)}</span></div><div class="version-diff"><div class="diff-line" data-diff="removed"><span class="diff-gutter">−</span><div>${olderHtml}</div></div></div></section><section class="version-column"><div class="version-column-head"><strong>v${newer.version}</strong><span>${esc(newer.author)}</span></div><div class="version-diff"><div class="diff-line" data-diff="added"><span class="diff-gutter">+</span><div>${newerHtml}</div></div></div></section></div></div></div><div class="modal-footer"><button class="button" type="button" data-action="page-history" data-page-id="${pageId}">Back to history</button></div>`, true);
+    const inlineDiff = renderWordDiff(stripHtml(olderHtml), stripHtml(newerHtml));
+    openModal(`<div class="modal-header"><h2>Compare v${older.version} with v${newer.version}</h2><button class="icon-button" type="button" data-action="close-modal" aria-label="Close">×</button></div><div class="modal-body"><div class="version-compare" data-version-compare><div class="version-compare-toolbar"><span class="tag">v${older.version} · ${esc(older.note)}</span><span>compared with</span><span class="tag">v${newer.version} · ${esc(newer.note)}</span></div>${inlineDiff ? `<div class="diff-panel"><h3 style="margin:12px 0 6px;font-size:11px">Changes, word by word</h3>${inlineDiff}</div>` : ""}<details class="diff-full-versions"${inlineDiff ? "" : " open"}><summary>Full versions side by side</summary><div class="version-compare-grid"><section class="version-column"><div class="version-column-head"><strong>v${older.version}</strong><span>${esc(older.author)}</span></div><div class="version-diff"><div class="diff-line" data-diff="removed"><span class="diff-gutter">−</span><div>${olderHtml}</div></div></div></section><section class="version-column"><div class="version-column-head"><strong>v${newer.version}</strong><span>${esc(newer.author)}</span></div><div class="version-diff"><div class="diff-line" data-diff="added"><span class="diff-gutter">+</span><div>${newerHtml}</div></div></div></section></div></details></div></div><div class="modal-footer"><button class="button" type="button" data-action="page-history" data-page-id="${pageId}">Back to history</button></div>`, true);
   }
 
   function restorePageVersion(pageId, versionNumber) {
@@ -2494,6 +3263,13 @@
     render();
     if (!drawerScrim.hidden) openIssue(key);
     toast(key + " moved to " + status, "Board, reports, and activity updated.", status === "Done" ? "success" : "");
+    if (issue.parent && status === "Done") {
+      const parent = issueByKey(issue.parent);
+      const siblings = subtasksOf(issue.parent);
+      if (parent && parent.status !== "Done" && siblings.length && siblings.every((child) => child.status === "Done")) {
+        toast("All subtasks complete", `Every subtask of ${parent.key} is done — consider moving the parent forward.`, "success");
+      }
+    }
   }
 
   function moveCard(key, direction) {
@@ -2684,7 +3460,7 @@
     }
     if (persona().key === "customer") return;
     const issueMatches = canViewRoute("board") || can("read-work") ? DemoState.issues.filter((issue) => `${issue.key} ${issue.summary} ${issue.assignee} ${issue.type}`.toLowerCase().includes(q)).slice(0, 5) : [];
-    const pageMatches = canViewRoute("spaces") ? DemoState.pages.filter((page) => !page.archived && `${page.title} ${page.summary} ${page.owner}`.toLowerCase().includes(q)).slice(0, 5) : [];
+    const pageMatches = canViewRoute("spaces") ? visiblePages(DemoState.pages.filter((page) => !page.archived)).filter((page) => pageSearchText(page).toLowerCase().includes(q)).slice(0, 5) : [];
     const decisionMatches = canViewRoute("decisions") ? DemoState.decisions.filter((decision) => `${decision.id} ${decision.title} ${decision.rationale}`.toLowerCase().includes(q)).slice(0, 4) : [];
     const riskMatches = canViewRoute("reports") ? DemoState.risks.filter((risk) => `${risk.id} ${risk.title} ${risk.owner} ${risk.response}`.toLowerCase().includes(q)).slice(0, 4) : [];
     const peopleMatches = canViewRoute("people") ? DemoState.people.filter((person) => `${person.name} ${person.role} ${person.team}`.toLowerCase().includes(q)).slice(0, 4) : [];
@@ -2698,7 +3474,8 @@
     if (peopleMatches.length) groups.push(searchGroup("People", peopleMatches.map((person) => searchResult(person.initials, person.name, person.role, "person", person.name))));
     if (requestMatches.length) groups.push(searchGroup("Service requests", requestMatches.map((request) => searchResult("SR", request.summary, request.key + " · " + request.status, "request", request.key))));
     if (filterMatches.length) groups.push(searchGroup("Saved filters", filterMatches.map((filter) => searchResult("FL", filter.name, filter.scope + " · " + filter.owner, "filter", filter.id))));
-    searchResults.innerHTML = groups.length ? groups.join("") : '<div class="empty-state" style="padding:24px"><strong>No matches</strong>Try a key, title, person, risk, or decision.</div>';
+    const footer = canViewRoute("search") ? `<button class="search-result" type="button" data-action="open-search-page"><span class="search-result-icon">${icon("search")}</span><span class="search-result-copy"><strong>See all results for “${esc(query.trim())}”</strong><span>Full-text search across page content, work, blog, and decisions</span></span><span class="search-result-meta">Enter ${icon("arrow-right")}</span></button>` : "";
+    searchResults.innerHTML = (groups.length ? groups.join("") : '<div class="empty-state" style="padding:24px"><strong>No quick matches</strong>Try the full search for content inside pages.</div>') + footer;
     searchResults.hidden = false;
   }
 
@@ -2814,6 +3591,26 @@
       return;
     }
 
+    const macroInsert = event.target.closest("[data-macro-insert]");
+    if (macroInsert) {
+      event.preventDefault();
+      const editor = document.getElementById("pageEditor");
+      if (!editor) return;
+      editor.focus();
+      const kind = macroInsert.dataset.macroInsert;
+      const snippets = {
+        "toc": '<div data-macro="toc"></div><p></p>',
+        "panel-info": '<div class="callout"><strong>Note</strong><p>Explain the context the reader needs.</p></div><p></p>',
+        "panel-warning": '<div class="callout warning"><strong>Watch out</strong><p>Name the exposure and its owner.</p></div><p></p>',
+        "expand": '<details class="macro-expand"><summary>More detail</summary><p>Collapsed content readers can open when they need it.</p></details><p></p>',
+        "status": '<span class="lozenge lz-amber">In review</span>&nbsp;',
+        "table": '<table><thead><tr><th>Column</th><th>Column</th></tr></thead><tbody><tr><td>Row</td><td>Row</td></tr><tr><td>Row</td><td>Row</td></tr></tbody></table><p></p>',
+        "work-chip": (() => { const first = issuesForProject()[0]; return first ? `{{${first.key}}}&nbsp;` : ""; })()
+      };
+      document.execCommand("insertHTML", false, snippets[kind] || "");
+      announce("Macro inserted.");
+      return;
+    }
     const editorCommand = event.target.closest("[data-command]");
     if (editorCommand) {
       event.preventDefault();
@@ -2831,13 +3628,29 @@
       return;
     }
 
+    const mentionPick = event.target.closest("[data-mention-pick]");
+    if (mentionPick) {
+      event.preventDefault();
+      const host = mentionPick.closest(".mention-host");
+      const textarea = host?.querySelector("[data-mention-input]");
+      if (textarea) {
+        const caret = textarea.selectionStart ?? textarea.value.length;
+        const upTo = textarea.value.slice(0, caret).replace(/@[A-Za-z]{0,24}$/, "@" + mentionPick.dataset.mentionPick + " ");
+        textarea.value = upTo + textarea.value.slice(caret);
+        textarea.focus();
+        textarea.setSelectionRange(upTo.length, upTo.length);
+      }
+      host?.querySelector(".mention-menu")?.remove();
+      return;
+    }
+    if (!event.target.closest(".mention-host")) document.querySelectorAll(".mention-menu").forEach((menu) => menu.remove());
     const actionTarget = event.target.closest("[data-action]");
     if (actionTarget) {
       event.preventDefault();
       const action = actionTarget.dataset.action;
       if (action === "open-create") openCreateModal("work");
       else if (action === "open-create-project") openProjectCreate();
-      else if (action === "create-page") openCreateModal("page");
+      else if (action === "create-page") openCreateModal("page", { template: actionTarget.dataset.template });
       else if (action === "create-decision") openCreateModal("decision");
       else if (action === "open-request-create") openRequestCreate(actionTarget.dataset.requestType);
       else if (action === "show-help-article") openHelpArticle(actionTarget.dataset.pageId);
@@ -2936,6 +3749,106 @@
           toast(copied ? "Link copied" : "Copy unavailable", copied ? value : "Select the address from the browser to copy this work-item link.", copied ? "success" : "danger");
         });
       }
+      else if (action === "toggle-tree") {
+        const id = actionTarget.dataset.pageId;
+        DemoState.pageTreeCollapsed[id] = !DemoState.pageTreeCollapsed[id];
+        persistState();
+        render();
+      }
+      else if (action === "toggle-watch-page") {
+        const page = pageById(actionTarget.dataset.pageId);
+        if (!page) return;
+        const list = DemoState.watches.pages[page.id] = DemoState.watches.pages[page.id] || [];
+        const index = list.indexOf(actor());
+        if (index >= 0) list.splice(index, 1); else list.push(actor());
+        persistState();
+        render();
+        toast(index >= 0 ? "Watch removed" : "Watching page", index >= 0 ? `You will no longer be notified about ${page.title}.` : `You will be notified when ${page.title} is published or discussed.`, "success");
+      }
+      else if (action === "toggle-watch-space") {
+        const key = actionTarget.dataset.spaceKey;
+        const list = DemoState.watches.spaces[key] = DemoState.watches.spaces[key] || [];
+        const index = list.indexOf(actor());
+        if (index >= 0) list.splice(index, 1); else list.push(actor());
+        persistState();
+        render();
+        toast(index >= 0 ? "Space watch removed" : "Watching space", index >= 0 ? "Space notifications are off for this persona." : "You will be notified about page publishes across this space.", "success");
+      }
+      else if (action === "react-page" || action === "react-blog") {
+        const record = action === "react-page" ? pageById(actionTarget.dataset.pageId) : DemoState.blogPosts.find((item) => item.id === actionTarget.dataset.postId);
+        if (!record) return;
+        record.reactions = record.reactions || {};
+        const names = record.reactions[actionTarget.dataset.emoji] = record.reactions[actionTarget.dataset.emoji] || [];
+        const index = names.indexOf(actor());
+        if (index >= 0) names.splice(index, 1); else names.push(actor());
+        persistState();
+        render();
+      }
+      else if (action === "remove-label") {
+        const page = pageById(actionTarget.dataset.pageId);
+        if (!page || !requireCapability("edit-knowledge", page, "This persona cannot edit labels.")) return;
+        page.labels = (page.labels || []).filter((label) => label !== actionTarget.dataset.label);
+        recordAudit("Removed page label", `${page.title} · ${actionTarget.dataset.label}`);
+        persistState();
+        render();
+      }
+      else if (action === "open-search-page") {
+        DemoState.searchQuery = globalSearch.value.trim();
+        globalSearch.value = "";
+        searchResults.hidden = true;
+        navigate("search");
+      }
+      else if (action === "create-blog-post") openBlogEditor();
+      else if (action === "edit-blog-post") openBlogEditor(actionTarget.dataset.postId);
+      else if (action === "move-page") openMovePageModal(actionTarget.dataset.pageId);
+      else if (action === "copy-page") copyPage(actionTarget.dataset.pageId);
+      else if (action === "page-restrictions") openRestrictionsModal(actionTarget.dataset.pageId);
+      else if (action === "export-page") exportPageMarkdown(actionTarget.dataset.pageId);
+      else if (action === "export-space") exportSpaceMarkdown(actionTarget.dataset.spaceKey);
+      else if (action === "reply-page-comment" || action === "reply-inline-comment") {
+        const selector = action === "reply-page-comment" ? `[data-page-comment-reply="${actionTarget.dataset.pageId}"][data-thread="${actionTarget.dataset.thread}"]` : `[data-inline-reply="${actionTarget.dataset.pageId}"][data-thread="${actionTarget.dataset.thread}"]`;
+        const form = document.querySelector(selector);
+        if (form) { form.hidden = !form.hidden; if (!form.hidden) form.querySelector("textarea")?.focus(); }
+      }
+      else if (action === "resolve-page-comment") {
+        const thread = (DemoState.pageComments[actionTarget.dataset.pageId] || []).find((comment) => String(comment.id) === actionTarget.dataset.thread);
+        if (!thread) return;
+        thread.resolved = true;
+        recordAudit("Resolved page comment", pageById(actionTarget.dataset.pageId)?.title || actionTarget.dataset.pageId);
+        persistState();
+        render();
+      }
+      else if (action === "resolve-inline-comment") {
+        const thread = (DemoState.pageInlineComments[actionTarget.dataset.pageId] || []).find((item) => item.id === actionTarget.dataset.thread);
+        if (!thread) return;
+        thread.resolved = true;
+        recordAudit("Resolved inline comment", pageById(actionTarget.dataset.pageId)?.title || actionTarget.dataset.pageId);
+        persistState();
+        render();
+      }
+      else if (action === "remove-checklist-item") {
+        const issue = issueByKey(actionTarget.dataset.key);
+        if (!issue || !requireCapability("edit-work", issue, "This persona cannot change this checklist.")) return;
+        const index = Number(actionTarget.dataset.index);
+        issue.checklist.splice(index, 1);
+        issue.checked.splice(index, 1);
+        issue.history.unshift(`Checklist item removed by ${actor()}`);
+        persistState();
+        openIssue(issue.key);
+      }
+      else if (action === "remove-attachment") {
+        const kind = actionTarget.dataset.kind;
+        const record = actionTarget.dataset.record;
+        const list = (DemoState.attachments[kind] || {})[record] || [];
+        const file = list.find((item) => item.id === actionTarget.dataset.file);
+        if (kind === "issues") { const issue = issueByKey(record); if (!issue || !requireCapability("edit-work", issue, "This persona cannot manage attachments here.")) return; }
+        else if (!requireCapability("edit-knowledge", pageById(record), "This persona cannot manage attachments here.")) return;
+        DemoState.attachments[kind][record] = list.filter((item) => item.id !== actionTarget.dataset.file);
+        recordAudit("Removed attachment", `${record} · ${file?.name || "file"}`);
+        persistState();
+        if (kind === "issues") openIssue(record);
+        else render();
+      }
       else if (action === "return-role-home") navigate(persona().defaultRoute);
       else if (action === "reset-demo") resetDemo();
       return;
@@ -2980,6 +3893,37 @@
       event.preventDefault();
       selectProject(projectTarget.dataset.project);
       render();
+      return;
+    }
+    const labelTarget = event.target.closest("[data-label-search]");
+    if (labelTarget) {
+      event.preventDefault();
+      if (!canViewRoute("search")) return;
+      DemoState.searchQuery = "label:" + labelTarget.dataset.labelSearch;
+      navigate("search");
+      return;
+    }
+    const blogTarget = event.target.closest("[data-blog-post]");
+    if (blogTarget) {
+      event.preventDefault();
+      DemoState.activeBlogPost = blogTarget.dataset.blogPost;
+      DemoState.activePage = null;
+      navigate("spaces", { preservePage: true });
+      return;
+    }
+    const personalSpaceTarget = event.target.closest("[data-personal-space]");
+    if (personalSpaceTarget) {
+      event.preventDefault();
+      const key = personalSpaceTarget.dataset.personalSpace;
+      const first = DemoState.pages.find((page) => page.projectKey === key && !page.archived);
+      if (first) { DemoState.activePage = first.id; navigate("spaces", { preservePage: true }); }
+      else if (can("edit-knowledge")) openCreateModal("page");
+      return;
+    }
+    const inlineAnchor = event.target.closest(".inline-anchor");
+    if (inlineAnchor) {
+      const thread = document.querySelector(`[data-inline-thread="${inlineAnchor.dataset.inlineRef}"]`);
+      if (thread) { thread.scrollIntoView({ behavior: "smooth", block: "center" }); thread.classList.add("active"); }
       return;
     }
     const spaceTarget = event.target.closest("[data-space]");
@@ -3033,6 +3977,46 @@
   });
 
   document.addEventListener("change", (event) => {
+    if (event.target.matches("[data-create-type-select]")) {
+      const type = event.target.value;
+      const modal = event.target.closest("form");
+      const parentField = modal?.querySelector("[data-create-parent-field]");
+      const sprintField = modal?.querySelector("[data-create-sprint-field]");
+      const epicField = modal?.querySelector("[data-create-epic-field]");
+      if (parentField) parentField.hidden = type !== "Sub-task";
+      if (sprintField) sprintField.hidden = type === "Sub-task" || type === "Epic";
+      if (epicField) epicField.hidden = type === "Sub-task" || type === "Epic";
+      return;
+    }
+    if (event.target.matches('[data-action-toggle="board-subtasks"]')) {
+      DemoState.boardShowSubtasks = event.target.checked;
+      persistState();
+      render();
+      return;
+    }
+    if (event.target.matches("[data-attach-kind]")) {
+      const input = event.target;
+      const file = input.files?.[0];
+      input.value = "";
+      if (!file) return;
+      if (file.size > 512 * 1024) { toast("File too large", "Attachments in this browser-local demo are limited to 512 KB.", "danger"); return; }
+      const kind = input.dataset.attachKind;
+      const record = input.dataset.attachRecord;
+      const reader = new FileReader();
+      reader.onload = () => {
+        DemoState.attachments[kind] = DemoState.attachments[kind] || {};
+        const list = DemoState.attachments[kind][record] = DemoState.attachments[kind][record] || [];
+        if (list.length >= 12) { toast("Attachment limit reached", "This record already has 12 browser-local attachments.", "danger"); return; }
+        list.push({ id: `att-${Date.now()}-${Math.floor(Math.random() * 100000)}`, name: file.name.slice(0, 160), size: file.size, type: file.type || "application/octet-stream", dataUrl: String(reader.result), addedBy: actor(), time: "Just now" });
+        recordAudit("Attached file", `${record} · ${file.name.slice(0, 80)}`);
+        try { persistState(); } catch (_) { /* quota */ }
+        if (kind === "issues") openIssue(record);
+        else render();
+        toast("File attached", `${file.name.slice(0, 60)} is stored in this browser only.`, "success");
+      };
+      reader.readAsDataURL(file);
+      return;
+    }
     if (event.target.matches("[data-state-import]")) {
       if (persona().key !== "administrator") { event.target.value = ""; toast("Administrator action", "This persona cannot replace the complete demo workspace."); return; }
       previewStateImport(event.target.files?.[0]);
@@ -3115,6 +4099,23 @@
 
   document.addEventListener("input", (event) => {
     if (event.target === globalSearch) performSearch(globalSearch.value);
+    if (event.target.matches("[data-mention-input]")) {
+      const textarea = event.target;
+      const host = textarea.closest(".mention-host");
+      let menu = host?.querySelector(".mention-menu");
+      const upTo = textarea.value.slice(0, textarea.selectionStart ?? textarea.value.length);
+      const match = upTo.match(/@([A-Za-z]{0,24})$/);
+      if (!host || !match) { menu?.remove(); }
+      else {
+        const query = match[1].toLowerCase();
+        const options = DemoState.people.filter((person) => person.name.toLowerCase().startsWith(query) || person.name.split(" ").some((part) => part.toLowerCase().startsWith(query))).slice(0, 5);
+        if (!options.length) { menu?.remove(); }
+        else {
+          if (!menu) { menu = document.createElement("div"); menu.className = "mention-menu"; host.appendChild(menu); }
+          menu.innerHTML = options.map((person) => `<button type="button" data-mention-pick="${esc(person.name)}">${avatar(person.name, "table-avatar")}<span>${esc(person.name)}</span><small>${esc(person.role)}</small></button>`).join("");
+        }
+      }
+    }
     if (event.target.matches("[data-portal-search]")) {
       const results = document.querySelector("[data-portal-results]");
       const query = event.target.value.trim().toLowerCase();
@@ -3231,10 +4232,48 @@
       const issue = issueByKey(form.dataset.issueComment);
       issue.comments.unshift({ author: actor(), time: "Just now", text });
       issue.history.unshift(`Comment added by ${actor()}`);
+      notifyPeople(mentionedPeople(text), { kind: "issue", target: issue.key, title: `${actor()} mentioned you on ${issue.key}`, detail: text.slice(0, 140) });
       recordAudit("Commented on work item", issue.key);
       openIssue(issue.key);
       persistState();
       toast("Comment added", issue.key + " activity updated.", "success");
+      return;
+    }
+    if (form.dataset.subtaskForm) {
+      event.preventDefault();
+      const parent = issueByKey(form.dataset.subtaskForm);
+      if (!parent || isSubtask(parent)) return;
+      if (!(can("edit-work", parent) || can("create-work"))) { toast("Subtask not created", "This persona cannot add subtasks to this work item."); return; }
+      const data = Object.fromEntries(new FormData(form).entries());
+      const summary = String(data.summary || "").trim();
+      if (!summary) return;
+      const projectKey = recordProjectKey(parent);
+      const next = Math.max(99, ...issuesForProject(projectKey).map((issue) => Number(issue.key.split("-").pop()) || 0)) + 1;
+      const key = projectKey + "-" + next;
+      DemoState.issues.push({
+        projectKey, key, summary, type: "Sub-task", status: "To Do", priority: parent.priority,
+        assignee: data.assignee || parent.assignee, reporter: actor(), sprint: parent.sprint, epic: parent.epic || "—", parent: parent.key,
+        points: 1, due: "Not set", description: `Subtask of ${parent.key} — ${parent.summary}.`, dependencies: [], linkedPage: parent.linkedPage, risk: "", milestone: parent.milestone || "Not set",
+        checklist: [], checked: [], comments: [], history: [`Created by ${actor()}`]
+      });
+      parent.history.unshift(`Subtask ${key} added by ${actor()}`);
+      recordAudit("Created subtask", key);
+      render();
+      openIssue(parent.key);
+      toast(key + " created", `Subtask added under ${parent.key}.`, "success");
+      return;
+    }
+    if (form.dataset.checklistForm) {
+      event.preventDefault();
+      const issue = issueByKey(form.dataset.checklistForm);
+      if (!issue || !requireCapability("edit-work", issue, "This persona cannot change this checklist.")) return;
+      const item = String(new FormData(form).get("item") || "").trim();
+      if (!item) return;
+      issue.checklist.push(item);
+      issue.checked.push(false);
+      issue.history.unshift(`Checklist item added by ${actor()}`);
+      persistState();
+      openIssue(issue.key);
       return;
     }
     if (form.dataset.pageComment) {
@@ -3242,11 +4281,132 @@
       const text = new FormData(form).get("comment").trim();
       if (!text) return;
       const pageId = form.dataset.pageComment;
+      const page = pageById(pageId);
       DemoState.pageComments[pageId] = DemoState.pageComments[pageId] || [];
-      DemoState.pageComments[pageId].unshift({ author: actor(), time: "Just now", text });
-      recordAudit("Commented on knowledge page", pageById(pageId)?.title || pageId);
+      DemoState.pageComments[pageId].unshift({ id: `pc-${Date.now()}`, author: actor(), time: "Just now", text, replies: [], resolved: false });
+      notifyPeople(mentionedPeople(text), { kind: "page", target: pageId, title: `${actor()} mentioned you on ${page?.title || pageId}`, detail: text.slice(0, 140) });
+      if (page) notifyPageWatchers(page, `New comment on ${page.title}`, `${actor()}: ${text.slice(0, 120)}`);
+      recordAudit("Commented on knowledge page", page?.title || pageId);
       render();
       toast("Comment added", "Page discussion updated.", "success");
+      return;
+    }
+    if (form.dataset.pageCommentReply || form.dataset.inlineReply) {
+      event.preventDefault();
+      const text = String(new FormData(form).get("comment") || "").trim();
+      if (!text) return;
+      const pageId = form.dataset.pageCommentReply || form.dataset.inlineReply;
+      const threadId = form.dataset.thread;
+      const collection = form.dataset.pageCommentReply ? (DemoState.pageComments[pageId] || []) : (DemoState.pageInlineComments[pageId] || []);
+      const thread = collection.find((item) => String(item.id) === threadId);
+      if (!thread) return;
+      thread.replies = thread.replies || [];
+      thread.replies.push({ author: actor(), time: "Just now", text });
+      notifyPeople([thread.author, ...mentionedPeople(text)], { kind: "page", target: pageId, title: `${actor()} replied on ${pageById(pageId)?.title || pageId}`, detail: text.slice(0, 140) });
+      recordAudit("Replied to a comment", pageById(pageId)?.title || pageId);
+      persistState();
+      render();
+      return;
+    }
+    if (form.dataset.inlineCreate) {
+      event.preventDefault();
+      const data = Object.fromEntries(new FormData(form).entries());
+      const text = String(data.comment || "").trim();
+      const pageId = form.dataset.inlineCreate;
+      const page = pageById(pageId);
+      if (!text || !page) return;
+      DemoState.pageInlineComments[pageId] = DemoState.pageInlineComments[pageId] || [];
+      DemoState.pageInlineComments[pageId].push({ id: `il-${Date.now()}`, quote: String(data.quote || "").slice(0, 300), author: actor(), time: "Just now", text, resolved: false, replies: [] });
+      notifyPeople([page.owner, ...mentionedPeople(text)], { kind: "page", target: pageId, title: `${actor()} commented inline on ${page.title}`, detail: text.slice(0, 140) });
+      recordAudit("Added inline comment", page.title);
+      closeModal();
+      render();
+      toast("Inline comment added", "The selected text is now highlighted with an open thread.", "success");
+      return;
+    }
+    if (form.dataset.blogComment !== undefined && form.dataset.blogComment !== "") {
+      event.preventDefault();
+      const text = String(new FormData(form).get("comment") || "").trim();
+      const post = DemoState.blogPosts.find((item) => item.id === form.dataset.blogComment);
+      if (!text || !post) return;
+      post.comments = post.comments || [];
+      post.comments.push({ author: actor(), time: "Just now", text });
+      notifyPeople([post.author, ...mentionedPeople(text)], { kind: "page", target: pageById("program-hub") ? "program-hub" : post.projectKey, title: `${actor()} commented on “${post.title}”`, detail: text.slice(0, 140) });
+      recordAudit("Commented on blog post", post.title);
+      persistState();
+      render();
+      return;
+    }
+    if (form.dataset.blogForm !== undefined) {
+      event.preventDefault();
+      if (!requireCapability("edit-knowledge", null, "This persona cannot write blog posts.")) return;
+      const data = Object.fromEntries(new FormData(form).entries());
+      const editor = document.getElementById("pageEditor");
+      const bodyHtml = sanitizeRichText(editor?.innerHTML || "");
+      const title = String(data.title || "").trim();
+      if (!title) return;
+      const existing = form.dataset.blogForm ? DemoState.blogPosts.find((item) => item.id === form.dataset.blogForm) : null;
+      if (existing) {
+        Object.assign(existing, { title, bodyHtml, time: "Just now" });
+        recordAudit("Updated blog post", title);
+      } else {
+        const id = `blog-${Date.now()}`;
+        DemoState.blogPosts.unshift({ id, projectKey: activeProject().key, title, author: actor(), time: "Just now", bodyHtml, reactions: {}, comments: [] });
+        DemoState.activeBlogPost = id;
+        recordAudit("Published blog post", title);
+      }
+      closeModal();
+      navigate("spaces", { preservePage: true });
+      toast(existing ? "Post updated" : "Post published", `${title} is visible in the space blog.`, "success");
+      return;
+    }
+    if (form.dataset.searchPageForm !== undefined) {
+      event.preventDefault();
+      DemoState.searchQuery = String(new FormData(form).get("q") || "").trim();
+      render();
+      return;
+    }
+    if (form.dataset.movePage) {
+      event.preventDefault();
+      const page = pageById(form.dataset.movePage);
+      if (!page || !requireCapability("edit-knowledge", page)) return;
+      const data = Object.fromEntries(new FormData(form).entries());
+      const parentId = data.parent || null;
+      if (parentId && (parentId === page.id || pageDescendantIds(page.id).includes(parentId))) { toast("Move blocked", "A page cannot move under itself or its own descendants.", "danger"); return; }
+      page.parent = parentId;
+      page.depth = pageDepthOf(page);
+      pageDescendantIds(page.id).forEach((id) => { const child = pageById(id); if (child) child.depth = pageDepthOf(child); });
+      recordAudit("Moved knowledge page", page.title);
+      closeModal();
+      render();
+      toast("Page moved", `${page.title} now sits ${parentId ? "under " + (pageById(parentId)?.title || "its new parent") : "at the top level"}.`, "success");
+      return;
+    }
+    if (form.dataset.restrictionsForm) {
+      event.preventDefault();
+      const page = pageById(form.dataset.restrictionsForm);
+      if (!page || !requireCapability("edit-knowledge", page)) return;
+      const formData = new FormData(form);
+      const view = formData.getAll("view").map(String);
+      const edit = formData.getAll("edit").map(String);
+      page.restricted = view.length || edit.length ? { view, edit } : null;
+      recordAudit("Updated page restrictions", page.title);
+      closeModal();
+      render();
+      toast("Restrictions saved", page.restricted ? "The page now shows a restricted marker in the tree." : "The page is open to the space again.", "success");
+      return;
+    }
+    if (form.dataset.addLabel) {
+      event.preventDefault();
+      const page = pageById(form.dataset.addLabel);
+      if (!page || !requireCapability("edit-knowledge", page, "This persona cannot edit labels.")) return;
+      const label = String(new FormData(form).get("label") || "").trim().toLowerCase().replace(/[^a-z0-9 _-]/g, "").slice(0, 30);
+      if (!label) return;
+      page.labels = page.labels || [];
+      if (!page.labels.includes(label)) page.labels.push(label);
+      recordAudit("Added page label", `${page.title} · ${label}`);
+      persistState();
+      render();
       return;
     }
     if (form.matches("[data-release-form]")) {
@@ -3330,28 +4490,42 @@
         const projectKey = activeProject().key;
         const next = Math.max(99, ...issuesForProject(projectKey).map((issue) => Number(issue.key.split("-").pop()) || 0)) + 1;
         const key = projectKey + "-" + next;
+        const isEpic = data.type === "Epic";
+        const isNewSubtask = data.type === "Sub-task";
+        const parentIssue = isNewSubtask ? issueByKey(data.parent) : null;
+        if (isNewSubtask && (!parentIssue || isSubtask(parentIssue) || recordProjectKey(parentIssue) !== projectKey)) { toast("Subtask needs a parent", "Choose a non-subtask parent work item in this project.", "danger"); return; }
+        const sprint = isEpic ? "Portfolio backlog" : isNewSubtask ? parentIssue.sprint : data.sprint;
+        const epic = isEpic ? "—" : isNewSubtask ? (parentIssue.epic || "—") : (data.epic && issueByKey(data.epic) ? data.epic : "—");
         DemoState.issues.push({
-          projectKey, key, summary: data.summary, type: data.type, status: data.sprint === activeSprint()?.name ? "Ready" : "To Do", priority: data.priority,
-          assignee: data.assignee, reporter: actor(), sprint: data.sprint, epic: "—", points: 3, due: "Not set",
-          description: data.description || "New work item created in the interactive prototype.", dependencies: [], linkedPage: projectHubId(projectKey), risk: "", milestone: "Not set",
-          checklist: ["Confirm acceptance criteria"], checked: [false], comments: [], history: [`Created by ${actor()}`]
+          projectKey, key, summary: data.summary, type: data.type, status: !isEpic && sprint === activeSprint()?.name ? "Ready" : "To Do", priority: data.priority,
+          assignee: data.assignee, reporter: actor(), sprint, epic, parent: isNewSubtask ? parentIssue.key : null, points: isEpic ? 8 : isNewSubtask ? 1 : 3, due: "Not set",
+          description: data.description || "New work item created in the interactive prototype.", dependencies: [], linkedPage: isNewSubtask ? parentIssue.linkedPage : projectHubId(projectKey), risk: "", milestone: "Not set",
+          checklist: [], checked: [], comments: [], history: [`Created by ${actor()}`]
         });
+        if (isNewSubtask) parentIssue.history.unshift(`Subtask ${key} added by ${actor()}`);
         recordAudit("Created work item", key);
         closeModal();
         render();
-        toast(key + " created", "The new work item is available in the backlog and search.", "success");
+        toast(key + " created", isNewSubtask ? `Subtask added under ${parentIssue.key}.` : isEpic ? "The new epic is available in the Epics panel." : "The new work item is available in the backlog and search.", "success");
         openIssue(key);
       } else if (form.dataset.createForm === "page") {
         if (!requireCapability("edit-knowledge")) return;
         const id = slug(data.title) + "-" + (DemoState.pages.length + 1);
-        DemoState.pages.push({ projectKey: activeProject().key, id, title: data.title, parent: data.parent || null, depth: data.parent ? 1 : 0, owner: data.owner, updated: "Just now", version: 1, summary: data.summary, content: data.summary });
+        const spaceKey = isPersonalSpaceKey(data.space) ? personalSpaceKey(actor()) : (projectByKey(data.space) ? data.space : activeProject().key);
+        const parentPage = !isPersonalSpaceKey(spaceKey) && data.parent ? pageById(data.parent) : null;
+        const parent = parentPage && parentPage.projectKey === spaceKey ? parentPage.id : null;
+        const template = PAGE_TEMPLATES.find((item) => item.id === data.template) || PAGE_TEMPLATES[0];
+        const labels = String(data.labels || "").split(",").map((label) => label.trim().toLowerCase()).filter(Boolean).slice(0, 8);
+        const bodyHtml = template.bodyHtml || `<p>${esc(data.summary)}</p>`;
+        const record = { projectKey: spaceKey, id, title: data.title, parent, depth: parent ? pageDepthOf({ parent }) : 0, owner: data.owner, updated: "Just now", version: 1, summary: data.summary, content: data.summary, labels, bodyHtml, reactions: {}, restricted: null };
+        DemoState.pages.push(record);
         DemoState.pageComments[id] = [];
-        DemoState.pageVersions[id] = [{ version: 1, author: actor(), time: "Just now", note: "Initial version", title: data.title, content: data.summary, bodyHtml: `<p>${esc(data.summary)}</p>` }];
+        DemoState.pageVersions[id] = [{ version: 1, author: actor(), time: "Just now", note: template.id === "blank" ? "Initial version" : `Created from the ${template.name} template`, title: data.title, content: data.summary, bodyHtml }];
         recordAudit("Created knowledge page", data.title);
         closeModal();
         DemoState.activePage = id;
         navigate("spaces", { preservePage: true });
-        toast("Page created", data.title + " is now in the " + activeProject().name + " space.", "success");
+        toast("Page created", `${data.title} is now in ${spaceForKey(spaceKey)?.name || spaceKey}.`, "success");
       } else {
         if (!requireCapability("create-work")) return;
         const number = Math.max(...DemoState.decisions.map((decision) => Number(decision.id.split("-")[1]))) + 1;
@@ -3380,6 +4554,7 @@
       DemoState.pageVersions[page.id].unshift({ version: page.version, author: actor(), time: "Just now", note: data.get("note") || "Content updated", title: page.title, content: page.content, bodyHtml: page.bodyHtml });
       delete DemoState.pageDrafts[page.id];
       recordAudit("Published page version " + page.version, page.title);
+      notifyPageWatchers(page, `${page.title} is now v${page.version}`, `${actor()} published: ${String(data.get("note") || "Content updated").slice(0, 120)}`);
       window.clearTimeout(draftTimer);
       closeModal();
       render();
@@ -3403,6 +4578,14 @@
       event.preventDefault();
       globalSearch.focus();
       globalSearch.select();
+      return;
+    }
+    if (event.key === "Enter" && document.activeElement === globalSearch && canViewRoute("search")) {
+      event.preventDefault();
+      DemoState.searchQuery = globalSearch.value.trim();
+      globalSearch.value = "";
+      searchResults.hidden = true;
+      navigate("search");
       return;
     }
     if (!interactive && event.key.toLowerCase() === "c") {
