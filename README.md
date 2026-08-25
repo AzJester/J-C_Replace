@@ -60,7 +60,7 @@ Navigation, actions, search results, and dashboards adapt to the selected person
 
 ### Knowledge management
 
-- Spaces with a true recursive page tree: arbitrary nesting depth, expand/collapse, and move/copy that carries a page’s whole branch
+- Spaces with a true recursive page tree: arbitrary nesting depth, expand/collapse, a move that carries a page’s whole branch, and a copy that duplicates a single page
 - Full-text search across page bodies, work items, blog posts, and decisions, with highlighted snippets and `label:` / `type:` / `space:` filter tokens
 - Page labels with a label browse cloud, plus live page templates (decision brief, meeting notes, retrospective, integration review, risk assessment, leadership readout)
 - Macros inside pages: table of contents, info/warning panels, expandable sections, status lozenges, tables, and live work-item chips (`{{SMN-184}}`) that show current status and open the work item

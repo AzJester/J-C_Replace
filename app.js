@@ -793,7 +793,7 @@
     state.activeDecision = null;
     state.activeRequest = null;
     Object.keys(state.pageComments).forEach((pageId) => {
-      state.pageComments[pageId] = (state.pageComments[pageId] || []).map((comment, index) => ({ id: comment.id || `pc-${pageId}-${index}`, replies: Array.isArray(comment.replies) ? comment.replies : [], resolved: Boolean(comment.resolved), ...comment }));
+      state.pageComments[pageId] = (state.pageComments[pageId] || []).filter((comment) => comment && typeof comment === "object").map((comment, index) => ({ ...comment, id: comment.id || `pc-${pageId}-${index}`, replies: Array.isArray(comment.replies) ? comment.replies : [], resolved: Boolean(comment.resolved) }));
     });
     state.migrationProgress = state.migrationComplete ? 100 : 0;
     return state;
@@ -802,7 +802,16 @@
   function loadState() {
     try {
       const raw = window.localStorage.getItem(STORAGE_KEY);
-      return raw ? normalizeState(JSON.parse(raw)) : normalizeState(clone(FIXTURE));
+      if (!raw) return normalizeState(clone(FIXTURE));
+      const parsed = JSON.parse(raw);
+      const restored = normalizeState(parsed);
+      // If the stored snapshot could not be validated, normalizeState returns fixtures.
+      // Preserve the unloadable snapshot under a recovery key instead of letting the next
+      // persistState silently overwrite it.
+      if (validateStateCandidate(migrateLegacySnapshot(parsed))) {
+        try { window.localStorage.setItem(STORAGE_KEY + "-recover", raw); } catch (_) { /* ignore */ }
+      }
+      return restored;
     } catch (_) {
       storageHealthy = false;
       return normalizeState(clone(FIXTURE));
@@ -2873,6 +2882,16 @@
         </div>
         ${isSubtask(issue) && issue.parent ? `<section class="drawer-section subtask-parent-strip"><button class="linked-object" type="button" data-issue="${esc(issue.parent)}"><span class="linked-icon">${icon("arrow-left")}</span><span class="linked-copy"><strong>Subtask of ${esc(issue.parent)}</strong><span>${esc(issueByKey(issue.parent)?.summary || "Parent work item")} · ${esc(issueByKey(issue.parent)?.status || "")}</span></span></button></section>` : ""}
         <section class="drawer-section"><h3>Description</h3><p>${esc(issue.description)}</p></section>
+        ${issue.type === "Epic" ? (() => {
+          const children = issuesForProject(recordProjectKey(issue)).filter((item) => item.epic === issue.key && !isSubtask(item));
+          const done = children.filter((item) => item.status === "Done").reduce((sum, item) => sum + Number(item.points || 0), 0);
+          const total = children.reduce((sum, item) => sum + Number(item.points || 0), 0);
+          const percent = total ? Math.round(done / total * 100) : 0;
+          return `<section class="drawer-section"><h3>Epic contents${children.length ? ` · ${percent}% of ${total} pts` : ""}</h3>
+            ${children.length ? `<div class="subtask-progress-track" aria-hidden="true"><span style="width:${percent}%"></span></div>
+            <ul class="subtask-list">${children.map((child) => `<li><button class="dependency-item" type="button" data-issue="${esc(child.key)}"><span class="dependency-key">${esc(child.key)}</span><span>${esc(child.summary)}</span><span class="subtask-owner">${avatar(child.assignee, "table-avatar")}</span>${statusBadge(child.status)}</button></li>`).join("")}</ul>` : '<p class="empty-inline">No work items assigned to this epic yet. Set the Epic field on a story or task to add it here.</p>'}
+          </section>`;
+        })() : ""}
         ${!isSubtask(issue) && issue.type !== "Epic" ? (() => {
           const children = subtasksOf(issue.key);
           const done = children.filter((child) => child.status === "Done").length;
@@ -3676,7 +3695,8 @@
   function resetDemo() {
     if (migrationTimer) window.clearInterval(migrationTimer);
     window.clearTimeout(draftTimer);
-    try { window.localStorage.removeItem(STORAGE_KEY); } catch (_) { storageHealthy = false; }
+    storageHealthy = true;
+    try { window.localStorage.removeItem(STORAGE_KEY); window.localStorage.removeItem(STORAGE_KEY + "-recover"); } catch (_) { storageHealthy = false; }
     DemoState = normalizeState(clone(FIXTURE));
     closeModal();
     closeDrawer();
@@ -3815,7 +3835,7 @@
       else if (action === "all-decisions") { DemoState.activeDecision = null; render(); }
       else if (action === "open-projects") { DemoState.projectMode = "list"; navigate("projects", { preserveProject: true }); }
       else if (action === "move-card") moveCard(actionTarget.dataset.key, actionTarget.dataset.direction);
-      else if (action === "move-to-sprint") { const issue = issueByKey(actionTarget.dataset.key); const sprint = activeSprint(); if (!requireCapability("manage-sprint", sprint)) return; issue.sprint = sprint.name; issue.status = "Ready"; recordAudit("Added work to " + sprint.name, issue.key); render(); toast(issue.key + " added to " + sprint.name, "Sprint scope and capacity updated."); }
+      else if (action === "move-to-sprint") { const issue = issueByKey(actionTarget.dataset.key); const sprint = activeSprint(); if (!requireCapability("manage-sprint", sprint)) return; issue.sprint = sprint.name; issue.status = "Ready"; subtasksOf(issue.key).forEach((child) => { child.sprint = sprint.name; }); recordAudit("Added work to " + sprint.name, issue.key); render(); toast(issue.key + " added to " + sprint.name, "Sprint scope and capacity updated."); }
       else if (action === "clear-filters") { DemoState.issueFilter = { text: "", status: "All", assignee: "All" }; render(); }
       else if (action === "save-view") {
         const clauses = [`project = ${activeProject().key}`];
@@ -4391,7 +4411,7 @@
     if (form.dataset.subtaskForm) {
       event.preventDefault();
       const parent = issueByKey(form.dataset.subtaskForm);
-      if (!parent || isSubtask(parent)) return;
+      if (!parent || isSubtask(parent) || parent.type === "Epic") return;
       if (!(can("edit-work", parent) || can("create-work"))) { toast("Subtask not created", "This persona cannot add subtasks to this work item."); return; }
       const data = Object.fromEntries(new FormData(form).entries());
       const summary = String(data.summary || "").trim();
@@ -4552,7 +4572,9 @@
       const label = normalizeLabelInput(new FormData(form).get("label"), 1)[0];
       if (!label) return;
       page.labels = page.labels || [];
-      if (!page.labels.includes(label)) page.labels.push(label);
+      if (page.labels.includes(label)) { toast("Label already added", `“${label}” is already on this page.`); return; }
+      if (page.labels.length >= 20) { toast("Label limit reached", "A page can carry up to 20 labels in this demo.", "danger"); return; }
+      page.labels.push(label);
       recordAudit("Added page label", `${page.title} · ${label}`);
       persistState();
       render();
