@@ -1152,6 +1152,7 @@
     const needle = String(query || "").trim().toLowerCase();
     const match = (values) => !needle || values.join(" ").toLowerCase().includes(needle);
     const results = [];
+    if (match([state.decision.id, state.decision.title, "certification approval evidence Sentinel Mesh Node"])) results.push({ type: "document", id: "doc-certification-path", title: `${state.decision.id} · ${state.decision.title}`, meta: `${state.decision.approved ? "Approved" : "Awaiting approval"} · Sentinel Mesh Node`, icon: state.decision.approved ? "check" : "alert" });
     state.issues.filter((issue) => match([issue.id, issue.title, issue.component, issue.milestone, ...(issue.tags || [])])).slice(0, needle ? 8 : 3).forEach((issue) => results.push({ type: "issue", id: issue.id, title: `${issue.id} · ${issue.title}`, meta: `${projectById(issue.project).short} · ${statusDefinitions[statusForIssue(issue)].label}`, icon: "tracker" }));
     state.documents.filter((page) => match([page.title, page.teamspace, page.raw])).slice(0, needle ? 6 : 2).forEach((page) => results.push({ type: "document", id: page.id, title: page.title, meta: `${page.teamspace} · version ${page.version}`, icon: "file" }));
     state.files.filter((file) => match([file.name, file.type, personById(file.owner).name])).slice(0, 5).forEach((file) => results.push({ type: "file", id: file.id, title: file.name, meta: `${file.type} · ${file.size}`, icon: "drive" }));
