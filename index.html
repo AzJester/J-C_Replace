@@ -8,9 +8,53 @@
   <meta name="description" content="Unified Project Management Suite interactive concept prototype.">
   <title>Unified Project Management Suite</title>
   <link rel="icon" href="assets/brand/unified-suite-mark.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="app.css">
+  <link rel="stylesheet" href="app.css?v=3.2">
 </head>
 <body>
+  <svg class="icon-sprite" aria-hidden="true" focusable="false">
+    <symbol id="icon-home" viewBox="0 0 24 24"><path d="m3 11 9-8 9 8"/><path d="M5 10v10h14V10"/><path d="M9 20v-6h6v6"/></symbol>
+    <symbol id="icon-check-square" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="m8 12 3 3 5-6"/></symbol>
+    <symbol id="icon-inbox" viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/><path d="M4 14h4l2 3h4l2-3h4"/></symbol>
+    <symbol id="icon-folder" viewBox="0 0 24 24"><path d="M3 6h7l2 2h9v11H3z"/></symbol>
+    <symbol id="icon-list" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13"/><path d="M3 6h.01M3 12h.01M3 18h.01"/></symbol>
+    <symbol id="icon-columns" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16M15 4v16"/></symbol>
+    <symbol id="icon-timeline" viewBox="0 0 24 24"><path d="M4 7h10M10 12h10M4 17h13"/><circle cx="17" cy="7" r="2"/><circle cx="7" cy="12" r="2"/><circle cx="20" cy="17" r="2"/></symbol>
+    <symbol id="icon-package" viewBox="0 0 24 24"><path d="m12 3 9 5-9 5-9-5z"/><path d="m3 8 9 5 9-5v9l-9 5-9-5z"/><path d="M12 13v9"/></symbol>
+    <symbol id="icon-filter" viewBox="0 0 24 24"><path d="M3 5h18l-7 8v5l-4 2v-7z"/></symbol>
+    <symbol id="icon-life-buoy" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/><path d="m5.6 5.6 4.3 4.3m4.2 4.2 4.3 4.3m0-12.8-4.3 4.3m-4.2 4.2-4.3 4.3"/></symbol>
+    <symbol id="icon-list-checks" viewBox="0 0 24 24"><path d="m3 6 1.5 1.5L7 5M10 6h11m-18 6 1.5 1.5L7 11m3 1h11m-18 6 1.5 1.5L7 17m3 1h11"/></symbol>
+    <symbol id="icon-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+    <symbol id="icon-book-open" viewBox="0 0 24 24"><path d="M3 5.5A4.5 4.5 0 0 1 7.5 4H11v16H7.5A4.5 4.5 0 0 0 3 21.5zM21 5.5A4.5 4.5 0 0 0 16.5 4H13v16h3.5a4.5 4.5 0 0 1 4.5 1.5z"/></symbol>
+    <symbol id="icon-diamond" viewBox="0 0 24 24"><path d="m12 3 9 9-9 9-9-9z"/></symbol>
+    <symbol id="icon-chart" viewBox="0 0 24 24"><path d="M4 20V10m6 10V4m6 16v-7m5 7H2"/></symbol>
+    <symbol id="icon-presentation" viewBox="0 0 24 24"><path d="M4 4h16v12H4zM12 16v5m-4 0 4-5 4 5"/></symbol>
+    <symbol id="icon-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3 20v-2a6 6 0 0 1 12 0v2M16 5a3 3 0 0 1 0 6m2 3a5 5 0 0 1 3 4v2"/></symbol>
+    <symbol id="icon-zap" viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></symbol>
+    <symbol id="icon-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.8 2.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.2h-4V21a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1L4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9A1.7 1.7 0 0 0 3 14H2.8v-4H3a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9L4.2 7 7 4.2l.1.1a1.7 1.7 0 0 0 1.9.3A1.7 1.7 0 0 0 10 3V2.8h4V3a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1L19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1h.2v4H21a1.7 1.7 0 0 0-1.6 1z"/></symbol>
+    <symbol id="icon-migration" viewBox="0 0 24 24"><path d="M4 7h14m-4-4 4 4-4 4M20 17H6m4 4-4-4 4-4"/></symbol>
+    <symbol id="icon-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></symbol>
+    <symbol id="icon-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="icon-bell" viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></symbol>
+    <symbol id="icon-chevron-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+    <symbol id="icon-menu" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></symbol>
+    <symbol id="icon-alert-triangle" viewBox="0 0 24 24"><path d="M12 3 2.5 20h19z"/><path d="M12 9v4m0 4h.01"/></symbol>
+    <symbol id="icon-key" viewBox="0 0 24 24"><circle cx="8" cy="15" r="4"/><path d="m11 12 9-9m-4 4 3 3m-7 1 3 3"/></symbol>
+    <symbol id="icon-box" viewBox="0 0 24 24"><path d="m4 7 8-4 8 4-8 4zM4 7v10l8 4 8-4V7M12 11v10"/></symbol>
+    <symbol id="icon-refresh" viewBox="0 0 24 24"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M18 12a6 6 0 0 0-10-4L5 11m1 1a6 6 0 0 0 10 4l3-3"/></symbol>
+    <symbol id="icon-help-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.8 9a2.3 2.3 0 1 1 3.8 1.8c-1 .7-1.6 1.2-1.6 2.7M12 17h.01"/></symbol>
+    <symbol id="icon-file-text" viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></symbol>
+    <symbol id="icon-shield-alert" viewBox="0 0 24 24"><path d="M12 3 20 6v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M12 8v5m0 3h.01"/></symbol>
+    <symbol id="icon-x" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+    <symbol id="icon-history" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5M12 7v5l3 2"/></symbol>
+    <symbol id="icon-arrow-left" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6M9 12h11"/></symbol>
+    <symbol id="icon-arrow-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6M4 12h11"/></symbol>
+    <symbol id="icon-paperclip" viewBox="0 0 24 24"><path d="m21 11-8.5 8.5a6 6 0 0 1-8.5-8.5l9-9a4 4 0 0 1 5.7 5.7l-9 9a2 2 0 0 1-2.9-2.9L15 5.6"/></symbol>
+    <symbol id="icon-star" viewBox="0 0 24 24"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-2.9-5.6 2.9 1.1-6.2L3 9.6l6.2-.9z"/></symbol>
+    <symbol id="icon-trash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3m3 0-1 14H7L6 7m4 4v6m4-6v6"/></symbol>
+    <symbol id="icon-download" viewBox="0 0 24 24"><path d="M12 3v12m-5-5 5 5 5-5M4 21h16"/></symbol>
+    <symbol id="icon-file-spreadsheet" viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6zM14 3v5h5M9 12h6M9 16h6M12 10v8"/></symbol>
+    <symbol id="icon-briefcase" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V4h6v3M3 12h18M10 12v2h4v-2"/></symbol>
+  </svg>
   <a class="skip-link" href="#appContent">Skip to main content</a>
   <div class="prototype-banner" role="note">
     <span class="prototype-dot" aria-hidden="true"></span>
@@ -30,46 +74,46 @@
       <nav class="primary-nav" aria-label="Suite navigation">
         <div class="nav-group">
           <div class="nav-label">Personal</div>
-          <button class="nav-item active" type="button" data-view="home"><span class="nav-glyph" aria-hidden="true">⌂</span><span>Home</span></button>
-          <button class="nav-item" type="button" data-view="my-work"><span class="nav-glyph" aria-hidden="true">✓</span><span>My work</span><span class="nav-count" id="myWorkCount">7</span></button>
-          <button class="nav-item" type="button" data-view="inbox"><span class="nav-glyph" aria-hidden="true">◉</span><span>Inbox</span><span class="nav-count alert" id="inboxCount">3</span></button>
+          <button class="nav-item active" type="button" data-view="home"><span class="nav-glyph" aria-hidden="true"><svg class="ui-icon"><use href="#icon-home"></use></svg></span><span>Home</span></button>
+          <button class="nav-item" type="button" data-view="my-work"><span class="nav-glyph" aria-hidden="true"><svg class="ui-icon"><use href="#icon-check-square"></use></svg></span><span>My work</span><span class="nav-count" id="myWorkCount">7</span></button>
+          <button class="nav-item" type="button" data-view="inbox"><span class="nav-glyph" aria-hidden="true"><svg class="ui-icon"><use href="#icon-inbox"></use></svg></span><span>Inbox</span><span class="nav-count alert" id="inboxCount">3</span></button>
         </div>
 
         <div class="nav-group">
           <div class="nav-label">Plan & deliver</div>
-          <button class="nav-item" type="button" data-view="projects"><span class="nav-glyph" aria-hidden="true">◇</span><span>Projects</span></button>
-          <button class="nav-item" type="button" data-view="backlog"><span class="nav-glyph" aria-hidden="true">≡</span><span>Backlog</span></button>
-          <button class="nav-item" type="button" data-view="board"><span class="nav-glyph" aria-hidden="true">▦</span><span>Board</span></button>
-          <button class="nav-item" type="button" data-view="timeline"><span class="nav-glyph" aria-hidden="true">↔</span><span>Timeline</span></button>
-          <button class="nav-item" type="button" data-view="releases"><span class="nav-glyph" aria-hidden="true">◆</span><span>Releases</span></button>
-          <button class="nav-item" type="button" data-view="filters"><span class="nav-glyph" aria-hidden="true">⌕</span><span>Filters</span></button>
+          <button class="nav-item" type="button" data-view="projects"><span class="nav-glyph" aria-hidden="true"><svg class="ui-icon"><use href="#icon-folder"></use></svg></span><span>Projects</span></button>
+          <button class="nav-item" type="button" data-view="backlog"><span class="nav-glyph" aria-hidden="true"><svg class="ui-icon"><use href="#icon-list"></use></svg></span><span>Backlog</span></button>
+          <button class="nav-item" type="button" data-view="board"><span class="nav-glyph" aria-hidden="true"><svg class="ui-icon"><use href="#icon-columns"></use></svg></span><span>Board</span></button>
+          <button class="nav-item" type="button" data-view="timeline"><span class="nav-glyph" aria-hidden="true"><svg class="ui-icon"><use href="#icon-timeline"></use></svg></span><span>Timeline</span></button>
+          <button class="nav-item" type="button" data-view="releases"><span class="nav-glyph" aria-hidden="true"><svg class="ui-icon"><use href="#icon-package"></use></svg></span><span>Releases</span></button>
+          <button class="nav-item" type="button" data-view="filters"><span class="nav-glyph" aria-hidden="true"><svg class="ui-icon"><use href="#icon-filter"></use></svg></span><span>Filters</span></button>
         </div>
 
         <div class="nav-group">
           <div class="nav-label">Service management</div>
-          <button class="nav-item" type="button" data-view="portal"><span class="nav-glyph" aria-hidden="true">◇</span><span>Portal</span></button>
-          <button class="nav-item" type="button" data-view="queues"><span class="nav-glyph" aria-hidden="true">☷</span><span>Queues</span></button>
-          <button class="nav-item" type="button" data-view="slas"><span class="nav-glyph" aria-hidden="true">◷</span><span>SLAs</span></button>
+          <button class="nav-item" type="button" data-view="portal"><span class="nav-glyph" aria-hidden="true"><svg class="ui-icon"><use href="#icon-life-buoy"></use></svg></span><span>Portal</span></button>
+          <button class="nav-item" type="button" data-view="queues"><span class="nav-glyph" aria-hidden="true"><svg class="ui-icon"><use href="#icon-list-checks"></use></svg></span><span>Queues</span></button>
+          <button class="nav-item" type="button" data-view="slas"><span class="nav-glyph" aria-hidden="true"><svg class="ui-icon"><use href="#icon-clock"></use></svg></span><span>SLAs</span></button>
         </div>
 
         <div class="nav-group">
           <div class="nav-label">Knowledge</div>
-          <button class="nav-item" type="button" data-view="spaces"><span class="nav-glyph" aria-hidden="true">▤</span><span>Spaces</span></button>
-          <button class="nav-item" type="button" data-view="decisions"><span class="nav-glyph" aria-hidden="true">◆</span><span>Decisions</span><span class="nav-count warning" id="decisionCount">1</span></button>
+          <button class="nav-item" type="button" data-view="spaces"><span class="nav-glyph" aria-hidden="true"><svg class="ui-icon"><use href="#icon-book-open"></use></svg></span><span>Spaces</span></button>
+          <button class="nav-item" type="button" data-view="decisions"><span class="nav-glyph" aria-hidden="true"><svg class="ui-icon"><use href="#icon-diamond"></use></svg></span><span>Decisions</span><span class="nav-count warning" id="decisionCount">1</span></button>
         </div>
 
         <div class="nav-group">
           <div class="nav-label">Understand</div>
-          <button class="nav-item" type="button" data-view="reports"><span class="nav-glyph" aria-hidden="true">⌁</span><span>Reports</span></button>
-          <button class="nav-item" type="button" data-view="leadership"><span class="nav-glyph" aria-hidden="true">◎</span><span>Leadership</span></button>
+          <button class="nav-item" type="button" data-view="reports"><span class="nav-glyph" aria-hidden="true"><svg class="ui-icon"><use href="#icon-chart"></use></svg></span><span>Reports</span></button>
+          <button class="nav-item" type="button" data-view="leadership"><span class="nav-glyph" aria-hidden="true"><svg class="ui-icon"><use href="#icon-presentation"></use></svg></span><span>Leadership</span></button>
         </div>
 
         <div class="nav-group nav-group-manage">
           <div class="nav-label">Manage</div>
-          <button class="nav-item" type="button" data-view="people"><span class="nav-glyph" aria-hidden="true">♙</span><span>People & teams</span></button>
-          <button class="nav-item" type="button" data-view="automation"><span class="nav-glyph" aria-hidden="true">⚡</span><span>Automation</span></button>
-          <button class="nav-item" type="button" data-view="admin"><span class="nav-glyph" aria-hidden="true">⚙</span><span>Administration</span></button>
-          <button class="nav-item" type="button" data-view="migration"><span class="nav-glyph" aria-hidden="true">⇄</span><span>Migration center</span></button>
+          <button class="nav-item" type="button" data-view="people"><span class="nav-glyph" aria-hidden="true"><svg class="ui-icon"><use href="#icon-users"></use></svg></span><span>People & teams</span></button>
+          <button class="nav-item" type="button" data-view="automation"><span class="nav-glyph" aria-hidden="true"><svg class="ui-icon"><use href="#icon-zap"></use></svg></span><span>Automation</span></button>
+          <button class="nav-item" type="button" data-view="admin"><span class="nav-glyph" aria-hidden="true"><svg class="ui-icon"><use href="#icon-settings"></use></svg></span><span>Administration</span></button>
+          <button class="nav-item" type="button" data-view="migration"><span class="nav-glyph" aria-hidden="true"><svg class="ui-icon"><use href="#icon-migration"></use></svg></span><span>Migration center</span></button>
         </div>
       </nav>
 
@@ -86,21 +130,21 @@
 
     <section class="workspace">
       <header class="topbar">
-        <button class="icon-button menu-button" id="menuButton" type="button" aria-label="Open navigation" aria-expanded="false"><span aria-hidden="true">☰</span></button>
+        <button class="icon-button menu-button" id="menuButton" type="button" aria-label="Open navigation" aria-expanded="false"><svg class="ui-icon" aria-hidden="true"><use href="#icon-menu"></use></svg></button>
         <button class="project-switcher" type="button" data-action="open-projects" aria-label="Current project: Sentinel Mesh Node">
-          <span class="project-avatar">SM</span>
-          <span class="project-switcher-copy"><span>Sentinel Mesh Node</span><small>Delivery project</small></span>
-          <span aria-hidden="true">⌄</span>
+          <span class="project-avatar" id="currentProjectAvatar">SM</span>
+          <span class="project-switcher-copy"><span id="currentProjectName">Sentinel Mesh Node</span><small id="currentProjectType">Product delivery</small></span>
+          <svg class="ui-icon project-chevron" aria-hidden="true"><use href="#icon-chevron-down"></use></svg>
         </button>
         <div class="topbar-spacer"></div>
         <div class="global-search-wrap">
-          <span class="search-icon" aria-hidden="true">⌕</span>
+          <span class="search-icon" aria-hidden="true"><svg class="ui-icon"><use href="#icon-search"></use></svg></span>
           <input id="globalSearch" class="global-search" type="search" placeholder="Search work, pages, decisions" autocomplete="off" aria-label="Search across the suite" aria-controls="searchResults">
           <kbd>Ctrl K</kbd>
           <div class="search-results" id="searchResults" role="dialog" aria-label="Search results" hidden></div>
         </div>
-        <button class="button primary create-button" id="createButton" type="button"><span aria-hidden="true">＋</span> Create</button>
-        <button class="icon-button notification-button" id="notificationButton" type="button" aria-label="Open notifications"><span aria-hidden="true">♢</span><span class="notification-pip" id="notificationPip">3</span></button>
+        <button class="button primary create-button" id="createButton" type="button"><svg class="ui-icon" aria-hidden="true"><use href="#icon-plus"></use></svg> Create</button>
+        <button class="icon-button notification-button" id="notificationButton" type="button" aria-label="Open notifications"><svg class="ui-icon" aria-hidden="true"><use href="#icon-bell"></use></svg><span class="notification-pip" id="notificationPip">3</span></button>
         <button class="profile-button" id="profileButton" type="button" aria-label="Open user and role simulation menu" aria-expanded="false" aria-controls="profileMenu"><span id="profileCurrentInitials">MO</span></button>
         <div class="profile-menu" id="profileMenu" hidden>
           <div class="profile-menu-head">
@@ -144,6 +188,6 @@
   <div class="toast-region" id="toastRegion" aria-live="polite" aria-atomic="true"></div>
   <div class="sr-only" id="liveRegion" aria-live="polite"></div>
 
-  <script src="app.js"></script>
+  <script src="app.js?v=3.2"></script>
 </body>
 </html>

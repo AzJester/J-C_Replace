@@ -38,6 +38,8 @@ Navigation, actions, search results, and dashboards adapt to the selected person
 
 ### Project and sprint management
 
+- Seven populated project workspaces with separate backlog, board, sprints, releases, milestones, risks, decisions, pages, reports, and leadership status
+- Project creation provisions a starter sprint plan, project hub, epic, and milestones so a new workspace is immediately usable
 - Projects, backlog, delivery board, releases, milestones, risks, dependencies, comments, checklists, and activity
 - Basic search plus a saved-filter experience with a deliberately limited JQL-like query subset
 - Personal and shared saved filters with query ordering and seeded favorites
@@ -61,6 +63,8 @@ Navigation, actions, search results, and dashboards adapt to the selected person
 ### Reporting and administration
 
 - Portfolio, delivery, sprint, service, and leadership readouts derived from the same synthetic state
+- Browser-generated timeline and report CSV files, release-note Markdown, migration mapping CSV, and leadership briefing Markdown
+- Working release configuration, team-capacity, synthetic-person, and automation-rule forms
 - People, teams, capacity, workflow configuration, permission matrices, templates, automation, integrations, and audit views
 - Synthetic migration dry run, unified search, global create, keyboard navigation, responsive layouts, reduced motion, and repeatable reset
 
