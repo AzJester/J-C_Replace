@@ -3259,6 +3259,11 @@
     if (!sprint || !future || !requireCapability("manage-sprint", sprint)) return;
     const stats = sprintStats(sprint);
     stats.issues.filter((issue) => issue.status !== "Done").forEach((issue) => { issue.sprint = future.name; });
+    issuesForProject(sprint.projectKey).filter(isSubtask).forEach((subtask) => {
+      const parent = issueByKey(subtask.parent);
+      if (parent) subtask.sprint = parent.sprint;
+      else if (subtask.sprint === sprint.name && subtask.status !== "Done") subtask.sprint = future.name;
+    });
     sprint.status = "completed";
     sprint.committed = stats.committed;
     sprint.completed = stats.completed;
@@ -4457,7 +4462,7 @@
       if (!text || !post) return;
       post.comments = post.comments || [];
       post.comments.push({ author: actor(), time: "Just now", text });
-      notifyPeople([post.author, ...mentionedPeople(text)], { kind: "page", target: pageById("program-hub") ? "program-hub" : post.projectKey, title: `${actor()} commented on “${post.title}”`, detail: text.slice(0, 140) });
+      notifyPeople([post.author, ...mentionedPeople(text)], { kind: "page", target: pageById(projectHubId(post.projectKey)) ? projectHubId(post.projectKey) : "program-hub", title: `${actor()} commented on “${post.title}”`, detail: text.slice(0, 140) });
       recordAudit("Commented on blog post", post.title);
       persistState();
       render();
