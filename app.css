@@ -5128,3 +5128,4 @@ textarea:focus-visible,
 }
 .toolbar-divider { width: 1px; align-self: stretch; background: var(--line); margin: 0 4px; }
 .diff-panel { border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; margin-top: 12px; max-height: 320px; overflow-y: auto; }
+.timeline-milestone-lane { position: relative; }

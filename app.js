@@ -1702,38 +1702,152 @@
     if (!text) return { items: DemoState.issues.slice(), error: "" };
     const orderMatch = text.match(/\s+ORDER\s+BY\s+([a-z-]+)(?:\s+(ASC|DESC))?\s*$/i);
     const filterText = orderMatch ? text.slice(0, orderMatch.index).trim() : text;
-    const clauses = filterText ? filterText.split(/\s+AND\s+/i) : [];
-    const tests = [];
-    for (const clause of clauses) {
-      const match = clause.match(/^([a-z-]+)\s*(IN|!=|=|~)\s*(.+)$/i);
-      if (!match) return { items: [], error: `Could not parse “${clause}”. Use FIELD = value, FIELD != value, FIELD IN (...), or FIELD ~ text.` };
-      const field = match[1].toLowerCase();
-      const operator = match[2].toUpperCase();
-      if (!fields.includes(field)) return { items: [], error: `“${field}” is not available in this demo query language.` };
-      let values;
-      if (operator === "IN") {
-        const list = match[3].trim();
-        if (!list.startsWith("(") || !list.endsWith(")")) return { items: [], error: `IN requires a parenthesized list in “${clause}”.` };
-        values = list.slice(1, -1).split(",").map(cleanQueryValue).filter(Boolean);
-      } else values = [cleanQueryValue(match[3])];
-      tests.push((issue) => {
-        const actual = String(queryValue(issue, field)).toLowerCase();
-        const expected = values.map((value) => String(value).toLowerCase());
-        if (operator === "=") return actual === expected[0];
-        if (operator === "!=") return actual !== expected[0];
-        if (operator === "~") return actual.includes(expected[0]);
-        return expected.includes(actual);
-      });
+
+    const tokens = [];
+    const scanner = /"([^"]*)"|'([^']*)'|([A-Za-z_]+\(\))|(\()|(\))|(,)|(!=|<=|>=|=|~|<|>)|([^\s(),]+)/g;
+    let scan;
+    while ((scan = scanner.exec(filterText))) {
+      if (scan[1] !== undefined || scan[2] !== undefined) tokens.push({ kind: "string", value: scan[1] ?? scan[2] });
+      else if (scan[3]) tokens.push({ kind: "word", value: scan[3] });
+      else if (scan[4]) tokens.push({ kind: "lparen" });
+      else if (scan[5]) tokens.push({ kind: "rparen" });
+      else if (scan[6]) tokens.push({ kind: "comma" });
+      else if (scan[7]) tokens.push({ kind: "op", value: scan[7] });
+      else {
+        const word = scan[8];
+        const upper = word.toUpperCase();
+        if (upper === "AND" || upper === "OR" || upper === "IN" || upper === "NOT") tokens.push({ kind: "keyword", value: upper });
+        else tokens.push({ kind: "word", value: word });
+      }
     }
-    let items = DemoState.issues.filter((issue) => tests.every((test) => test(issue)));
+
+    let position = 0;
+    let parseError = "";
+    const peek = () => tokens[position];
+    const fail = (message) => { if (!parseError) parseError = message; return null; };
+    const priorities = { Highest: 4, High: 3, Medium: 2, Low: 1 };
+
+    const readValueWords = () => {
+      const words = [];
+      while (peek() && (peek().kind === "word" || peek().kind === "string")) {
+        if (peek().kind === "word" && ["AND", "OR"].includes(String(peek().value).toUpperCase())) break;
+        words.push(tokens[position].value);
+        position += 1;
+        if (tokens[position - 1].kind === "string") break;
+      }
+      return words.length ? words.join(" ") : null;
+    };
+
+    const parseClause = () => {
+      const fieldToken = peek();
+      if (!fieldToken || fieldToken.kind !== "word") return fail("Expected a field name.");
+      const field = String(fieldToken.value).toLowerCase();
+      if (!fields.includes(field)) return fail(`“${field}” is not available in this demo query language.`);
+      position += 1;
+      const opToken = peek();
+      if (opToken && opToken.kind === "keyword" && opToken.value === "IN") {
+        position += 1;
+        if (!peek() || peek().kind !== "lparen") return fail(`IN requires a parenthesized list after “${field}”.`);
+        position += 1;
+        const values = [];
+        while (peek() && peek().kind !== "rparen") {
+          if (peek().kind === "comma") { position += 1; continue; }
+          const value = readValueWords();
+          if (value === null) return fail(`Unexpected token in the IN list for “${field}”.`);
+          values.push(cleanQueryValue(value));
+        }
+        if (!peek()) return fail(`The IN list for “${field}” is missing its closing parenthesis.`);
+        position += 1;
+        return (issue) => values.map((value) => value.toLowerCase()).includes(String(queryValue(issue, field)).toLowerCase());
+      }
+      if (!opToken || opToken.kind !== "op") return fail(`Expected an operator after “${field}”. Use =, !=, ~, <, <=, >, >=, or IN.`);
+      const operator = opToken.value;
+      position += 1;
+      const raw = readValueWords();
+      if (raw === null) return fail(`Expected a value after “${field} ${operator}”.`);
+      const expected = cleanQueryValue(raw);
+      if (["<", "<=", ">", ">="].includes(operator)) {
+        if (field === "points") {
+          const bound = Number(expected);
+          if (!Number.isFinite(bound)) return fail(`“${expected}” is not a number for the points comparison.`);
+          return (issue) => {
+            const actual = Number(issue.points);
+            if (!Number.isFinite(actual)) return false;
+            return operator === "<" ? actual < bound : operator === "<=" ? actual <= bound : operator === ">" ? actual > bound : actual >= bound;
+          };
+        }
+        if (field === "due") {
+          const bound = parseDemoDate(expected);
+          if (bound === null) return fail(`“${expected}” is not a date. Use “04 Sep 2026” or today.`);
+          return (issue) => {
+            const actual = parseDemoDate(issue.due);
+            if (actual === null) return false;
+            return operator === "<" ? actual < bound : operator === "<=" ? actual <= bound : operator === ">" ? actual > bound : actual >= bound;
+          };
+        }
+        return fail(`Comparison operators only work with due and points, not “${field}”.`);
+      }
+      return (issue) => {
+        const actual = String(queryValue(issue, field)).toLowerCase();
+        const value = expected.toLowerCase();
+        if (operator === "=") return actual === value;
+        if (operator === "!=") return actual !== value;
+        return actual.includes(value);
+      };
+    };
+
+    const parseFactor = () => {
+      if (peek() && peek().kind === "lparen") {
+        position += 1;
+        const inner = parseExpression();
+        if (!peek() || peek().kind !== "rparen") return fail("A grouping parenthesis was never closed.");
+        position += 1;
+        return inner;
+      }
+      return parseClause();
+    };
+
+    const parseTerm = () => {
+      let left = parseFactor();
+      while (!parseError && peek() && peek().kind === "keyword" && peek().value === "AND") {
+        position += 1;
+        const right = parseFactor();
+        const previous = left;
+        left = previous && right ? (issue) => previous(issue) && right(issue) : null;
+      }
+      return left;
+    };
+
+    const parseExpression = () => {
+      let left = parseTerm();
+      while (!parseError && peek() && peek().kind === "keyword" && peek().value === "OR") {
+        position += 1;
+        const right = parseTerm();
+        const previous = left;
+        left = previous && right ? (issue) => previous(issue) || right(issue) : null;
+      }
+      return left;
+    };
+
+    let test = null;
+    if (filterText) {
+      test = parseExpression();
+      if (!parseError && position < tokens.length) parseError = `Could not parse the query near “${tokens[position].value || tokens[position].kind}”.`;
+      if (parseError) return { items: [], error: parseError };
+    }
+
+    let items = test ? DemoState.issues.filter(test) : DemoState.issues.slice();
     if (orderMatch) {
       const field = orderMatch[1].toLowerCase();
       if (!fields.includes(field)) return { items: [], error: `Cannot order by “${field}” in this demo.` };
       const direction = String(orderMatch[2] || "ASC").toUpperCase() === "DESC" ? -1 : 1;
-      const priorities = { Highest: 4, High: 3, Medium: 2, Low: 1 };
       items = items.slice().sort((a, b) => {
-        const av = field === "priority" ? priorities[a.priority] || 0 : String(queryValue(a, field));
-        const bv = field === "priority" ? priorities[b.priority] || 0 : String(queryValue(b, field));
+        let av;
+        let bv;
+        if (field === "priority") { av = priorities[a.priority] || 0; bv = priorities[b.priority] || 0; }
+        else if (field === "due") { av = parseDemoDate(a.due) ?? Infinity; bv = parseDemoDate(b.due) ?? Infinity; }
+        else if (field === "points") { av = Number(a.points) || 0; bv = Number(b.points) || 0; }
+        else { av = String(queryValue(a, field)); bv = String(queryValue(b, field)); }
         return (av > bv ? 1 : av < bv ? -1 : 0) * direction;
       });
     }
@@ -1754,7 +1868,7 @@
         <section class="stack">
           <div class="card query-card">
             <div class="field"><label for="advancedQuery">Advanced query</label><textarea id="advancedQuery" data-filter-query spellcheck="false">${esc(DemoState.filterQuery)}</textarea></div>
-            <div class="query-actions"><span class="query-help">Fields: project, key, type, status, priority, assignee, reporter, sprint, epic, text · Operators: =, !=, IN, ~, AND, ORDER BY</span><button class="button primary" type="button" data-action="run-filter">Run query</button></div>
+            <div class="query-actions"><span class="query-help">Fields: project, key, type, status, priority, assignee, reporter, sprint, epic, parent, points, due, text · Operators: =, !=, IN, ~, &lt;, &lt;=, &gt;, &gt;=, AND, OR, ( ), ORDER BY · e.g. project = SMN AND (status = Blocked OR due &lt; "05 Sep 2026")</span><button class="button primary" type="button" data-action="run-filter">Run query</button></div>
             ${result.error ? `<div class="callout danger" role="alert"><strong>Query needs attention</strong><p>${esc(result.error)}</p></div>` : ""}
           </div>
           <form class="card save-filter-form" data-save-filter-form>
@@ -1854,39 +1968,51 @@
   function renderTimeline() {
     const project = activeProject();
     const scale = DemoState.timelineScale;
+    const windowStart = Date.UTC(2026, 7, 24);
+    const slotMs = scale === "months" ? 14 * 86400000 : 7 * 86400000;
+    const slots = 8;
+    const windowEnd = windowStart + slots * slotMs;
     const labels = scale === "months"
-      ? ["Aug", "", "Sep", "", "Oct", "", "Nov", ""]
+      ? ["24 Aug", "07 Sep", "21 Sep", "05 Oct", "19 Oct", "02 Nov", "16 Nov", "30 Nov"]
       : ["24 Aug", "31 Aug", "07 Sep", "14 Sep", "21 Sep", "28 Sep", "05 Oct", "12 Oct"];
-    const monthMap = { Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5, Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11 };
-    const rows = issuesForProject().filter((issue) => !isSubtask(issue)).slice(0, 8).map((issue, index) => {
-      const match = String(issue.due).match(/^(\d{1,2})\s+([A-Za-z]{3})\s+(\d{4})$/);
-      const span = scale === "months" ? (issue.type === "Epic" || issue.points >= 8 ? 2 : 1) : issue.type === "Epic" ? 3 : issue.points >= 8 ? 2 : 1;
-      let dueSlot = index;
-      if (match && monthMap[match[2]] !== undefined) {
-        const day = Number(match[1]);
-        const month = monthMap[match[2]];
-        const year = Number(match[3]);
-        dueSlot = scale === "months" ? (month - 7) * 2 + (day > 15 ? 1 : 0) : Math.round((Date.UTC(year, month, day) - Date.UTC(2026, 7, 24)) / 604800000);
-      }
+    const slotFor = (ms) => Math.floor((ms - windowStart) / slotMs);
+    const rows = issuesForProject().filter((issue) => !isSubtask(issue)).map((issue) => {
+      const due = parseDemoDate(issue.due);
+      const durationSlots = Math.max(1, Math.min(4, issue.type === "Epic" ? Math.ceil(issue.points / 12) : Math.ceil(issue.points / 6)));
+      let endSlot;
+      let clipped = "";
+      if (due === null) endSlot = slots - 1;
+      else if (due >= windowEnd) { endSlot = slots - 1; clipped = "→"; }
+      else if (due < windowStart) { endSlot = 0; clipped = "←"; }
+      else endSlot = Math.max(0, Math.min(slots - 1, slotFor(due)));
+      const span = Math.min(durationSlots, endSlot + 1);
+      const start = Math.max(0, endSlot - span + 1);
       return {
-        issue: issue.key,
-        label: issue.summary,
-        start: Math.max(0, Math.min(8 - span, dueSlot - span + 1)),
+        issue,
+        start,
         span,
+        clipped,
         tone: issue.status === "Done" ? "success" : issue.status === "Blocked" ? "danger" : issue.status === "In Review" ? "warning" : issue.priority === "Highest" ? "dark" : ""
       };
-    });
+    }).sort((a, b) => (a.issue.type === "Epic" ? 0 : 1) - (b.issue.type === "Epic" ? 0 : 1) || (parseDemoDate(a.issue.due) ?? Infinity) - (parseDemoDate(b.issue.due) ?? Infinity));
+    const milestones = milestonesForProject().map((item) => {
+      const target = parseDemoDate(item.target);
+      if (target === null || target < windowStart || target >= windowEnd) return null;
+      return { item, percent: ((target - windowStart) / (slots * slotMs)) * 100 };
+    }).filter(Boolean);
     const atRisk = milestonesForProject().filter((item) => item.status === "At risk");
     return `<div class="page page-enter">
-      ${pageHeader(`${project.key} · Plan`, "Timeline", "See epics, work, milestones, dependencies, and schedule exposure in one delivery view.", `<div class="segmented" aria-label="Timeline scale"><button class="${scale === "weeks" ? "active" : ""}" type="button" data-action="set-timeline-scale" data-scale="weeks">Weeks</button><button class="${scale === "months" ? "active" : ""}" type="button" data-action="set-timeline-scale" data-scale="months">Months</button></div><button class="button" type="button" data-action="export-timeline">Export</button>`)}
+      ${pageHeader(`${project.key} · Plan`, "Timeline", "Every scheduled work item positioned by its real due date, with milestone gates and dependency counts.", `<div class="segmented" aria-label="Timeline scale"><button class="${scale === "weeks" ? "active" : ""}" type="button" data-action="set-timeline-scale" data-scale="weeks">Weeks</button><button class="${scale === "months" ? "active" : ""}" type="button" data-action="set-timeline-scale" data-scale="months">Months</button></div><button class="button" type="button" data-action="export-timeline">Export</button>`)}
       <div class="timeline-shell"><div class="timeline">
         <div class="timeline-header"><div>Work</div>${labels.map((date) => `<div>${date}</div>`).join("")}</div>
+        <div class="timeline-row"><div class="timeline-label"><span class="type-badge tag">Gates</span><span><strong>Milestones</strong><span>${milestones.length} in window</span></span></div><div class="timeline-milestone-lane" style="grid-column:2 / -1"><div class="timeline-milestone-row">${milestones.map(({ item, percent }) => `<span class="timeline-milestone ${item.status === "At risk" ? "at-risk" : ""}" style="left:${percent}%" title="${esc(item.name)} · target ${esc(item.target)} · forecast ${esc(item.forecast)} · ${esc(item.status)}"><span class="ms-diamond"></span><span>${esc(item.name.length > 22 ? item.name.slice(0, 22) + "…" : item.name)}</span></span>`).join("")}</div></div></div>
         ${rows.map((row) => {
-          const issue = issueByKey(row.issue);
+          const issue = row.issue;
+          const deps = issue.dependencies.length;
           return `<div class="timeline-row">
-            <div class="timeline-label"><span class="type-badge tag">${esc(issue.type)}</span><span><strong>${esc(row.label)}</strong><span>${esc(row.issue)} · ${esc(issue.assignee)}</span></span></div>
-            ${Array.from({ length: 8 }, () => '<div class="timeline-cell"></div>').join("")}
-            <button class="timeline-bar ${row.tone}" style="--start:${row.start};--span:${row.span}" type="button" data-issue="${row.issue}">${esc(row.issue)} · ${esc(issue.status)}</button>
+            <div class="timeline-label"><span class="type-badge tag">${esc(issue.type)}</span><span><strong>${esc(issue.summary)}</strong><span>${esc(issue.key)} · ${esc(issue.assignee)} · due ${esc(issue.due)}</span></span></div>
+            ${Array.from({ length: slots }, () => '<div class="timeline-cell"></div>').join("")}
+            <button class="timeline-bar ${row.tone}" style="--start:${row.start};--span:${row.span}" type="button" data-issue="${issue.key}" title="${esc(issue.key)} · due ${esc(issue.due)}${deps ? ` · ${deps} dependenc${deps === 1 ? "y" : "ies"}` : ""}">${row.clipped === "←" ? "← " : ""}${esc(issue.key)} · ${esc(issue.status)}${deps ? `<span class="timeline-dep-chip">⛓ ${deps}</span>` : ""}${row.clipped === "→" ? " →" : ""}</button>
           </div>`;
         }).join("")}
       </div></div>

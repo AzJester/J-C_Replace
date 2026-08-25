@@ -39,9 +39,14 @@ Navigation, actions, search results, and dashboards adapt to the selected person
 ### Project and sprint management
 
 - Seven populated project workspaces with separate backlog, board, sprints, releases, milestones, risks, decisions, pages, reports, and leadership status
+- A real work-item hierarchy: Epic → Story / Task / Bug → Sub-task. Subtasks belong to a parent, inherit its sprint, show progress roll-ups on backlog rows and board cards, and are excluded from sprint point totals so estimates never double-count
+- Subtask management in the work-item panel: inline add, per-subtask status, parent breadcrumbs, and a completion prompt when the last subtask closes
+- Epics as first-class references: an epic picker on creation, clickable epic links, and an Epics panel with child progress
+- Editable checklists (add, check, remove) and browser-local file attachments on work items
+- Overdue indicators computed from real parsed dates against the deterministic 24 August demo date
 - Project creation provisions a starter sprint plan, project hub, epic, and milestones so a new workspace is immediately usable
-- Projects, backlog, delivery board, releases, milestones, risks, dependencies, comments, checklists, and activity
-- Basic search plus a saved-filter experience with a deliberately limited JQL-like query subset
+- A timeline that positions every scheduled work item by its actual due date, with milestone gates and dependency counts
+- An upgraded query language: `AND`, `OR`, parentheses, `IN`, `~`, and date/point comparisons (`due < "05 Sep 2026"`, `points >= 8`), plus `parent`, `points`, and `due` fields
 - Personal and shared saved filters with query ordering and seeded favorites
 - Completed, active, and future sprints with editable goals, dates, capacity, completion, and automatic carryover
 - A governed decision cascade that updates dependent work, schedule, risk, notifications, audit history, and leadership status
@@ -55,9 +60,16 @@ Navigation, actions, search results, and dashboards adapt to the selected person
 
 ### Knowledge management
 
-- Spaces, page trees, linked work, comments, evidence, and governed publishing
+- Spaces with a true recursive page tree: arbitrary nesting depth, expand/collapse, and move/copy that carries a page’s whole branch
+- Full-text search across page bodies, work items, blog posts, and decisions, with highlighted snippets and `label:` / `type:` / `space:` filter tokens
+- Page labels with a label browse cloud, plus live page templates (decision brief, meeting notes, retrospective, integration review, risk assessment, leadership readout)
+- Macros inside pages: table of contents, info/warning panels, expandable sections, status lozenges, tables, and live work-item chips (`{{SMN-184}}`) that show current status and open the work item
+- Collaboration: @mention autocomplete with inbox notifications, threaded page comments with reply and resolve, and inline comments anchored to selected text
+- Watch a page or a whole space and receive inbox notifications when watched content is published or discussed; reactions on pages and posts
+- Per-page view/edit restrictions enforced by the persona simulation, with a restricted marker in the tree
+- Browser-local attachments on pages, page and whole-space Markdown export, space blog posts, and personal spaces per persona
 - Browser-local autosaved drafts that can be resumed after navigation or refresh
-- Version history with stored page snapshots, comparison, and restore-to-new-draft behavior
+- Version history with a word-level diff between any two versions and restore-to-new-draft behavior
 - Page archive and restore behavior with permissions and audit history
 
 ### Reporting and administration
@@ -90,7 +102,7 @@ Clone the repository and open `index.html` in a modern browser, or serve the fol
 
 Keyboard shortcuts:
 
-- `Ctrl/Cmd + K` — unified search
+- `Ctrl/Cmd + K` — unified search (press `Enter` for full-text results)
 - `C` — create work
 - `Esc` — close the current overlay
 
