@@ -617,6 +617,7 @@
 
     const finiteInRange = (value, min, max) => typeof value === "number" && Number.isFinite(value) && value >= min && value <= max;
     const hasTextFields = (record, fields, maxLength = 100000) => fields.every((field) => typeof record[field] === "string" && record[field].length <= maxLength);
+    const isValidReactionMap = (map) => map && typeof map === "object" && !Array.isArray(map) && Object.entries(map).every(([emoji, names]) => typeof emoji === "string" && emoji.length <= 16 && Array.isArray(names) && names.every((name) => typeof name === "string"));
     for (const project of candidate.projects) {
       if (!hasTextFields(project, ["key", "name", "type", "health", "releaseName", "release", "objective", "owner", "description"]) || !finiteInRange(project.completion, 0, 100) || !finiteInRange(project.confidence, 0, 100)) return `Project ${project.key} has invalid fields or metrics.`;
     }
@@ -650,6 +651,8 @@
     for (const page of candidate.pages) {
       if (!hasTextFields(page, ["projectKey", "id", "title", "owner", "updated", "summary", "content"]) || !validPageProject(page.projectKey) || !finiteInRange(page.depth, 0, 10) || !finiteInRange(page.version, 1, 100000)) return `Page ${page.id} has invalid project, fields, hierarchy, or version data.`;
       if (page.labels !== undefined && (!Array.isArray(page.labels) || page.labels.length > 20 || page.labels.some((label) => typeof label !== "string" || !label.trim() || label.length > 40))) return `Page ${page.id} has invalid labels.`;
+      if (page.reactions !== undefined && !isValidReactionMap(page.reactions)) return `Page ${page.id} has invalid reactions.`;
+      if (page.bodyHtml !== undefined && (typeof page.bodyHtml !== "string" || page.bodyHtml.length > 200000)) return `Page ${page.id} has an invalid body.`;
       if (page.restricted !== undefined && page.restricted !== null && (typeof page.restricted !== "object" || ["view", "edit"].some((mode) => page.restricted[mode] !== undefined && (!Array.isArray(page.restricted[mode]) || page.restricted[mode].some((name) => typeof name !== "string"))))) return `Page ${page.id} has invalid restrictions.`;
       let cursor = page;
       const walked = new Set();
@@ -720,6 +723,8 @@
       if (!Array.isArray(candidate.blogPosts) || candidate.blogPosts.length > 500) return "Blog posts are invalid.";
       for (const post of candidate.blogPosts) {
         if (!post || typeof post !== "object" || !SAFE_RECORD_ID.test(String(post.id)) || !hasTextFields(post, ["title", "author", "time"])) return "A blog post is invalid.";
+        if (post.bodyHtml !== undefined && (typeof post.bodyHtml !== "string" || post.bodyHtml.length > 200000)) return "A blog post body is invalid.";
+        if (post.reactions !== undefined && !isValidReactionMap(post.reactions)) return "A blog post has invalid reactions.";
       }
     }
     if (candidate.pageInlineComments !== undefined && (typeof candidate.pageInlineComments !== "object" || Array.isArray(candidate.pageInlineComments))) return "Inline comments are invalid.";
@@ -1008,7 +1013,7 @@
       scratch.innerHTML = html;
       const headings = [...scratch.content.querySelectorAll("h2, h3")].map((heading) => heading.textContent.trim()).filter(Boolean);
       const toc = headings.length ? `<div class="macro-toc"><strong>On this page</strong><ul>${headings.map((title) => `<li>${esc(title)}</li>`).join("")}</ul></div>` : "";
-      html = html.replace(/<div data-macro="toc"><\/div>/g, toc);
+      html = html.replace(/<div data-macro="toc"><\/div>/g, () => toc);
     }
     html = html.replace(/\{\{([A-Z][A-Z0-9]*-\d+)\}\}/g, (matchText, key) => {
       const issue = issueByKey(key);
@@ -1136,6 +1141,18 @@
 
   function slug(value) {
     return String(value).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  }
+
+  function safeRecordId(base, salt, prefix = "page") {
+    let candidate = String(base || "").slice(0, 60);
+    if (!/^[A-Za-z0-9]/.test(candidate)) candidate = `${prefix}-${candidate}`.slice(0, 60);
+    candidate = `${candidate}-${salt}`.replace(/[^A-Za-z0-9._:-]/g, "").slice(0, 79);
+    if (!SAFE_RECORD_ID.test(candidate)) candidate = `${prefix}-${salt}`;
+    return candidate;
+  }
+
+  function normalizeLabelInput(raw, max = 8) {
+    return String(raw || "").split(",").map((label) => label.trim().toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9_-]/g, "").slice(0, 30)).filter(Boolean).slice(0, max);
   }
 
   function initials(name) {
@@ -2181,7 +2198,7 @@
       <form data-blog-form="${post ? esc(post.id) : ""}">
         <div class="modal-body">
           <div class="field"><label for="blogTitle">Title</label><input id="blogTitle" name="title" required value="${esc(post?.title || "")}" placeholder="Announce something worth reading"></div>
-          <div class="field" style="margin-top:14px"><span class="field-label">Content</span><div class="editor-toolbar" aria-label="Formatting toolbar"><button type="button" data-command="bold" aria-label="Bold">B</button><button type="button" data-command="italic" aria-label="Italic"><em>I</em></button><button type="button" data-command="insertUnorderedList" aria-label="Bulleted list">• List</button><button type="button" data-command="formatBlock" data-value="h2" aria-label="Heading level 2">H2</button></div><div id="pageEditor" class="page-editor" contenteditable="true" role="textbox" aria-multiline="true">${post ? renderPageBodyHtml(post, post.bodyHtml) : "<p></p>"}</div></div>
+          <div class="field" style="margin-top:14px"><span class="field-label">Content</span><div class="editor-toolbar" aria-label="Formatting toolbar"><button type="button" data-command="bold" aria-label="Bold">B</button><button type="button" data-command="italic" aria-label="Italic"><em>I</em></button><button type="button" data-command="insertUnorderedList" aria-label="Bulleted list">• List</button><button type="button" data-command="formatBlock" data-value="h2" aria-label="Heading level 2">H2</button></div><div id="pageEditor" class="page-editor" contenteditable="true" role="textbox" aria-multiline="true">${post ? sanitizeRichText(post.bodyHtml) : "<p></p>"}</div></div>
         </div>
         <div class="modal-footer"><button class="button" type="button" data-action="close-modal">Cancel</button><button class="button primary" type="submit">${post ? "Save post" : "Publish post"}</button></div>
       </form>
@@ -2225,7 +2242,7 @@
         <div class="stack">
           <section class="panel">
             <div class="panel-header"><h2>Blog</h2><span class="tag">${posts.length} post${posts.length === 1 ? "" : "s"}</span></div>
-            <div class="panel-body">${posts.slice(0, 4).map((post) => `<article class="blog-card" data-blog-post="${esc(post.id)}" tabindex="0"><h3>${esc(post.title)}</h3><div class="blog-meta"><span>${esc(post.author)}</span><span>${esc(post.time)}</span><span>${esc(spaceForKey(post.projectKey)?.name || post.projectKey)}</span>${Object.entries(post.reactions || {}).filter(([, names]) => names.length).map(([emoji, names]) => `<span>${emoji} ${names.length}</span>`).join("")}</div></article>`).join("") || '<div class="empty-state">No blog posts yet.</div>'}</div>
+            <div class="panel-body">${posts.slice(0, 4).map((post) => `<article class="blog-card" data-blog-post="${esc(post.id)}" tabindex="0"><h3>${esc(post.title)}</h3><div class="blog-meta"><span>${esc(post.author)}</span><span>${esc(post.time)}</span><span>${esc(spaceForKey(post.projectKey)?.name || post.projectKey)}</span>${Object.entries(post.reactions || {}).filter(([, names]) => Array.isArray(names) && names.length).map(([emoji, names]) => `<span>${esc(emoji)} ${names.length}</span>`).join("")}</div></article>`).join("") || '<div class="empty-state">No blog posts yet.</div>'}</div>
           </section>
           <section class="panel">
             <div class="panel-header"><h2>Labels</h2><span class="tag">${labels.length}</span></div>
@@ -2824,8 +2841,8 @@
   function attachmentSection(kind, id, canManage) {
     const files = (DemoState.attachments[kind] || {})[id] || [];
     return `<div class="attachment-block" data-attachment-block>
-      ${files.map((file) => `<div class="attachment-row"><span class="attachment-icon">${icon("paperclip")}</span><span class="attachment-copy"><strong>${esc(file.name)}</strong><span>${esc(file.addedBy)} · ${esc(file.time)} · ${Math.max(1, Math.round((file.size || 0) / 1024))} KB</span></span>${file.dataUrl ? `<a class="button small" href="${esc(file.dataUrl)}" download="${esc(file.name)}">Download</a>` : ""}${canManage ? `<button class="label-remove" type="button" data-action="remove-attachment" data-kind="${esc(kind)}" data-record="${esc(id)}" data-file="${esc(file.id)}" aria-label="Remove attachment ${esc(file.name)}">×</button>` : ""}</div>`).join("") || '<p class="empty-inline">No attachments yet.</p>'}
-      ${canManage ? `<label class="attachment-add button small">Attach file<input type="file" data-attach-kind="${esc(kind)}" data-attach-record="${esc(id)}" hidden></label><span class="field-hint">Stored in this browser only · 512 KB per file</span>` : ""}
+      ${files.map((file) => `<div class="attachment-row"><span class="attachment-icon">${icon("paperclip")}</span><span class="attachment-copy"><strong>${esc(file.name)}</strong><span>${esc(file.addedBy)} · ${esc(file.time)} · ${Math.max(1, Math.round((file.size || 0) / 1024))} KB</span></span>${file.dataUrl && /^data:(image\/(png|jpe?g|gif|webp|svg\+xml)|application\/pdf|text\/plain)[;,]/i.test(file.dataUrl) ? `<a class="button small" href="${esc(file.dataUrl)}" download="${esc(file.name)}">Download</a>` : ""}${canManage ? `<button class="label-remove" type="button" data-action="remove-attachment" data-kind="${esc(kind)}" data-record="${esc(id)}" data-file="${esc(file.id)}" aria-label="Remove attachment ${esc(file.name)}">×</button>` : ""}</div>`).join("") || '<p class="empty-inline">No attachments yet.</p>'}
+      ${canManage ? `<label class="attachment-add button small">Attach file<input type="file" data-attach-kind="${esc(kind)}" data-attach-record="${esc(id)}" hidden></label><span class="field-hint">Stored in this browser only · 384 KB per file</span>` : ""}
     </div>`;
   }
 
@@ -2856,7 +2873,7 @@
         </div>
         ${isSubtask(issue) && issue.parent ? `<section class="drawer-section subtask-parent-strip"><button class="linked-object" type="button" data-issue="${esc(issue.parent)}"><span class="linked-icon">${icon("arrow-left")}</span><span class="linked-copy"><strong>Subtask of ${esc(issue.parent)}</strong><span>${esc(issueByKey(issue.parent)?.summary || "Parent work item")} · ${esc(issueByKey(issue.parent)?.status || "")}</span></span></button></section>` : ""}
         <section class="drawer-section"><h3>Description</h3><p>${esc(issue.description)}</p></section>
-        ${!isSubtask(issue) ? (() => {
+        ${!isSubtask(issue) && issue.type !== "Epic" ? (() => {
           const children = subtasksOf(issue.key);
           const done = children.filter((child) => child.status === "Done").length;
           const canAdd = can("edit-work", issue) || can("create-work");
@@ -3037,7 +3054,7 @@
   }
 
   function createForm(type, options = {}) {
-    if (type === "page") return `<form id="createEntityForm" data-create-form="page"><div class="form-grid"><div class="field full"><label for="newPageTitle">Page title</label><input id="newPageTitle" name="title" required autofocus placeholder="e.g., Release readiness checklist"></div><div class="field"><label for="newPageSpace">Space</label><select id="newPageSpace" name="space" data-page-space-select><option value="${esc(activeProject().key)}">${esc(activeProject().name)}</option><option value="${esc(personalSpaceKey(actor()))}">My personal space</option></select></div><div class="field"><label for="newPageTemplate">Template</label><select id="newPageTemplate" name="template">${PAGE_TEMPLATES.map((template) => `<option value="${template.id}" ${options.template === template.id ? "selected" : ""}>${esc(template.name)}</option>`).join("")}</select></div><div class="field"><label for="newPageParent">Parent page</label><select id="newPageParent" name="parent"><option value="">No parent (top level)</option>${orderedProjectPages(activeProject().key).filter((entry) => pageVisibleTo(entry.page)).map(({ page, depth }) => `<option value="${page.id}">${"— ".repeat(depth)}${esc(page.title)}</option>`).join("")}</select></div><div class="field"><label for="newPageOwner">Owner</label><select id="newPageOwner" name="owner">${DemoState.people.map((person) => `<option ${person.name === actor() ? "selected" : ""}>${esc(person.name)}</option>`).join("")}</select></div><div class="field full"><label for="newPageLabels">Labels</label><input id="newPageLabels" name="labels" placeholder="Comma-separated, e.g. evidence, readiness"></div><div class="field full"><label for="newPageSummary">Purpose</label><textarea id="newPageSummary" name="summary" required placeholder="What should this page help the team understand or do?"></textarea></div></div><div class="modal-footer" style="margin:20px -20px -20px"><button class="button" type="button" data-action="close-modal">Cancel</button><button class="button primary" type="submit">Create page</button></div></form>`;
+    if (type === "page") return `<form id="createEntityForm" data-create-form="page"><div class="form-grid"><div class="field full"><label for="newPageTitle">Page title</label><input id="newPageTitle" name="title" required autofocus maxlength="120" placeholder="e.g., Release readiness checklist"></div><div class="field"><label for="newPageSpace">Space</label><select id="newPageSpace" name="space" data-page-space-select><option value="${esc(activeProject().key)}">${esc(activeProject().name)}</option><option value="${esc(personalSpaceKey(actor()))}">My personal space</option></select></div><div class="field"><label for="newPageTemplate">Template</label><select id="newPageTemplate" name="template">${PAGE_TEMPLATES.map((template) => `<option value="${template.id}" ${options.template === template.id ? "selected" : ""}>${esc(template.name)}</option>`).join("")}</select></div><div class="field"><label for="newPageParent">Parent page</label><select id="newPageParent" name="parent"><option value="">No parent (top level)</option>${orderedProjectPages(activeProject().key).filter((entry) => pageVisibleTo(entry.page)).map(({ page, depth }) => `<option value="${page.id}">${"— ".repeat(depth)}${esc(page.title)}</option>`).join("")}</select></div><div class="field"><label for="newPageOwner">Owner</label><select id="newPageOwner" name="owner">${DemoState.people.map((person) => `<option ${person.name === actor() ? "selected" : ""}>${esc(person.name)}</option>`).join("")}</select></div><div class="field full"><label for="newPageLabels">Labels</label><input id="newPageLabels" name="labels" placeholder="Comma-separated, e.g. evidence, readiness"></div><div class="field full"><label for="newPageSummary">Purpose</label><textarea id="newPageSummary" name="summary" required placeholder="What should this page help the team understand or do?"></textarea></div></div><div class="modal-footer" style="margin:20px -20px -20px"><button class="button" type="button" data-action="close-modal">Cancel</button><button class="button primary" type="submit">Create page</button></div></form>`;
     if (type === "decision") return `<form id="createEntityForm" data-create-form="decision"><div class="form-grid"><div class="field full"><label for="newDecisionTitle">Decision title</label><input id="newDecisionTitle" name="title" required autofocus placeholder="What needs to be decided?"></div><div class="field"><label for="newDecisionOwner">Owner</label><select id="newDecisionOwner" name="owner">${DemoState.people.map((person) => `<option>${esc(person.name)}</option>`).join("")}</select></div><div class="field"><label for="newDecisionApprover">Approver</label><select id="newDecisionApprover" name="approver">${DemoState.people.map((person) => `<option>${esc(person.name)}</option>`).join("")}</select></div><div class="field full"><label for="newDecisionRecommendation">Recommendation</label><textarea id="newDecisionRecommendation" name="recommendation" required placeholder="State the recommended option and why."></textarea></div></div><div class="modal-footer" style="margin:20px -20px -20px"><button class="button" type="button" data-action="close-modal">Cancel</button><button class="button primary" type="submit">Create decision</button></div></form>`;
     const parentCandidates = issuesForProject().filter((item) => !isSubtask(item) && item.type !== "Epic");
     const epicOptions = epicsForProject();
@@ -3125,7 +3142,7 @@
   function copyPage(pageId) {
     const page = pageById(pageId);
     if (!page || !requireCapability("edit-knowledge", page, "This persona cannot copy pages.")) return;
-    const id = slug(page.title) + "-copy-" + (DemoState.pages.length + 1);
+    const id = safeRecordId(slug(page.title) + "-copy", DemoState.pages.length + 1);
     const copy = { ...clone(page), id, title: "Copy of " + page.title, version: 1, updated: "Just now", owner: actor(), restricted: null, reactions: {} };
     DemoState.pages.push(copy);
     DemoState.pageComments[id] = [];
@@ -3262,7 +3279,7 @@
     issuesForProject(sprint.projectKey).filter(isSubtask).forEach((subtask) => {
       const parent = issueByKey(subtask.parent);
       if (parent) subtask.sprint = parent.sprint;
-      else if (subtask.sprint === sprint.name && subtask.status !== "Done") subtask.sprint = future.name;
+      if (subtask.status !== "Done" && subtask.sprint === sprint.name) subtask.sprint = future.name;
     });
     sprint.status = "completed";
     sprint.committed = stats.committed;
@@ -3556,9 +3573,10 @@
     try {
       if (file.size > MAX_IMPORT_BYTES) throw new Error("The snapshot exceeds the 5 MB demo import limit.");
       const parsed = JSON.parse(await file.text());
-      const candidate = parsed.state || parsed;
+      const rawCandidate = parsed.state || parsed;
       if (parsed.state && parsed.product !== "Unified Project Management Suite") throw new Error("This export was not created by the Unified Project Management Suite demo.");
-      const validationError = validateStateCandidate({ ...candidate, schemaVersion: Number(parsed.schemaVersion || candidate.schemaVersion) });
+      const candidate = migrateLegacySnapshot({ ...rawCandidate, schemaVersion: Number(parsed.schemaVersion || rawCandidate.schemaVersion) });
+      const validationError = validateStateCandidate(candidate);
       if (validationError) throw new Error(validationError);
       pendingImportState = normalizeState({ ...candidate, schemaVersion: SCHEMA_VERSION });
       openModal(`<div class="modal-header"><h2>Import browser-local workspace?</h2><button class="icon-button" type="button" data-action="close-modal" aria-label="Close">×</button></div><div class="modal-body"><div class="callout warning" style="margin-top:0"><strong>Schema-compatible JSON snapshot</strong><p>The current local demo state will be replaced only after you confirm. Required records, identifiers, references, workflow values, and numeric ranges passed the browser-local checks. The file remains on this device.</p></div><div class="migration-result-grid"><div class="migration-result"><strong>${pendingImportState.projects.length}</strong><span>Projects</span></div><div class="migration-result"><strong>${pendingImportState.issues.length}</strong><span>Work items</span></div><div class="migration-result"><strong>${pendingImportState.pages.length}</strong><span>Pages</span></div><div class="migration-result"><strong>${pendingImportState.service.requests.length}</strong><span>Requests</span></div></div></div><div class="modal-footer"><button class="button" type="button" data-action="close-modal">Cancel</button><button class="button primary" type="button" data-action="apply-import">Import snapshot</button></div>`);
@@ -3854,7 +3872,7 @@
       else if (action === "show-archived-pages") showArchivedPages();
       else if (action === "archive-page") { const page = pageById(actionTarget.dataset.pageId); if (!page || page.id === projectHubId(page.projectKey || "SMN") || !requireCapability("archive-knowledge", page)) return; page.archived = true; page.archivedBy = actor(); page.archivedAt = "Just now"; page.archiveReason = "No longer current; retained for traceability"; recordAudit("Archived knowledge page", page.title); render(); toast("Page archived", "It is hidden from normal navigation but remains restorable.", "success"); }
       else if (action === "restore-page") { const page = pageById(actionTarget.dataset.pageId); if (!page || !requireCapability("archive-knowledge", page)) return; page.archived = false; recordAudit("Restored archived knowledge page", page.title); closeModal(); DemoState.activePage = page.id; navigate("spaces", { preservePage: true }); toast("Page restored", page.title + " is back in the page tree.", "success"); }
-      else if (action === "mark-all-read") { DemoState.notifications.forEach((item) => { item.unread = false; }); render(); }
+      else if (action === "mark-all-read") { DemoState.notifications.filter(canOpenNotification).forEach((item) => { item.unread = false; }); render(); }
       else if (action === "toggle-rule") {
         const rule = DemoState.automations.find((item) => item.id === actionTarget.dataset.rule);
         rule.enabled = !rule.enabled;
@@ -4130,14 +4148,14 @@
       const file = input.files?.[0];
       input.value = "";
       if (!file) return;
-      if (file.size > 512 * 1024) { toast("File too large", "Attachments in this browser-local demo are limited to 512 KB.", "danger"); return; }
+      if (file.size > 384 * 1024) { toast("File too large", "Attachments in this browser-local demo are limited to 384 KB.", "danger"); return; }
       const kind = input.dataset.attachKind;
       const record = input.dataset.attachRecord;
       const reader = new FileReader();
       reader.onload = () => {
         DemoState.attachments[kind] = DemoState.attachments[kind] || {};
         const list = DemoState.attachments[kind][record] = DemoState.attachments[kind][record] || [];
-        if (list.length >= 12) { toast("Attachment limit reached", "This record already has 12 browser-local attachments.", "danger"); return; }
+        if (list.length >= 8) { toast("Attachment limit reached", "This record already has 8 browser-local attachments.", "danger"); return; }
         list.push({ id: `att-${Date.now()}-${Math.floor(Math.random() * 100000)}`, name: file.name.slice(0, 160), size: file.size, type: file.type || "application/octet-stream", dataUrl: String(reader.result), addedBy: actor(), time: "Just now" });
         recordAudit("Attached file", `${record} · ${file.name.slice(0, 80)}`);
         try { persistState(); } catch (_) { /* quota */ }
@@ -4531,7 +4549,7 @@
       event.preventDefault();
       const page = pageById(form.dataset.addLabel);
       if (!page || !requireCapability("edit-knowledge", page, "This persona cannot edit labels.")) return;
-      const label = String(new FormData(form).get("label") || "").trim().toLowerCase().replace(/[^a-z0-9 _-]/g, "").slice(0, 30);
+      const label = normalizeLabelInput(new FormData(form).get("label"), 1)[0];
       if (!label) return;
       page.labels = page.labels || [];
       if (!page.labels.includes(label)) page.labels.push(label);
@@ -4641,12 +4659,12 @@
         openIssue(key);
       } else if (form.dataset.createForm === "page") {
         if (!requireCapability("edit-knowledge")) return;
-        const id = slug(data.title) + "-" + (DemoState.pages.length + 1);
+        const id = safeRecordId(slug(data.title), DemoState.pages.length + 1);
         const spaceKey = isPersonalSpaceKey(data.space) ? personalSpaceKey(actor()) : (projectByKey(data.space) ? data.space : activeProject().key);
         const parentPage = !isPersonalSpaceKey(spaceKey) && data.parent ? pageById(data.parent) : null;
         const parent = parentPage && parentPage.projectKey === spaceKey ? parentPage.id : null;
         const template = PAGE_TEMPLATES.find((item) => item.id === data.template) || PAGE_TEMPLATES[0];
-        const labels = String(data.labels || "").split(",").map((label) => label.trim().toLowerCase()).filter(Boolean).slice(0, 8);
+        const labels = normalizeLabelInput(data.labels);
         const bodyHtml = template.bodyHtml || `<p>${esc(data.summary)}</p>`;
         const record = { projectKey: spaceKey, id, title: data.title, parent, depth: parent ? pageDepthOf({ parent }) : 0, owner: data.owner, updated: "Just now", version: 1, summary: data.summary, content: data.summary, labels, bodyHtml, reactions: {}, restricted: null };
         DemoState.pages.push(record);
@@ -4734,7 +4752,7 @@
       else if (!profileMenu.hidden) profileMenu.hidden = true;
       else closeSidebar();
     }
-    if ((event.key === "Enter" || event.key === " ") && event.target.matches("[data-issue], [data-project], [data-space], [data-decision], [data-risk], [data-person]") && event.target.tagName !== "BUTTON") {
+    if ((event.key === "Enter" || event.key === " ") && event.target.matches("[data-issue], [data-project], [data-space], [data-personal-space], [data-page], [data-blog-post], [data-decision], [data-risk], [data-person]") && event.target.tagName !== "BUTTON") {
       event.preventDefault();
       event.target.click();
     }
