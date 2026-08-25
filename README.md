@@ -11,6 +11,15 @@ Everything in the sandbox is synthetic. It is designed to feel operational durin
 - [Download the PowerPoint](./downloads/unified-project-management-suite-leadership-brief.pptx)
 - [Download the PDF](./downloads/unified-project-management-suite-leadership-brief.pdf)
 
+## Huly-style coworker evaluation
+
+The `huly-evaluation` branch includes a separate, browser-only workspace for demonstrating a Huly-style alternative without installing Huly or running Docker:
+
+- [Run the Huly-style static evaluation](https://raw.githack.com/AzJester/J-C_Replace/huly-evaluation/huly-demo.html)
+- Local file: `huly-demo.html`
+
+The evaluation includes Office, Tracker, Documents, Inbox, Planner, Chat, Drive, and Team views; seven populated projects; cross-workspace search; local creation and editing; and a connected decision cascade. It uses only fictional records stored in browser local storage. It has no backend, authentication, uploads, telemetry, APIs, or external assets.
+
 ## Working sandbox capabilities
 
 ### Browser-local demo data
