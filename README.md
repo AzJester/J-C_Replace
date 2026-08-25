@@ -20,7 +20,7 @@ The `huly-evaluation` branch includes a separate, browser-only workspace for dem
 
 The hosted branch preview may show a one-time external-content notice; select **Open the page** to continue to the static demo.
 
-The evaluation includes Office, Tracker, Documents, Inbox, Planner, Chat, Drive, and Team views; seven populated projects; cross-workspace search; local creation and editing; and a connected decision cascade. It uses only fictional records stored in browser local storage. It has no backend, authentication, uploads, telemetry, APIs, or external assets.
+The evaluation uses a huly.io-inspired visual system: a dark graphite canvas, an iris-blue and ember accent pair, aurora gradient highlights, and an Inter-first type stack. It includes Office, Tracker, Documents, Inbox, Planner, Chat, Drive, and Team views; seven populated projects; cross-workspace search; local creation and editing; and a connected decision cascade. It uses only fictional records stored in browser local storage. It has no backend, authentication, uploads, telemetry, APIs, or external assets.
 
 ## Working sandbox capabilities
 
